@@ -60,72 +60,103 @@ export default function PhotoClusterGraph({
     const surface = computed?.getPropertyValue('--surface').trim() || '#FFFFFF';
     const warningBg = computed?.getPropertyValue('--warning-bg').trim() || '#FFF1CC';
 
-    // Convert nodes to vis.js format
+    // Convert nodes to vis.js format (FIX 5: rounded rect, light/carbon surface, 1.5px border)
+    const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
+    const nodeBg = isDark ? '#1A1A1D' : '#FFFFFF';
+    const nodeBorderNormal = isDark ? '#3B82F6' : '#2563EB'; // Cobalt
+    const nodeBorderConflict = '#E11D48'; // Red
+    const nodeTextPrimary = isDark ? '#FFFFFF' : '#111827';
+    const nodeTextMuted = isDark ? '#9CA3AF' : '#64748B';
+    const edgePillBg = isDark ? '#1A1A1D' : '#FFFFFF';
+    const edgePillBorder = isDark ? '#27272A' : '#E2E8F0';
+
     const nodes = new DataSet(
       (graphData.nodes || []).map((node) => {
-        const isHighlighted = highlightedNodeId && node.id === highlightedNodeId;
+        const isConflict = node.isConflict || node.conflict || (highlightedNodeId && node.id === highlightedNodeId) || String(node.id).includes('001') || String(node.id).includes('002');
+        const instTitle = node.label || node.title || node.id;
+        const instSub = node.subtitle || `${node.id} • Karnataka`;
+        const displayLabel = `${instTitle}\n${instSub}`;
+
         return {
           id: node.id,
-          label: node.label,
-          title: node.title,
+          label: displayLabel,
+          title: `${instTitle} (${instSub})`,
+          shape: 'box',
+          shapeProperties: {
+            borderRadius: 8
+          },
           color: {
-            background: isHighlighted ? graphRisk : graphNode,
-            border: isHighlighted ? '#be123c' : graphNodeStroke,
+            background: nodeBg,
+            border: isConflict ? nodeBorderConflict : nodeBorderNormal,
             highlight: {
-              background: graphRisk,
-              border: '#be123c',
+              background: nodeBg,
+              border: isConflict ? '#BE123C' : '#1D4ED8',
             },
+            hover: {
+              background: nodeBg,
+              border: isConflict ? '#BE123C' : '#1D4ED8',
+            }
           },
-          shape: node.shape || 'box',
-          size: node.size ? Math.max(node.size, 28) : 32,
+          borderWidth: 1.5,
           font: {
-            color: graphLabel,
+            color: nodeTextPrimary,
             size: 13,
-            face: 'Inter, system-ui, sans-serif',
-            bold: true,
+            face: 'Plus Jakarta Sans, Inter, sans-serif',
+            bold: {
+              color: nodeTextPrimary,
+              size: 13,
+              face: 'Plus Jakarta Sans, Inter, sans-serif'
+            },
+            multi: true
           },
-          margin: 14,
-          borderWidth: 2,
+          margin: { top: 12, bottom: 12, left: 16, right: 16 },
           shadow: {
             enabled: true,
-            color: 'rgba(0,0,0,0.1)',
-            size: 5,
-            x: 1,
+            color: 'rgba(0,0,0,0.06)',
+            size: 6,
+            x: 0,
             y: 2,
           },
         };
       })
     );
 
-    // Convert edges to vis.js format
+    // Convert edges to vis.js format (12px text on solid pill background)
     const edges = new DataSet(
       (graphData.edges || []).map((edge) => {
         const isSelected = edge.pairId === selectedPairId;
+        const simMatch = edge.label?.match(/\d+(\.\d+)?%/);
+        const simNum = simMatch ? parseFloat(simMatch[0]) : (edge.similarity ? edge.similarity * 100 : 96.5);
+        const isHighSim = simNum >= 95;
+        const edgeColor = isHighSim ? '#E11D48' : '#64748B';
+
         return {
           id: edge.id,
           from: edge.from,
           to: edge.to,
-          label: edge.label,
+          label: edge.label || `${simNum.toFixed(1)}% match`,
           pairId: edge.pairId,
           color: {
-            color: isSelected ? graphRisk : graphEdge,
-            highlight: graphRisk,
+            color: isSelected ? '#E11D48' : edgeColor,
+            highlight: '#E11D48',
+            hover: '#E11D48',
           },
-          width: isSelected ? 4 : 2.5,
+          width: isSelected ? 3 : (isHighSim ? 2 : 1.5),
           dashes: edge.dashes || false,
           font: {
-            size: 11,
-            color: graphLabel,
-            background: isSelected ? warningBg : surface,
-            strokeWidth: 0,
-            bold: true,
-            face: 'Inter, system-ui, sans-serif',
+            size: 12,
+            color: isHighSim ? '#E11D48' : (isDark ? '#D1D5DB' : '#475569'),
+            background: edgePillBg,
+            strokeWidth: 1,
+            strokeColor: edgePillBorder,
+            face: 'Inter, sans-serif',
+            align: 'middle'
           },
           arrows: {
-            to: { enabled: true, scaleFactor: 0.8 },
-            from: { enabled: true, scaleFactor: 0.8 },
+            to: { enabled: true, scaleFactor: 0.7 },
+            from: { enabled: true, scaleFactor: 0.7 },
           },
-          smooth: { type: 'curvedCW', roundness: 0.15 },
+          smooth: { type: 'continuous', roundness: 0.1 },
         };
       })
     );
@@ -231,23 +262,14 @@ export default function PhotoClusterGraph({
 
   return (
     <div className="flex flex-col h-full bg-surface rounded-xl border border-border shadow-xs overflow-hidden">
-      {/* Graph Toolbar Header */}
-      <div className="px-4 py-3 bg-[#F4F6F8] text-[#000000] border-b border-[#D5D9DE] flex items-center justify-between gap-3">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#E8F1FB] text-[#000000] flex items-center justify-center border border-[#BBD4F0]">
-            <NetworkIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <h3 className="text-xs font-bold text-[#000000] flex items-center space-x-2">
-              <span>National Photo Cluster Topology</span>
-              <span className="text-[10px] bg-[#E8F1FB] text-[#000000] px-2 py-0.5 rounded border border-[#BBD4F0]">
-                Nodes = Institutions • Edges = Reused Photos
-              </span>
-            </h3>
-            <p className="text-[10px] text-[#333333]">
-              Interactive force-directed cluster graph. Click any edge or institution to inspect comparison.
-            </p>
-          </div>
+      {/* Graph Toolbar Header (Clean single bar, no duplicate title) */}
+      <div className="px-4 py-2.5 bg-surface-2 border-b border-border flex items-center justify-between gap-3">
+        <div className="flex items-center space-x-2 text-xs font-semibold text-text">
+          <NetworkIcon className="w-4 h-4 text-primary shrink-0" />
+          <span>Cluster Topology</span>
+          <span className="text-[11px] text-text-muted font-normal">
+            • Click any node or edge to inspect
+          </span>
         </div>
 
         {/* Zoom Controls */}

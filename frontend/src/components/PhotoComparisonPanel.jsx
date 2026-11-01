@@ -127,9 +127,9 @@ export default function PhotoComparisonPanel({
         </div>
       </div>
 
-      {/* Mandatory Statutory Advisory Banner */}
-      <div className="bg-rose-50 px-4 py-2.5 border-b border-rose-200 text-rose-900 text-xs flex items-center space-x-2">
-        <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+      {/* Mandatory Statutory Advisory Banner (Accessible in both themes) */}
+      <div className="bg-[#FFF1F2] dark:bg-rose-950/40 px-4 py-2.5 border-b border-[#FECDD3] dark:border-rose-900/60 text-[#9F1239] dark:text-rose-200 text-xs flex items-center space-x-2">
+        <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
         <span className="font-bold text-[11px] leading-tight">
           {pairData.ai_wording}
         </span>
@@ -137,47 +137,47 @@ export default function PhotoComparisonPanel({
 
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         
-        {/* View Mode Switcher Toolbar */}
+        {/* View Mode Switcher Toolbar: Single-Row Segmented Control (Dual | Split | Difference) */}
         <div className="flex flex-wrap items-center justify-between gap-2 bg-surface-2 p-1.5 rounded-xl border border-border text-xs">
           <span className="text-[11px] font-bold text-text px-1 shrink-0">Comparison View:</span>
-          <div className="flex flex-wrap gap-1 items-center">
+          <div className="inline-flex rounded-lg border border-border bg-surface p-0.5 divide-x divide-border shadow-2xs">
             <button
               id="view-mode-side-by-side"
               onClick={() => setViewMode('side_by_side')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center space-x-1 ${
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-l-md ${
                 viewMode === 'side_by_side'
-                  ? 'bg-surface text-text shadow-2xs border border-border'
-                  : 'text-muted hover:text-text'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
               }`}
             >
               <Split className="w-3 h-3" />
-              <span>Side-by-Side</span>
-            </button>
-
-            <button
-              id="view-mode-difference-overlay"
-              onClick={() => setViewMode('difference_overlay')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center space-x-1 ${
-                viewMode === 'difference_overlay'
-                  ? 'bg-surface text-text shadow-2xs border border-border'
-                  : 'text-muted hover:text-text'
-              }`}
-            >
-              <Layers className="w-3 h-3 text-rose-600" />
-              <span>Difference Overlay</span>
+              <span>Dual</span>
             </button>
 
             <button
               id="view-mode-wipe-slider"
               onClick={() => setViewMode('wipe_slider')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center space-x-1 ${
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                 viewMode === 'wipe_slider'
-                  ? 'bg-surface text-text shadow-2xs border border-border'
-                  : 'text-muted hover:text-text'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
               }`}
             >
-              <Sliders className="w-3 h-3 text-primary" />
-              <span>Wipe Slider</span>
+              <Sliders className="w-3 h-3" />
+              <span>Split</span>
+            </button>
+
+            <button
+              id="view-mode-difference-overlay"
+              onClick={() => setViewMode('difference_overlay')}
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-r-md ${
+                viewMode === 'difference_overlay'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              <span>Difference</span>
             </button>
           </div>
         </div>
