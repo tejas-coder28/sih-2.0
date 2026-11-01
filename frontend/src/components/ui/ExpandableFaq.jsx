@@ -79,7 +79,7 @@ export default function ExpandableFaq({ className = '' }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-success-bg text-success-text border border-success-border">
             <ShieldCheck className="w-3 h-3" />
             Statutory AICTE Defense
           </span>
@@ -105,7 +105,7 @@ export default function ExpandableFaq({ className = '' }) {
                 className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left transition-colors hover:bg-surface-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent min-h-[52px]"
               >
                 <div className="flex items-center gap-3 pr-2 min-w-0 flex-1">
-                  <span className="w-36 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-surface border border-border text-text-muted shrink-0 text-center truncate">
+                  <span className="w-48 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-surface border border-border text-text-muted shrink-0 text-center truncate">
                     {item.category}
                   </span>
                   <span className="text-xs font-semibold text-text text-left line-clamp-2 leading-relaxed flex-1">

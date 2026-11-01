@@ -1,6 +1,11 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const puppeteer = require('c:/Users/Tejas/Desktop/sih-2.0/frontend/node_modules/puppeteer-core');
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const puppeteer = require(path.join(__dirname, '..', '..', 'frontend', 'node_modules', 'puppeteer-core'));
 
 function getLuminance(r, g, b) {
   const [rs, gs, bs] = [r, g, b].map(c => {
@@ -72,7 +77,7 @@ async function runRegressionCheck() {
     await page.setViewport(vp);
     for (const r of ROLES) {
       // Login as role
-      await page.goto('http://127.0.0.1:5173', { waitUntil: 'networkidle2' });
+      await page.goto('http://localhost:5173', { waitUntil: 'networkidle2' });
       await page.evaluate(async (credentials) => {
         const res = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
           method: 'POST',
