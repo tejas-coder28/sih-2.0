@@ -241,10 +241,22 @@ export default function LoginPage({ onLoginSuccess }) {
     if (e && e.preventDefault) e.preventDefault();
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
 
-    // Ensure we have current values even if typing animation was interrupted
+    // Ensure complete credentials even if typing animation was interrupted or submitted early
     const currentPreset = DEMO_ROLES.find(r => r.role === selectedRole);
-    const submitEmail = (email && email.includes('@')) ? email.trim() : (currentPreset ? currentPreset.email : email.trim());
-    const submitPassword = password ? password : (currentPreset ? currentPreset.password : password);
+    let submitEmail = (email && email.includes('@')) ? email.trim() : (currentPreset ? currentPreset.email : email.trim());
+    let submitPassword = password ? password : (currentPreset ? currentPreset.password : password);
+
+    // If preset selected and animation was still completing, snap immediately to full credentials
+    if (currentPreset) {
+      if (!submitEmail || !submitEmail.includes('@') || currentPreset.email.toLowerCase().startsWith(submitEmail.toLowerCase())) {
+        submitEmail = currentPreset.email;
+        setEmail(currentPreset.email);
+      }
+      if (!submitPassword || currentPreset.password.startsWith(submitPassword)) {
+        submitPassword = currentPreset.password;
+        setPassword(currentPreset.password);
+      }
+    }
 
     if (!submitEmail || !submitPassword) {
       setErrorMessage(
@@ -342,7 +354,7 @@ export default function LoginPage({ onLoginSuccess }) {
   return (
     <div 
       id="login-root" 
-      className="login-root relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8"
+      className="login-root relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto py-8"
     >
       {/* ========================================================
           BACKGROUND: Deep Navy (#0B1B45 -> #0A1F3D -> #081433)

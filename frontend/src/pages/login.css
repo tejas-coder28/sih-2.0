@@ -613,8 +613,8 @@ button#login-submit-btn {
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  height: 58px !important;
-  min-height: 58px !important;
+  height: auto !important;
+  min-height: 54px !important;
   padding: 8px 14px !important;
   border-radius: 12px !important;
   background: #FFFFFF !important;
@@ -659,8 +659,10 @@ button#login-submit-btn {
 .role-preset-desc {
   color: #51607F !important;
   font-size: 11px !important;
-  line-height: 1.25 !important;
+  line-height: 1.35 !important;
   margin-top: 2px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
 }
 
 .role-chip-container {

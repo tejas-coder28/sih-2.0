@@ -406,6 +406,21 @@ export default function Navbar({
               </div>
             </button>
 
+            {/* Direct Header Sign-Out Button (Always Visible across Viewports) */}
+            {onLogout && (
+              <button
+                type="button"
+                id="header-signout-btn"
+                onClick={() => setShowLogoutConfirm(true)}
+                title="Sign Out"
+                aria-label="Sign Out"
+                className="h-9 px-2.5 rounded-lg border border-border bg-surface-2 hover:bg-danger/10 hover:border-danger/30 text-danger flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+              >
+                <LogOut className="w-4 h-4 shrink-0" />
+                <span className="text-xs font-semibold hidden md:inline">Sign Out</span>
+              </button>
+            )}
+
             {/* USER MENU (Solid Surface, High Contrast) */}
             <div className="relative" ref={userMenuRef}>
               <button
