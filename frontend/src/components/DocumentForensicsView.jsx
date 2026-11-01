@@ -257,7 +257,7 @@ export default function DocumentForensicsView() {
       <div className="bg-surface-2/80 p-3 rounded-xl border border-border/80">
         <div className="text-[11px] font-bold uppercase tracking-wider text-text-subtle px-1 mb-2 flex items-center justify-between">
           <span>Ground Truth Benchmark Samples</span>
-          <span className="text-[10px] font-mono text-text-subtle">8 Curated Cases (F1: 1.0 @ 0.80)</span>
+          <span className="text-[10px] font-mono text-text-subtle" title="Synthetic benchmark (tuned seed 42, tested seed 7), not field accuracy">8 Curated Cases (F1: 1.0 @ 0.80, synthetic benchmark)</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {PRESET_SAMPLES.map((sample) => {
@@ -338,6 +338,9 @@ export default function DocumentForensicsView() {
               <div className="text-[10px] text-text-subtle font-bold uppercase">False Positive Rate</div>
               <div className="text-base font-bold text-text font-mono mt-0.5">0.0% @ 0.80</div>
             </div>
+          </div>
+          <div className="text-[10px] text-text-muted mt-2 italic text-center">
+            * Synthetic benchmark (tuned seed 42, tested seed 7), not field accuracy.
           </div>
         </div>
       )}

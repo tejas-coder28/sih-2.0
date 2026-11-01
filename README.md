@@ -262,7 +262,7 @@ pytest backend/tests mock_issuer -q
   - **Defect Detection Accuracy**: 100.0% across 17 statutory categories
   - **Anomaly Detection**: Precision 0.9917 / Recall 1.0000 (FPR: 3.51%)
   - **Photo Radar Duplicate Match**: Precision 0.8824 / Recall 1.0000
-  - **Processing Turnaround**: 2.04s per dossier (5,289x acceleration vs. 180 min manual baseline)
+  - **Processing Turnaround**: 2.04s per dossier (illustrative model, assumed baseline, not measured)
 - **Component Reality & Architecture Disclosures**:
   - **Digital Signatures**: Verification receipts are signed using **Ed25519** asymmetric cryptography (RFC 8032) in an append-only SHA-256 hash chain with database triggers.
   - **Issuer Verification**: Digilocker / API Setu authorities are backed by the local Mock Statutory Issuer (`http://127.0.0.1:8001`).

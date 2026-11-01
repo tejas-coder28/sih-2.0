@@ -123,7 +123,7 @@ const SCREENSHOT_CATALOG = [
     tabTarget: 'document-intelligence',
     badge: 'OCR & Schema',
     badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    summary: 'Automated field extraction, schema parsing, and live external verification status across Digilocker and state portals.',
+    summary: 'Automated field extraction, schema parsing, and live external verification status across Mock Statutory Authority Gateway (simulated) and state portals.',
     features: [
       'Tier-1 PyMuPDF text & table extraction with high fidelity',
       'Tier-2 ML Classifier for automated document classification',
@@ -425,7 +425,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
       {/* Page Title & Hero Header */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-sky-400/10 via-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-2">
@@ -441,7 +441,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 SHA-256 Merkle Ledger
               </span>
             </div>
-            
+
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               PRAMAAN-X System Architecture & Evidence Showcase
             </h1>
@@ -483,11 +483,10 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 key={tab.id}
                 id={`tab-${tab.id}`}
                 onClick={() => setActiveSection(tab.id)}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 cursor-pointer ${
-                  isActive
+                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 cursor-pointer ${isActive
                     ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-600/20'
                     : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
                 <span>{tab.label}</span>
@@ -525,11 +524,10 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                         key={node.id}
                         id={`arch-node-${node.id}`}
                         onClick={() => setSelectedNode(node)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden group ${
-                          isSelected
+                        className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden group ${isSelected
                             ? 'bg-sky-50/70 border-sky-400 ring-2 ring-sky-300/40 shadow-xs'
                             : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
@@ -687,13 +685,12 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   <button
                     key={s.step}
                     onClick={() => setActivePipelineStep(idx)}
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                      isCurrent
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${isCurrent
                         ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300/40'
                         : isCompleted
-                        ? 'bg-emerald-50/50 border-emerald-200 text-slate-700'
-                        : 'bg-slate-50 border-slate-200 opacity-60'
-                    }`}
+                          ? 'bg-emerald-50/50 border-emerald-200 text-slate-700'
+                          : 'bg-slate-50 border-slate-200 opacity-60'
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[10px] font-mono font-bold text-slate-500">
@@ -718,7 +715,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
               return (
                 <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-                  
+
                   <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
                     <div className="flex flex-col gap-3 max-w-2xl">
                       <div className="flex items-center gap-2">
@@ -793,11 +790,10 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      selectedCategory === cat.id
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${selectedCategory === cat.id
                         ? 'bg-sky-600 text-white shadow-xs'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     {cat.label}
                   </button>

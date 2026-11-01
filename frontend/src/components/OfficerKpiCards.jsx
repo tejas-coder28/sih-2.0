@@ -193,7 +193,7 @@ export default function OfficerKpiCards({
       title: 'Verified %',
       value: kpis?.verifiedPercentage !== undefined ? `${kpis.verifiedPercentage}%` : '72.5%',
       unit: '',
-      subtitle: 'Authoritative Gateway Checked',
+      subtitle: 'Mock Gateway Verified (simulated)',
       icon: CheckCircle2,
       iconSquare: 'bg-success-bg border-success-border text-success-text',
       filterTarget: 'Verified',

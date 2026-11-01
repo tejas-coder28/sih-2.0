@@ -732,6 +732,13 @@ export default function RuleConfigPage() {
         </>
       )}
 
+      {/* Regulatory Footnote on rule parameter placeholders */}
+      <div className="mt-8 pt-4 border-t border-border text-center text-xs text-text-muted">
+        <p>
+          * <strong>Regulatory Note:</strong> Handbook parameter values are placeholders pending official AICTE sign-off.
+        </p>
+      </div>
+
       {/* 
         PUBLISH NEW RULE VERSION MODAL (CONFIRMATION REQUIRED)
       */}
