@@ -217,31 +217,33 @@ body {
   }
 
   /* Global headings hierarchy */
-  h1:not(#login-root *):not(.login-root *) {
+  h1:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 22px !important;
     font-weight: 600 !important;
     line-height: 1.3 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h2:not(#login-root *):not(.login-root *) {
+  h2:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 18px !important;
     font-weight: 600 !important;
     line-height: 1.35 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h3:not(#login-root *):not(.login-root *) {
+  h3:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 15px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h4, h5, h6 {
+  h4:not(.document-paper-canvas *):not(.document-paper-sheet *), 
+  h5:not(.document-paper-canvas *):not(.document-paper-sheet *), 
+  h6:not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 14px !important;
     font-weight: 600 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
   button,
@@ -2927,8 +2929,12 @@ html[data-theme="dark"] div#document-page-canvas,
 #document-page-canvas h2,
 #document-page-canvas span,
 #document-page-canvas div,
-#document-page-canvas p {
-  color: #111827;
+#document-page-canvas p,
+.document-paper-sheet h2,
+.document-paper-sheet span,
+.document-paper-sheet div,
+.document-paper-sheet p {
+  color: #111827 !important;
 }
 
 #document-page-canvas .text-slate-600 {
