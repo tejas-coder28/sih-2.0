@@ -388,8 +388,8 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 ${
               isIntact 
                 ? isGreenChainAnimating 
-                  ? 'bg-emerald-600 text-white scale-105 shadow-emerald-500/30' 
-                  : 'bg-emerald-600 text-white shadow-emerald-500/20'
+                  ? 'bg-emerald-700 text-white scale-105 shadow-emerald-700/30' 
+                  : 'bg-emerald-700 text-white shadow-emerald-700/20'
                 : 'bg-rose-600 text-white scale-105 shadow-rose-500/30 animate-pulse'
             }`}>
               {isIntact ? (
@@ -408,7 +408,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
                 <span className={`text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs ${
                   isIntact 
                     ? isGreenChainAnimating 
-                      ? 'bg-emerald-500 text-white border-emerald-400 animate-pulse' 
+                      ? 'bg-emerald-800 text-white border-emerald-700 animate-pulse' 
                       : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                     : 'bg-rose-600 text-white border-rose-700 animate-bounce'
                 }`}>
@@ -456,8 +456,8 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
               disabled={verifying}
               className={`px-5 py-3 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 ${
                 isGreenChainAnimating
-                  ? 'bg-emerald-500 text-white ring-4 ring-emerald-400/50 shadow-emerald-500/40 scale-102'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  ? 'bg-emerald-700 text-white ring-4 ring-emerald-500/50 shadow-emerald-700/40 scale-102'
+                  : 'bg-emerald-700 hover:bg-emerald-800 text-white'
               }`}
               title="Executes cryptographic audit of all parent hashes and Ed25519 digital signatures"
             >
@@ -640,7 +640,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
                       : isDownstreamCompromised
                       ? 'bg-amber-100 text-amber-700 border-amber-300'
                       : isBlockAnimatingGreen
-                      ? 'bg-emerald-600 text-white border-emerald-200 scale-105 shadow-emerald-500/30 ring-2 ring-emerald-400/40'
+                      ? 'bg-emerald-700 text-white border-emerald-200 scale-105 shadow-emerald-700/30 ring-2 ring-emerald-500/40'
                       : 'bg-emerald-50 text-emerald-800 border-emerald-300'
                   }`}>
                     {isInvalidBlock ? (
@@ -810,6 +810,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
                         <div className="inline-flex items-center space-x-1 bg-indigo-50 border border-indigo-200 text-indigo-800 text-[10px] px-2.5 py-1 rounded-md font-mono">
                           <Key className="w-3 h-3 text-indigo-600" />
                           <span>Ed25519 Signed: {receipt.ed25519_signature ? `${receipt.ed25519_signature.slice(0, 14)}...` : 'Valid'}</span>
+                          <span className="text-[9px] text-indigo-600 font-sans italic ml-1">(byte-range inspection real, PKI chain validation stubbed)</span>
                         </div>
 
                         {/* Rule Version Set */}
@@ -1296,15 +1297,15 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
       {/* Tamper Simulation Confirmation Modal (Item 17) */}
       <ConfirmModal
         isOpen={showTamperConfirmModal}
+        onClose={() => setShowTamperConfirmModal(false)}
         title="Simulate Ledger Tampering?"
-        message="This action will deliberately inject an altered payload hash into Block #2 (Bhoomi Land Registry) to simulate adversarial tampering and demonstrate cryptographic hash-chain break detection."
+        description="This action will deliberately inject an altered payload hash into Block #2 (Bhoomi Land Registry) to simulate adversarial tampering and demonstrate cryptographic hash-chain break detection."
         confirmText="Inject Tampering"
-        confirmVariant="danger"
+        variant="danger"
         onConfirm={() => {
           setShowTamperConfirmModal(false);
           handleToggleTamperDemo(true);
         }}
-        onCancel={() => setShowTamperConfirmModal(false)}
       />
     </div>
   );

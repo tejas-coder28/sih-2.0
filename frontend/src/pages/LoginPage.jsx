@@ -299,9 +299,9 @@ export default function LoginPage({ onLoginSuccess }) {
     } catch (err) {
       console.error('Login failed:', err);
       // Graceful offline fallback: if backend is unreachable or returns error in deployment, allow offline demo mode
+      // Only match if the submitted email matches a preset role email
       const matchedPreset = DEMO_ROLES.find(p => 
-        (p.email && submitEmail && p.email.toLowerCase() === submitEmail.toLowerCase()) ||
-        p.role === selectedRole
+        p.email && submitEmail && p.email.toLowerCase() === submitEmail.toLowerCase()
       );
 
       const isOfflineOrDeploymentError = 
@@ -336,7 +336,14 @@ export default function LoginPage({ onLoginSuccess }) {
         return;
       }
 
-      const detail = err.response?.data?.detail || err.message || 'Authentication failed. Please verify credentials.';
+      let detail = err.response?.data?.detail;
+      if (!detail) {
+        if (isOfflineOrDeploymentError) {
+          detail = 'Backend service is currently unreachable (offline). Please check that the API server is running on http://127.0.0.1:8000, or choose a demo role below.';
+        } else {
+          detail = err.message || 'Authentication failed. Please verify credentials.';
+        }
+      }
       setErrorMessage(detail);
       localStorage.removeItem('pramaan_token');
       localStorage.removeItem('pramaan_user');
