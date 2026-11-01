@@ -17,7 +17,7 @@ The **PRAMAAN-X Evaluation Harness** calibrated all decision thresholds strictly
 | **False-Positive Rate (FPR)** | **3.51%** (2/57) | $\le 5.0\%$ | Low scrutiny committee burden |
 | **Photo Reuse Radar Precision / Recall** | **P: 0.882** / **R: 1.000** | $\ge 0.900$ | 4 multi-college clusters detected |
 | **Source-Verification Success Rate** | **100.0%** (7/7) | $\ge 98.0\%$ | API, QR, Digital Signatures |
-| **Average Processing Time / Dossier** | **2.04 seconds (Measured)** | Assumption: 180 min manual | **5289x Speedup** (180.0 min saved) |
+| **Average Processing Time / Dossier** | **2.04 seconds (Measured)** | Assumption: 180 min manual | **5289x Speedup (illustrative model, assumed baseline, not measured)** |
 | **Alert Dispatch Latency** | **Mean: 3.2ms** (P95: 3.2ms) | $\le 500$ ms | 100% Deduplicated Dispatch |
 
 > [!IMPORTANT]
@@ -128,7 +128,7 @@ Benchmarked against an assumed **180-minute** (3-hour) manual scrutiny baseline 
 - **Automated PRAMAAN-X Processing Time (Measured):** **2.04 seconds** (0.034 minutes)
 - **Manual Scrutiny Committee Baseline (Explicit Assumption):** **180.0 minutes**
 - **Time Saved per Application:** **180.0 minutes**
-- **Speedup Factor:** **5289x Faster**
+- **Speedup Factor:** **5289x Faster (illustrative model, assumed baseline, not measured)**
 - **Turnaround Efficiency Gain:** **99.98% reduction**
 
 *Note: The manual baseline of 180 minutes is an explicit model assumption representing standard AICTE scrutiny committee review duration for a multi-document institutional filing, not an empirically timed study.*

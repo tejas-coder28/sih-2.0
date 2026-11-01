@@ -343,7 +343,7 @@ export default function PhotoComparisonPanel({
                   className="absolute border-2 border-amber-400 bg-amber-400/20 rounded shadow-[0_0_12px_rgba(251,191,36,0.8)]"
                   style={{ top: '35%', right: '12%', width: '22%', height: '45%' }}
                 >
-                  <span className="absolute -top-5 left-0 bg-amber-600 text-white text-[8px] font-mono px-1.5 py-0.2 rounded">
+                  <span className="absolute -top-5 left-0 bg-amber-400 text-slate-950 font-bold text-[8px] font-mono px-1.5 py-0.2 rounded shadow-xs">
                     SERVER RACK MATCH (pHash Dist = 0)
                   </span>
                 </div>

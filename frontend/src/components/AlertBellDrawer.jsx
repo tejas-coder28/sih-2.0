@@ -254,7 +254,7 @@ export default function AlertBellDrawer({ currentRole }) {
                           ? s === 'CRITICAL'
                             ? 'bg-rose-600 text-white border-rose-600'
                             : s === 'WARNING'
-                            ? 'bg-amber-600 text-white border-amber-600'
+                            ? 'bg-amber-900 text-amber-50 border-amber-800'
                             : 'bg-primary/10 text-primary border-primary/20'
                           : 'bg-surface text-text-muted border-border hover:bg-surface-2'
                       }`}

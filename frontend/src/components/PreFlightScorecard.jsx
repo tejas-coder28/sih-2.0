@@ -735,7 +735,7 @@ export default function PreFlightScorecard({ currentUser }) {
                       onClick={() => handleToggleResolve(item.id)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
                         isResolved
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-emerald-700 text-white'
                           : 'bg-surface border border-border text-text hover:bg-surface-2'
                       }`}
                     >

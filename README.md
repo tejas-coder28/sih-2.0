@@ -1,269 +1,354 @@
-# PRAMAAN-X (प्रमाण-X)
-### AI Decision-Support Platform for AICTE Extension of Approval (EoA) & Regulatory Document Scrutiny
+# PRAMAAN-X
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18+-61DAFB.svg?logo=react&logoColor=black)](https://react.dev)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4+-38BDF8.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![NetworkX](https://img.shields.io/badge/NetworkX-3.2+-orange.svg)](https://networkx.org)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.13-blue.svg)](https://python.org)
+**AI-Powered Regulatory Decision-Support Framework for AICTE Approval Document Scrutiny**
 
-PRAMAAN-X is an AI-powered regulatory decision-support system engineered for the **All India Council for Technical Education (AICTE)**. It scrutinizes institutional Extension of Approval (EoA) dossiers, extracts and cross-corroborates documentary evidence, executes handbook regulations as declarative code, builds multi-institution knowledge graphs to uncover physically impossible claims, runs forensic image/perceptual hash analysis, verifies claims against mock government issuer portals, and maintains a cryptographically chained, tamper-evident audit ledger.
+[![Python 3.12](https://img.shields.io/badge/Python-3.12.8-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI 0.115.6](https://img.shields.io/badge/FastAPI-0.115.6-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React 19](https://img.shields.io/badge/React-19.3.1-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![Vite 8](https://img.shields.io/badge/Vite-8.3.4-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS 3.4](https://img.shields.io/badge/TailwindCSS-3.4.19-38B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Tests: 177 Passing](https://img.shields.io/badge/Tests-177%20Passing%20(100%25)-success.svg?logo=pytest&logoColor=white)](evidence_pack/pytest_output.txt)
+[![Status: Advisory Only](https://img.shields.io/badge/Status-Advisory%20Decision--Support-amber.svg)](backend/app/rules/aicte_aph_2025.yaml)
 
----
-
-## 🏛 Statutory Hard Constraints & Safeguards
-1. **Advisory Decision Support Only**: AI output produces **"Indicators for Review"**, never automated rejections. Statutory scrutiny committees retain sole decision-making authority.
-2. **Explainability with Evidentiary Trail**: Every single flagged discrepancy cites handbook clauses, exact mathematical shortfalls, and external registry diffs.
-3. **Regulation-as-Code (Configurable Rules)**: Rules are defined declaratively in YAML rule packs (`aicte_aph_2025.yaml`) and can be reconfigured or hot-reloaded dynamically at runtime without codebase modifications.
-4. **Data Privacy & PII Masking**: Sensitive identifiers (Aadhaar `XXXX-XXXX-9021`, PAN `AB****89C`) are masked under Indian regulatory standards.
-5. **Synthetic Benchmark Data**: All benchmark institutions, faculty names, and documents use anonymized, synthetic test data.
+> **Quick Links**: [3-Min Walkthrough Demo (Coming Soon)](#) • [Presentation Pitch Deck Outline](SLIDE_DECK_OUTLINE.md) • [Full Evaluation Report](evidence_pack/evaluation_report.md) • [154-Element Audit Report](AUDIT_REPORT.md)
 
 ---
 
-## 🚀 Key Functional Modules
+## ⚡ In 30 Seconds
 
-### 1. Application Category -> Checklist -> Multi-State Validation
-- Maps application categories (`Extension of Approval (EoA)`, `Increase in Intake`, `New Courses`) to dynamic mandatory checklists.
-- Automatically flags **Missing**, **Expired**, and **Inconsistent** documents based on session threshold dates.
-
-### 2. OCR Intelligence, Document Classification & Field Extraction
-- Modular text extraction pipeline powered by **PyMuPDF** (`fitz`) and deterministic regex normalizers with high-fidelity structured field extraction.
-- Classifies document types (Fire Safety NOC, Land Deed, Building Plan Approval, Faculty Roster, Affiliation Orders).
-- Extracts structured numeric values: sanctioned intake, carpet areas in sq. meters, survey numbers, issue/expiry dates.
-
-### 3. Regulation-as-Code (AICTE Approval Process Handbook)
-> **Statutory Notice**: All 12 APH regulatory rule parameters and thresholds are regulatory placeholders pending final gazette notification by statutory council.
-- Codifies AICTE Approval Process Handbook (APH 2025-26) clauses into declarative YAML:
-  - `APH-2025-Cl-4.1.1`: Faculty-to-Student Ratio (FSR <= 1:20 for UG Engineering).
-  - `APH-2025-Cl-4.1.3`: Faculty Cadre Proportion (Professor : Associate : Assistant = 1:2:6).
-  - `APH-2025-Cl-5.2.4`: Minimum Carpet Area Requirement (10.5 sq.m per student).
-  - `APH-2025-Cl-6.3.2`: Fire Safety NOC Validity covering the forthcoming academic session.
-  - `APH-2025-Cl-7.1.5`: Land Title & 30-Year Continuous Leasehold norm.
-  - `APH-2025-Cl-8.4.1`: Examining University Active Affiliation Order.
-
-### 4. Institution Knowledge Graph & "Impossibility Engine" (NetworkX)
-- Builds an interconnected relational graph across technical colleges, faculty members, land parcels, and governing trusts.
-- **Ghost Faculty / Dual Employment Detector**: Flags faculty members concurrently reported as full-time regular teachers across two or more institutions simultaneously.
-- **Land Parcel Collision Detector**: Flags the identical revenue Khasra/Survey parcel claimed by distinct colleges without joint-campus regulatory approval.
-- **Physical Density Impossibility**: Evaluates declared instructional carpet area against student population density.
-
-### 5. Digital Forensics & Photo Reuse Radar
-- **Metadata Scanner**: Detects unauthorized digital manipulation tools (e.g. Adobe Photoshop, Canva signatures) in scanned certificates.
-- **Error-Level Analysis (ELA)**: Recompression delta analysis identifying localized pixel-level tampering on dates, stamps, and signatures.
-- **Photo Reuse Radar**: Uses 64-bit Perceptual Hashing (`pHash` / `dHash`) with Hamming distance lookup across all historic campus photos in India to catch colleges submitting photos from other institutions.
-
-### 6. Mock External Statutory Issuer APIs
-- Simulates authoritative government gateways:
-  - State Fire & Emergency Services Portal (Fire NOC verification)
-  - State Revenue Land Registry Bhoomi/Mahabhulekh (Khata & encumbrance checks)
-  - Examining State University Affiliation Cell
-  - CBDT TRACES & Form 16 Gateway (TDS salary draw verification)
-- Standardized statuses: `verified`, `mismatch_detected`, `expired`, `verification_pending`, `source_unavailable`, `manual_review_required`.
-
-### 7. Hash-Chained, Tamper-Evident "Verification Receipts" Audit Ledger
-- Cryptographic hash-chain where every audit event (upload, OCR, verification check, rule evaluation, officer decision) creates a cryptographically linked receipt block:
-  $$\text{Receipt Hash} = \text{SHA-256}(\text{Index} \parallel \text{Timestamp} \parallel \text{Event} \parallel \text{Actor} \parallel \text{Payload Hash} \parallel \text{Prev Hash})$$
-- Digitally signed with Ed25519 asymmetric cryptography (RFC 8032), with private signing keys stored securely outside the repository and public key certificate verification.
-- Interactive chain integrity verifier and tampering simulation to prove breach detection.
-
-### 8. Evidence Lens & Pre-Flight Readiness Scorecard
-- **Evidence Lens**: 6-Stage decision pipeline:
-  `Claim -> Evidence -> Rule -> Source Response -> Confidence -> Officer Action`
-- **Pre-Flight Readiness Scorecard**: Institutions run self-assessments before formal submission to identify shortfalls and follow actionable remediation roadmaps.
+- **The Problem**: Over 10,000 technical institutions submit multi-document regulatory dossiers annually for AICTE Extension of Approval (EoA). Manual committee review faces an assumed baseline of **180 minutes per dossier**, creating backlogs while struggling to catch cross-institution fraud (e.g. "ghost faculty" claimed concurrently in multiple colleges or facilities sharing identical photos across states).
+- **Our Solution**: PRAMAAN-X is an **advisory decision-support platform** that audits compliance dossiers in **2.03 seconds**, highlights discrepancies with exact PDF bounding boxes, cross-references digital twins, and **never automatically rejects** an institution. Final statutory authority stays strictly with human scrutiny officers.
+- **What Makes It Different**:
+  1. **Regulation-as-Code**: AICTE Approval Process Handbook (APH) clauses codified as declarative YAML with cohort "What-If" impact dry-runs.
+  2. **Impossibility Engine (NetworkX)**: Multi-institutional knowledge graph uncovering dual-employment collisions, land overlap, and chronological impossibilities.
+  3. **Photo Reuse Radar & Digital Forensics**: 64-bit perceptual hashing (`pHash`), Error Level Analysis (ELA), and copy-move forgery detection.
+  4. **Tamper-Evident Verification Ledger**: Append-only SHA-256 Merkle chain with asymmetric **Ed25519** digital signatures and database triggers.
 
 ---
 
-## 🏗 System Architecture
+## 📸 Screenshots Gallery & Interactive UI Tour
+
+### 1. Primary Operational Scrutiny Views
+
+| Screen & Focus | Screen & Focus |
+| :--- | :--- |
+| [![Scrutiny Dashboard](docs/screenshots/dashboard.png)](docs/screenshots/dashboard.png)<br>**Risk-Ranked Scrutiny Queue**: Real-time triage queue, KPI cards, anomaly severity distribution, and instant filter by deficiency type. | [![Evidence Lens](docs/screenshots/evidence-lens.png)](docs/screenshots/evidence-lens.png)<br>**Evidence Lens (Split-Viewer)**: Synchronized PDF canvas with bounding-box OCR highlights, regulatory clause citations, and officer action drawer. |
+| [![Pre-Flight Scorecard](docs/screenshots/preflight-scorecard.png)](docs/screenshots/preflight-scorecard.png)<br>**Pre-Flight Readiness Scorecard**: Self-service institutional portal with deficit radar, mandatory checklist tracking, and corrective hints. | [![Photo Reuse Radar](docs/screenshots/photo-reuse-radar.png)](docs/screenshots/photo-reuse-radar.png)<br>**National Photo Reuse Radar**: Interactive cluster graph discovering identical campus facilities and lab equipment claimed across separate colleges. |
+
+### 2. Deep Regulatory & Forensic Intelligence Views
+
+| Screen & Focus | Screen & Focus |
+| :--- | :--- |
+| [![Impossibility Engine Graph](docs/screenshots/impossibility-engine.png)](docs/screenshots/impossibility-engine.png)<br>**Impossibility Engine (vis-network)**: Relational twin graph flagging concurrent faculty dual-employment and spatial land plot overlap. | [![Document Intelligence](docs/screenshots/document-intelligence.png)](docs/screenshots/document-intelligence.png)<br>**Document Ingestion & Forensics**: Live PyMuPDF text parser, Error Level Analysis (ELA) heatmap scanner, and certificate integrity check. |
+| [![Rules Catalog & What-If](docs/screenshots/rules-what-if.png)](docs/screenshots/rules-what-if.png)<br>**Regulation-as-Code & What-If Simulator**: Declarative YAML handbook rule editor with hot reload and cohort-wide failure simulation. | [![Geospatial Inspection Planner](docs/screenshots/inspection-planner.png)](docs/screenshots/inspection-planner.png)<br>**Geospatial Inspection Planner**: Risk-prioritized regional inspection itinerary clustering high-deficit colleges for surprise physical visits. |
+| [![Manual Review Queue](docs/screenshots/manual-review-queue.png)](docs/screenshots/manual-review-queue.png)<br>**Manual Review Queue**: Dedicated workflow for ambiguous or degraded certificates requiring officer secondary determination. | [![Theme & Accessibility](docs/screenshots/dark-mode.png)](docs/screenshots/dark-mode.png)<br>**National Institutional Design System**: Accessible UI meeting WCAG 2.1 AA contrast standards with seamless Dark Mode support. |
+
+### 3. Cryptographic Tamper-Detection Demonstration
+
+PRAMAAN-X features an active mathematical verification ledger. The interactive tamper demo proves immediate severed-link detection if any record is mutated:
+
+| Step 1: Pristine Hash Chain Verified | Step 2: Adversarial Mutation Trigger |
+| :---: | :---: |
+| [![Step 1: Pristine Hash Chain](docs/screenshots/tamper-demo-intact.png)](docs/screenshots/tamper-demo-intact.png)<br>**All Blocks Authentic**: SHA-256 Merkle chain and Ed25519 digital signatures verify authentic across all blocks. | [![Step 2: Adversarial Mutation Trigger](docs/screenshots/tamper-demo-modal.png)](docs/screenshots/tamper-demo-modal.png)<br>**Tamper Simulation Modal**: Evaluator injects an adversarial payload modification into Block #2. |
+| **Step 3: Cryptographic Link Breach Pinpointed** | **Step 4: Pristine Ledger Restored & Re-Verified** |
+| [![Step 3: Cryptographic Link Breach Pinpointed](docs/screenshots/tamper-demo-tampered.png)](docs/screenshots/tamper-demo-tampered.png)<br>**Link Severed**: Modifying Block #2 payload instantly invalidates downstream Block #3 parent hash in red. | [![Step 4: Pristine Ledger Restored & Re-Verified](docs/screenshots/tamper-demo-restored.png)](docs/screenshots/tamper-demo-restored.png)<br>**Restoration Verified**: Re-verifying pristine ledger plays green validation animation and restores integrity. |
+
+---
+
+## ⚙️ How It Works: The 4-Step Pipeline
+
+```
+  1. INGEST & EXTRACT           2. MULTI-ENGINE SCRUTINY        3. AUTHORITY LOOKUP         4. RECEIPT & DECISION
+┌──────────────────────┐      ┌───────────────────────────┐   ┌───────────────────────┐   ┌──────────────────────────┐
+│ Compliance Dossier   │ ───► │ • Regulation-as-Code      │ ─►│ Mock Statutory Issuer │──►│ • Ed25519 Signed Receipt │
+│ • 5 Statutory PDFs   │      │ • Impossibility Engine    │   │ • State Fire Services │   │ • Bounding Box Evidence  │
+│ • PyMuPDF Extraction │      │ • Photo Radar & Forensics │   │ • Land Revenue        │   │ • Officer Review & Action│
+└──────────────────────┘      └───────────────────────────┘   └───────────────────────┘   └──────────────────────────┘
+```
+
+1. **Document Ingestion & Field Extraction** ([`backend/app/services/`](backend/app/services/field_extraction.py)):  
+   Ingests statutory compliance PDFs (Fire NOC, Land Deed, Affiliation, Building Plan, Affidavit). PyMuPDF (`fitz`) parses text streams and regex normalizers extract sanctioned intake, carpet areas, survey numbers, and validity dates with bounding boxes ($F_1: 0.9013$).
+2. **Multi-Engine Scrutiny & Cross-Institution Analysis** ([`backend/app/rules/`](backend/app/rules/aicte_aph_2025.yaml), [`backend/app/services/`](backend/app/services/impossibility_engine.py)):  
+   - Evaluates 12 declarative APH handbook rules (FSR 1:20, carpet area $\ge 10.5\text{ m}^2/\text{student}$, cadre ratios).
+   - Projects colleges into an in-memory NetworkX digital twin to detect faculty sharing (Ghost Faculty) and pre-dated certificates.
+   - Computes 64-bit image perceptual hashes (`pHash`) to discover identical campus facilities claimed across institutions.
+3. **Statutory Authority Cross-Verification** ([`mock_issuer/`](mock_issuer/app/main.py), [`backend/app/services/connectors/`](backend/app/services/connectors/)):  
+   Dispatches record lookups against state authorities (Fire Services, Affiliating University, Land Revenue/Bhoomi, NBA). Performs QR payload parsing (`pyzbar`) and PDF digital signature byte-range structural inspection.
+4. **Receipt Minting & Human Officer Determination** ([`backend/app/services/`](backend/app/services/verification_receipts.py), [`backend/app/api/`](backend/app/api/applications.py)):  
+   Mints an asymmetric Ed25519-signed verification receipt appended to a SHA-256 Merkle chain. Surfaces findings on the Evidence Lens for officer determination; mandatory justification comments are enforced on any adverse action.
+
+---
+
+## 🏗️ System Architecture
+
+| Logical Service Blueprint & Dataflow | Live Multi-Tier Architecture & Node Inspector |
+| :---: | :---: |
+| [![Logical Service Blueprint](docs/architecture.png)](docs/architecture.png)<br>**Analytical Core Topology**: FastAPI gateway orchestrating the 6 statutory engines, SQLite/PostgreSQL persistence, and local mock statutory issuer. | [![Live Multi-Tier Architecture](docs/screenshots/system-architecture.png)](docs/screenshots/system-architecture.png)<br>**Interactive System Inspector**: Live tier inspection with performance SLAs, service interfaces, technology stacks, and statutory safeguards. |
 
 ```mermaid
-graph TB
-    subgraph Client Layer
-        UI["React 18 + Tailwind CSS Web Dashboard<br/>• Evidence Lens & Finding Review<br/>• Regulation-as-Code What-If Simulator<br/>• Photo Reuse Radar & Campus Map<br/>• Ed25519 Audit Chain & Tamper Demo<br/>• Pre-Flight Readiness & Rectification Flow<br/>• Geospatial Multi-Campus Inspection Planner"]
+flowchart TB
+    subgraph CLIENT["Presentation Layer"]
+        UI["React 19 + Tailwind CSS + Vite<br/>11 Scrutiny Views • Evidence Lens • vis-network"]
     end
 
-    subgraph API & Gateway Layer
-        API["FastAPI Regulatory Backend (Port 8000)<br/>• Role-Based Access Control (RBAC & JWT)<br/>• Non-Punitive Safeguard Enforcer<br/>• Adverse Status Impossibility Guard"]
+    subgraph API["API Gateway & Security"]
+        GATEWAY["FastAPI 0.115.6 Gateway<br/>85 Endpoints • JWT Bearer • RBAC • Tenant Isolation"]
     end
 
-    subgraph Analytical Core
-        INGEST["Ingestion & OCR Pipeline<br/>• Multi-Page Rendering & PyMuPDF Text Engine<br/>• Deterministic Heuristic Boundary Normalizer"]
-        RAC["Regulation-as-Code Engine<br/>• Declarative YAML Handbook Rule Packs<br/>• JSON Schema Verification & Hot Reload<br/>• Cohort What-If Dry-Run Simulator"]
-        IMP["Impossibility Engine (NetworkX)<br/>• Cross-Institution Faculty Dual-Employment<br/>• Land Parcel Title Overlap Collision<br/>• Physical Floor-to-Student Area Norms"]
-        FORENSIC["Digital Forensics & Photo Radar<br/>• Metadata Tampering & ELA Heatmaps<br/>• Copy-Move Cloned Stamp Detection<br/>• 64-bit pHash + OpenCLIP Embeddings"]
-        CONNECTOR["Statutory Issuer Connector Framework<br/>• Multi-Channel Gateway Dispatcher<br/>• Offline & Timeout Resilient Failover<br/>• ManualReviewQueue Routing"]
+    subgraph ENGINES["6 Analytical & Forensic Engines"]
+        direction TB
+        E1["Checklist Engine<br/>Application Category Schemas"]
+        E2["PyMuPDF Extraction Engine<br/>Regex Normalizers (Macro F1: 0.9013)"]
+        E3["Regulation-as-Code Engine<br/>12 APH Rules & Cohort What-If Sim"]
+        E4["NetworkX Impossibility Engine<br/>Multi-Campus Twin & Ghost Faculty"]
+        E5["Forensics & Photo Radar<br/>ELA, Copy-Move, 64-bit pHash (Hamming <= 10)"]
+        E6["Verification Ledger Engine<br/>Ed25519 Receipts & SHA-256 Chain"]
     end
 
-    subgraph External Simulation Layer
-        MOCK["Mock Statutory Issuer Service (Port 8001)<br/>• State Fire & Emergency Services<br/>• University Affiliation Directorate<br/>• National Board of Accreditation (NBA)<br/>• State Revenue & Land Records (Bhoomi)"]
+    subgraph ISSUER["Statutory Verification Gateway"]
+        MOCK["Mock Statutory Issuer (Port 8001)<br/>510 Authority Records (Fire, University, Revenue, NBA)"]
     end
 
-    subgraph Persistence & Audit Ledger
-        DB[("Application Database<br/>(PostgreSQL / SQLite)")]
-        RECEIPTS[("Append-Only Verification Receipt Ledger<br/>• SHA-256 Chained Blocks<br/>• Ed25519 Asymmetric Digital Signatures")]
+    subgraph DATA["Data & Persistence Layer"]
+        DB[("SQLite Local / PostgreSQL Compose<br/>Append-Only DB Triggers")]
+        RULES["Declarative YAML Packs<br/>aicte_aph_2025.yaml"]
+        GRAPH["In-Memory Twin Graph<br/>NetworkX MultiDiGraph"]
     end
 
-    UI -->|REST / JSON & JWT Bearer| API
-    API --> INGEST
-    API --> RAC
-    API --> IMP
-    API --> FORENSIC
-    API --> CONNECTOR
-    CONNECTOR -->|HTTP & API Key Auth| MOCK
-    API --> DB
-    API --> RECEIPTS
+    UI -->|HTTP / JSON REST| GATEWAY
+    GATEWAY --> ENGINES
+    E1 & E2 & E3 & E4 & E5 & E6 <--> DATA
+    E1 & E3 & E6 <-->|Local Authority Verification| MOCK
+```
+
+### Evidence Lens Regulatory Traceability Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Officer as Scrutiny Officer
+    participant UI as Evidence Lens UI
+    participant Core as Scrutiny Pipeline
+    participant Rule as Regulation-as-Code
+    participant Issuer as Mock Statutory Issuer
+    participant Ledger as Receipt Ledger
+
+    Officer->>UI: Selects Institutional Dossier
+    UI->>Core: Fetch Extracted Claims & Bounding Boxes
+    Core->>Rule: Evaluate APH Handbook Rules (FSR, Density, NOC Age)
+    Core->>Issuer: Query Authority Record (/verify/authority/id)
+    Issuer-->>Core: Registry Match (Verified / Mismatch / Expired)
+    Core->>Ledger: Mint Ed25519 Signed Verification Receipt
+    Ledger-->>Core: Block Appended to SHA-256 Merkle Chain
+    Core-->>UI: Render Claim ➔ Evidence ➔ Rule Citation ➔ Source Status
+    Officer->>UI: Select Action (Approve / Reject / Seek Clarification) + Mandatory Comment
+    UI->>Ledger: Commit Officer Determination (No Auto-Rejection)
 ```
 
 ---
 
-## ⚡ Quick Start Instructions
+## 📊 Benchmark Results & Performance Charts
+
+All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`evidence_pack/EVIDENCE_SUMMARY.md`](evidence_pack/EVIDENCE_SUMMARY.md).
+
+| Metric Dimension | Measured Value | Benchmark Context |
+| :--- | :---: | :--- |
+| **Held-Out Test Set** | **100 institutions** / **500 documents** | Seed 7 held-out test split (calibrated on Seed 42) |
+| **Planted Defect Cases** | **240 positive cases** | Distributed across 20 distinct statutory violation categories |
+| **Clean Control Cases** | **57 clean cases** | 55 True Negatives, 2 False Positives (conservative flags on noisy scans) |
+| **True Positives (TP) / False Negatives (FN)** | **TP: 240** / **FN: 0** | **100.0% Recall** across all 20 statutory defect categories |
+| **False Positives (FP) / True Negatives (TN)** | **FP: 2** / **TN: 55** | **0.0351 False-Positive Rate (FPR: 3.51%)** |
+| **Defect Detection Precision** | **0.9917** (99.17%) | $240 / (240 + 2)$ |
+| **Defect Detection F1-Score** | **0.9959** | Harmonic mean of precision (0.9917) and recall (1.0000) |
+| **Field Extraction Macro F1** | **0.9013** | Macro average across 6 statutory certificate fields |
+| **Field Extraction Micro F1** | **0.8596** | Global micro $F_1$ ($TP: 199, FP: 38, FN: 27$) |
+| **Automated Test Suite** | **177 / 177 passing (100%)** | 14 test suites across `backend/tests` and `mock_issuer` |
+| **Automated Pipeline Processing Time** | **2.03 seconds** | Measured mean runtime across 6 evaluation stages |
+| **Alert Dispatch Latency** | **Mean: 3.21 ms** / **Median: 3.20 ms** | In-app WebSocket notification and event bus latency |
+
+> ⚠️ **Important Disclosure**: *Synthetic benchmark (calibrated on Seed 42, evaluated on locked held-out Seed 7), not field accuracy on live production AICTE filings. The 180-minute manual scrutiny baseline is an assumed operational comparison, not an empirically timed study.*
+
+### Slide-Ready Evaluation Visualizations
+
+| Extraction Accuracy per Field | Defect Accuracy Across 20 Categories |
+| :---: | :---: |
+| [![Field Extraction](docs/charts/1_field_extraction_metrics.png)](docs/charts/1_field_extraction_metrics.png)<br>Macro $F_1$: 0.9013 across certificate numbers, dates, acreage & surveys. | [![Defect Detection](docs/charts/2_defect_type_accuracy.png)](docs/charts/2_defect_type_accuracy.png)<br>100.0% Recall across all 20 planted defect categories (240/240). |
+
+| 2.03s vs 180m Manual Baseline | Photo Radar & Anomaly Distribution |
+| :---: | :---: |
+| [![Processing Speedup](docs/charts/3_processing_time_comparison.png)](docs/charts/3_processing_time_comparison.png)<br>Automated pipeline turnaround of 2.03s per full dossier. | [![Radar & Anomaly](docs/charts/4_radar_and_anomaly_metrics.png)](docs/charts/4_radar_and_anomaly_metrics.png)<br>pHash precision: 0.8824, recall: 1.0000; anomaly precision: 0.9917. |
+
+<details>
+<summary><strong>Click to view Complete 20-Category Defect Coverage Breakdown</strong> (from <code>evidence_pack/defect_coverage.csv</code>)</summary>
+
+| # | Defect Identifier | Planted | Detected | Missed | Accuracy | Detection Module & Mechanism |
+| :-: | :--- | :-: | :-: | :-: | :-: | :--- |
+| 1 | `expired_document` | 19 | 19 | 0 | **100.0%** | Rule Engine: `RULE_FIRE_NOC_VALIDITY` (Cl 6.3.2) cutoff date check |
+| 2 | `missing_signature_field` | 22 | 22 | 0 | **100.0%** | Forensics / Connector: `DigitalSignatureConnector` notary check |
+| 3 | `wrong_institution_name` | 15 | 15 | 0 | **100.0%** | Rule Engine: `RULE_NAME_MATCH_AFFIDAVIT_NOC` (token similarity < 0.85) |
+| 4 | `shared_document_reference_number` | 3 | 3 | 0 | **100.0%** | Impossibility Engine: Multi-dossier reference ID collision |
+| 5 | `faculty_duplicate_across_institutions` | 21 | 21 | 0 | **100.0%** | Impossibility Engine: Ghost Faculty cross-college PAN/Aadhaar collision |
+| 6 | `area_too_small_for_intake` | 17 | 17 | 0 | **100.0%** | Rule Engine: `RULE_BUILT_UP_AREA_PER_STUDENT` (< 10.5 sqm/student) |
+| 7 | `date_before_issuer_existed` | 21 | 21 | 0 | **100.0%** | Impossibility Engine: Temporal causal check (issue date predates issuer) |
+| 8 | `inverted_validity_interval` | 3 | 3 | 0 | **100.0%** | Forensics: Temporal validator (issue date postdates expiry date) |
+| 9 | `reused_photo` | 42 | 42 | 0 | **100.0%** | Photo Reuse Radar: 64-bit pHash Hamming distance ($\le 10$) |
+| 10 | `missing_exif_metadata` | 21 | 21 | 0 | **100.0%** | Forensics: EXIF inspector (camera make, timestamp, GPS tags missing) |
+| 11 | `pdf_metadata_producer_anomaly` | 3 | 3 | 0 | **100.0%** | Forensics: PDF structural scan (Ghostscript/iText trailer tampering) |
+| 12 | `font_inconsistency_in_region` | 3 | 3 | 0 | **100.0%** | Forensics: Typography uniformity scan (font family and size anomaly) |
+| 13 | `error_level_analysis_spliced_patch` | 3 | 3 | 0 | **100.0%** | Forensics: Error Level Analysis compression artifact variance (> 0.65) |
+| 14 | `copymove_cloned_seal` | 3 | 3 | 0 | **100.0%** | Forensics: ORB keypoint duplicate stamp and seal matcher |
+| 15 | `qr_ocr_reference_mismatch` | 3 | 3 | 0 | **100.0%** | Forensics: `QrDecodeConnector` (pyzbar) vs OCR extracted certificate ID |
+| 16 | `sun_shadow_angle_discrepancy` | 3 | 3 | 0 | **100.0%** | Proof-of-Reality: `sun_shadow_service` (pvlib solar ephemeris vs shadow) |
+| 17 | `built_up_area_footprint_discrepancy` | 3 | 3 | 0 | **100.0%** | Proof-of-Reality: `built_up_area_service` (satellite polygon vs claim) |
+| 18 | `lab_equipment_inconsistent` | 2 | 2 | 0 | **100.0%** | Impossibility Engine: Equipment inventory serial number collision |
+| 19 | `mismatched_reference_number` | 20 | 20 | 0 | **100.0%** | Rule Engine: `RULE_SURVEY_NUMBER_CONSISTENCY` (Cl 7.2.1) cross-check |
+| 20 | `edited_amount` | 13 | 13 | 0 | **100.0%** | Rule Engine / Forensics: Leasehold tenure (< 30 years) and area statement |
+
+</details>
+
+---
+
+## 🛡️ Statutory Safeguards & Verifying Tests
+
+PRAMAAN-X strictly upholds statutory administrative fairness principles. Automated checks never issue punitive verdicts.
+
+| Safeguard Policy | Code Implementation | Verifying Test Suite & File Path |
+| :--- | :--- | :--- |
+| **No Automatic Rejection**<br>Adverse determination requires officer action with mandatory comment | [`models.py:140-155`](backend/app/models/models.py)<br>Empty comment rejected with HTTP 400 | `test_no_automatic_rejection_rule`<br>[`backend/tests/test_rbac_and_endpoints.py:182`](backend/tests/test_rbac_and_endpoints.py)<br>`test_adverse_status_impossible_without_officer_action`<br>[`backend/tests/test_rectification_and_features.py:263`](backend/tests/test_rectification_and_features.py) |
+| **RBAC & Tenant Isolation**<br>5 roles; colleges cannot see other colleges' dossiers | [`security.py`](backend/app/core/security.py), [`auth.py`](backend/app/api/auth.py)<br>Institutional query scoping | `test_login_all_5_roles`<br>[`backend/tests/test_rbac_and_endpoints.py:70`](backend/tests/test_rbac_and_endpoints.py)<br>`test_institution_user_cannot_view_other_institution_data`<br>[`backend/tests/test_rbac_and_endpoints.py:112`](backend/tests/test_rbac_and_endpoints.py) |
+| **PII Data Masking**<br>Masks national PAN / Aadhaar for officers and auditors | [`field_extraction.py:32`](backend/app/services/field_extraction.py)<br>`mask_pan` and `mask_aadhaar` | `test_pii_masking_for_officers_and_auditors`<br>[`backend/tests/test_rbac_and_endpoints.py:284`](backend/tests/test_rbac_and_endpoints.py) |
+| **Sensitive Access Logging**<br>Audit log entry recorded on all sensitive reads | [`models.py`](backend/app/models/models.py)<br>`AuditLog` table with timestamp | `test_access_logging_for_sensitive_reads`<br>[`backend/tests/test_rbac_and_endpoints.py:320`](backend/tests/test_rbac_and_endpoints.py) |
+| **Advisory Language Mandate**<br>Strict non-punitive wording ("Indicator for review") | Hardcoded policy in pipeline services<br>Prohibits verdict terms | `test_mandatory_advisory_caveat`<br>[`backend/tests/test_sun_shadow_plausibility.py:199`](backend/tests/test_sun_shadow_plausibility.py) |
+| **Tamper-Evident Ledger Security**<br>Append-only ledger with cryptographic hash chaining | [`verification_receipts.py`](backend/app/services/verification_receipts.py)<br>Ed25519 signatures, DB triggers | `test_tamper_detection_content_modification`<br>[`backend/tests/test_verification_receipts.py:90`](backend/tests/test_verification_receipts.py)<br>`test_database_trigger_blocks_direct_sql_mutation`<br>[`backend/tests/test_verification_receipts.py:130`](backend/tests/test_verification_receipts.py) |
+
+---
+
+## 🔍 What is Real vs. Simulated
+
+We believe in complete technical transparency with Hackathon evaluators.
+
+| Component / Capability | Implementation Reality | Current Repository State |
+| :--- | :--- | :--- |
+| **Text Stream Extraction** | **REAL** | PyMuPDF (`fitz`) direct stream parsing + deterministic regex boundary normalizers. |
+| **Regulation-as-Code** | **REAL** | Declarative YAML parser, JSON Schema pack validator, and cohort What-If simulation. |
+| **Impossibility Engine** | **REAL** | In-memory NetworkX graph analyzing dual employment, spatial overlap, and chronology. |
+| **Photo Reuse Radar** | **REAL (pHash) / SIMULATED (Vector)** | Perceptual 64-bit `imagehash` (pHash/dHash) is real. OpenCLIP 512-dim cosine similarity is simulated via projection matrices. |
+| **Digital Forensics** | **REAL** | Error Level Analysis (ELA), copy-move keypoint matching, and PDF metadata inspection. |
+| **QR Code Extraction** | **REAL** | Native 2D barcode rasterization and decoding via `pyzbar` and OpenCV. |
+| **Digital Signatures** | **HYBRID** | PDF `/ByteRange` structural integrity inspection is real. X.509 PKI trust anchor chain validation is a stub. |
+| **Verification Receipts** | **REAL** | Asymmetric Ed25519 digital signatures (RFC 8032) and SHA-256 Merkle chain with SQLite/Postgres DB triggers. |
+| **Statutory Authority Gateways** | **SIMULATED** | Local Mock Statutory Issuer (`127.0.0.1:8001`) with 510 pre-seeded JSON records. Live API Setu and DigiLocker are not integrated. |
+| **OCR for Degraded Scans** | **NOT INSTALLED** | Native OCR binaries (PaddleOCR / Tesseract) are not in the environment; pipeline parses text-embedded PDFs. |
+| **APH 2025-26 Rule Parameters** | **PLACEHOLDERS** | All 12 rule parameters in `aicte_aph_2025.yaml` are engineering placeholders awaiting gazetted sign-off. |
+| **Docker Compose** | **VALIDATED / NOT VERIFIED** | `docker-compose.yml` validates syntactically; runtime container build was not verified locally due to inactive daemon. |
+| **Manual Scrutiny Baseline** | **ASSUMED** | The 180.0 min manual review baseline is an assumed benchmark figure, not an empirical time study. |
+
+---
+
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Python 3.11+
-- Node.js v18+ and npm
-- Docker & Docker Compose (optional for containerized deployment)
+- Python 3.12+
+- Node.js 18+ and npm
 
-### Method 1: One-Command Makefile Orchestration (Recommended)
+### 1-Click Launch (Recommended)
+Run the automated launcher from repository root:
 ```bash
-# 1. Setup environment and install dependencies
-make setup
-
-# 2. Generate 100 institutions dataset (Seeds 42 & 7), seed registries, and populate database
-make seed-data
-
-# 3. Run complete automated test suite (backend/tests, mock_issuer, test_api)
-make test
-
-# 4. Start all services in Docker (PostgreSQL, Mock Issuer, Backend, Frontend)
-make run
+# Windows:
+run_all.bat
 ```
+*`run_all.bat` automatically launches the Mock Issuer (8001), FastAPI Backend (8000), and Vite Frontend (5173), then opens the browser.*
 
-### Method 2: Docker Compose (Production Multi-Container Mode)
-> **Runtime Environment Note**: Container configurations (`docker-compose.yml`, `Dockerfile`, `Dockerfile.issuer`) validate successfully; full multi-container runtime build is marked *Not Verified* on local host due to inactive Docker daemon.
+### Manual Step-by-Step Launch
+If launching services individually across terminal windows:
 ```bash
-docker compose up --build
+# Terminal 1: Mock Statutory Issuer Gateway (Port 8001)
+python -m uvicorn mock_issuer.app.main:app --host 127.0.0.1 --port 8001
+
+# Terminal 2: FastAPI Backend API (Port 8000)
+python -m uvicorn backend.app.main:app --reload-dir backend --host 127.0.0.1 --port 8000
+
+# Terminal 3: Vite React Frontend (Port 5173)
+cd frontend && npm run dev -- --host 127.0.0.1 --port 5173
 ```
-- **Web Frontend Dashboard**: `http://localhost:3000`
-- **FastAPI Backend Documentation**: `http://localhost:8000/api/v1/docs`
-- **Mock Statutory Issuer Gateway**: `http://localhost:8001/docs`
-- **PostgreSQL Database**: `localhost:5432` (`pramaan_x`)
+Then open: **`http://localhost:5173`**
 
-### Method 3: Local Standalone Development (Zero-Docker Mode)
-```bash
-# Terminal 1: Run Mock Issuer Gateway (Port 8001)
-make run-issuer
-# or: uvicorn mock_issuer.app.main:app --reload --host 127.0.0.1 --port 8001
-
-# Terminal 2: Run FastAPI Backend (Port 8000)
-make run-backend
-# or: uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
-
-# Terminal 3: Run React Frontend (Port 5173)
-make run-frontend
-# or: cd frontend && npm run dev
-```
+> 💡 **Troubleshooting**: If you see `ECONNREFUSED 127.0.0.1:8000`, the FastAPI backend process has stopped or has not completed initialization. Confirm port 8000 is open.
 
 ---
 
-## 👥 Demo User Credentials & Roles
+## 👥 Demo Accounts (Synthetic Testing Credentials)
 
-| Role | Email | Password | Scope |
+The system provides 5 mock role presets populated with synthetic data:
+
+| Role Title | Email Credential | Password | Primary Accessible Scope |
 | :--- | :--- | :--- | :--- |
-| **Scrutiny Officer** | `scrutiny.officer@aicte-india.org` | `AicteOfficer@2025` | Full review, Evidence Lens decisions, Clarifications |
-| **Regional Officer** | `regional.officer@aicte-india.org` | `AicteRegional@2025` | Regional oversight, hearing orders, policy waivers |
-| **Central Admin** | `admin@aicte-india.org` | `AicteAdmin@2025` | Handbook rule parameter configuration, audit logs |
-| **Institution User** | `registrar@apextech.edu.in` | `ApexPass@2025` | Pre-flight self-assessment, document uploads |
+| **Scrutiny Officer** | `scrutiny.officer@aicte-india.org` | `AicteOfficer@2025` | Desk scrutiny queue, Evidence Lens, bounding-box review |
+| **Regional Officer** | `regional.officer@aicte-india.org` | `AicteRegional@2025` | Regional escalations, approvals, What-If cohort simulations |
+| **Central Admin** | `admin@aicte-india.org` | `AicteAdmin@2025` | Rule catalog editor, handbook parameter hot-reload, users |
+| **Independent Auditor** | `auditor@aicte-india.org` | `AicteAuditor@2025` | Read-only tamper-evident audit ledger and cryptographic receipts |
+| **Institution User** | `registrar@apextech.edu.in` | `ApexPass@2025` | Apex Institute of Technology dossier, Pre-Flight Scorecard |
+
+*Note: All credentials above are mock accounts intended for evaluation and demonstration.*
 
 ---
 
----
+## 💻 Tech Stack & Repository Structure
 
-## 🏛 Phase 3: Statutory Mock Issuer Service (Port 8001)
+### Core Technologies
+- **Frontend**: React 19.3.1, Vite 8.3.4, Tailwind CSS 3.4.19, vis-network 10.1.3, Lucide Icons
+- **Backend API**: FastAPI 0.115.6, Uvicorn 0.34.0, Pydantic 2.10.4, SQLAlchemy 2.0.36
+- **Analytical & Graph**: NetworkX 3.4.2, PyMuPDF 1.25.1, imagehash 4.3.1, OpenCV, Shapely, pvlib
+- **Security & Integrity**: Asymmetric Ed25519 (`cryptography`), SHA-256 Merkle chain, SQLite DB triggers
+- **Python Environment**: CPython 3.12.8 (64-bit)
 
-The PRAMAAN-X mock issuer service simulates external state and central regulatory authorities:
-1. **State Fire & Emergency Services Department** (`fire`) - Fire Safety Certificate / NOC
-2. **State Technical University Affiliation Body** (`affiliation`) - Annual Affiliation Orders
-3. **National Board of Accreditation (NBA)** (`accreditation`) - Tier-1 / Tier-2 Accreditation Records
-4. **State Revenue & Land Records Registry / Bhoomi** (`land`) - Land Title Deeds & Survey Numbers
-
-### API Endpoints:
-- **Unified Verification**: `GET /verify?ref=...&name=...&authority=...`
-  - Parameters: `ref` (Reference number), `name` (Institution/Trust), `authority` (`fire`, `affiliation`, `accreditation`, `land`), `claimed_expiry`, `claimed_acres`, `latency_ms`, `simulate_failure`
-- **Dedicated Authority Endpoints**:
-  - Fire: `GET /fire/verify?ref=...&name=...`
-  - Affiliation: `GET /affiliation/verify?ref=...&name=...`
-  - Accreditation: `GET /accreditation/verify?ref=...&name=...`
-  - Land Records: `GET /land/verify?ref=...&name=...`
-- **Audit Logging**: `GET /logs?limit=50` (In-memory real-time query ledger)
-- **Service Health**: `GET /health` (Operational metrics & record counts by authority)
-- **Dynamic Hot Reload**: `POST /registry/reload`
-
-### Security & Protocol:
-- **Header Check**: `X-API-Key: pramaanx-mock-key-2025` (enforces HTTP 401 Unauthorized if missing/invalid)
-- **Standardized Statuses**: `verified`, `mismatch` (with differing fields), `expired`, `not_found`, and randomly configurable `source_unavailable` (HTTP 503 / timeout)
-- **Ground Truth Mapping**: Seeded via `python mock_issuer/seed_registry.py` against `generated_data/ground_truth.csv` with deliberate alterations and missing entries.
-
-### Running & Testing Mock Issuer:
-```powershell
-# 1. Seed registry from synthetic data
-python mock_issuer/seed_registry.py
-
-# 2. Run mock issuer server locally
-uvicorn mock_issuer.app.main:app --host 127.0.0.1 --port 8001
-
-# 3. Execute test suite
-pytest mock_issuer/test_mock_issuer.py -v
+### Repository Directory Tree
+```
+SIH_AKXY/
+├── backend/
+│   ├── app/
+│   │   ├── api/             # 85 REST API endpoints across 10 routers
+│   │   ├── core/            # JWT authentication, RBAC policy, DB session
+│   │   ├── models/          # SQLAlchemy schemas (Dossiers, Receipts, AuditLog)
+│   │   ├── rules/           # AICTE APH 2025-26 YAML rule packs & JSON schemas
+│   │   └── services/        # 6 core engines (Extraction, Forensics, Radar, Twin)
+│   └── tests/               # 13 automated test suites (168 tests)
+├── mock_issuer/             # Mock Statutory Issuer service on port 8001 (9 tests)
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # EvidenceLens, PhotoRadar, Navbar, BoundingBoxViewer
+│   │   ├── pages/           # 11 scrutiny screens (Dashboard, Preflight, Ledger)
+│   │   └── services/        # API client and live/offline fallback connectors
+├── evidence_pack/           # Ground truth metrics.json, defect_coverage.csv, reports
+├── docs/                    # Architecture diagrams, screenshots, and evaluation charts
+└── AUDIT_REPORT.md          # 154-element end-to-end verification audit report
 ```
 
----
-
-## 📜 Phase 4: Regulation-as-Code Engine & Rule Schema
-
-The Regulation-as-Code engine enforces AICTE Approval Process Handbook (APH 2025-26) clauses as declarative, hot-reloadable rules with formal JSON Schema validation:
-
-### Rule Schema Specification:
-- **`id`**: Unique rule identifier (e.g. `RULE_FIRE_NOC_VALIDITY`, `RULE_FACULTY_STUDENT_RATIO`)
-- **`version`**: Semantic versioning (e.g. `1.0.0`)
-- **`clause_ref`**: Official handbook citation (e.g. `APH-2025-Cl-4.1.1`)
-- **`title`**: Concise human-readable title
-- **`applies_to`**: Target application categories (`Extension of Approval (EoA)`, `Increase in Intake`, `New Courses`)
-- **`type`**: Evaluation classification:
-  1. `required_document`: Mandatory certificate presence & encumbrance check
-  2. `validity_check`: Date thresholds & recency window evaluation
-  3. `numeric_threshold`: Area norms, student multipliers & regional categories
-  4. `cross_field_consistency`: Entity name & survey number corroboration
-  5. `ratio_check`: Faculty-to-Student Ratio (FSR) & Cadre proportions
-  6. `custom`: Bounded condition expressions for statutory committee mandates
-- **`parameters`**: Rule thresholds with explicit `# PLACEHOLDER: Confirm with current APH 2025-26` annotations
-- **`severity`**: `info`, `warning`, `critical`
-- **`message_template`**: Explainable string template for finding narratives
-- **`remediation_hint`**: Statutory prescriptive action for non-compliance remediation
-- **`effective_from`**: Statutory commencement date (`YYYY-MM-DD`)
-
-### Engine Capabilities:
-- **Formal JSON Schema Validation**: [`backend/app/rules/rule_schema.json`](backend/app/rules/rule_schema.json) validates rule packs before loading.
-- **Finding Model**: Produces structured outcomes with `status: pass | fail | not_evaluable`, expected vs found, and documentary bounding-box citations.
-- **Hot-Reload**: Dynamically re-reads modified rules from disk (`POST /api/v1/rules/reload`) without application restart.
-- **What-If Dry Run Simulator**: Computes aggregate failure rates, severity distributions, and affected college IDs across application cohorts (`POST /api/v1/rules/dry-run`).
-
----
-
-## 🧪 Automated Testing & Synthetic Benchmark Evaluation
-
-Run the comprehensive automated test suite verifying the 6-stage Evidence Lens, Regulation-as-Code engine, Impossibility Engine, Forensics, and Mock Issuer:
+### Running the Test Suite
+To execute the complete 177 automated test suite:
 ```bash
-# Run ALL 177 automated tests across 14 test suites in backend/tests and mock_issuer:
-pytest backend/tests mock_issuer -q
+# Run all tests across backend and mock issuer:
+pytest backend/tests mock_issuer/test_mock_issuer.py -q
 ```
+*Expected Result: `177 passed in ~130s`*
 
-### Verification & Test Suite Summary:
-- **177 Unit & Integration Tests**: 100% passing across 14 test suites covering RBAC, tenant isolation, hash chaining, photo radar, forensics, and rules.
-- **Synthetic Evaluation Benchmark**: Pipeline calibrated on Development Split (Seed 42) and evaluated against Test Split (Seed 7):
-  - **Field Extraction Macro F1**: 0.9013
-  - **Defect Detection Accuracy**: 100.0% across 17 statutory categories
-  - **Anomaly Detection**: Precision 0.9917 / Recall 1.0000 (FPR: 3.51%)
-  - **Photo Radar Duplicate Match**: Precision 0.8824 / Recall 1.0000
-  - **Processing Turnaround**: 2.04s per dossier (5,289x acceleration vs. 180 min manual baseline)
-- **Component Reality & Architecture Disclosures**:
-  - **Digital Signatures**: Verification receipts are signed using **Ed25519** asymmetric cryptography (RFC 8032) in an append-only SHA-256 hash chain with database triggers.
-  - **Issuer Verification**: Digilocker / API Setu authorities are backed by the local Mock Statutory Issuer (`http://127.0.0.1:8001`).
-  - **OCR & Computer Vision**: Native document parsing uses PyMuPDF + regex; Photo Reuse Radar uses `imagehash` (pHash/dHash) with cosine similarity heuristics.
+---
+
+## 🗺️ Phased Implementation Roadmap
+
+- **Phase 1: Regulatory Calibration**: Formal Gazette of India sign-off on the 12 Approval Process Handbook (APH) rule parameters and cutoff tolerances.
+- **Phase 2: Authorized Scrutiny Pilot**: Controlled pilot deployment on anonymized historical dossiers across select AICTE Regional Offices.
+- **Phase 3: Production Authority Binding**: Integration with live API Setu and DigiLocker production gateways; replacement of mock issuer.
+- **Phase 4: Multilingual OCR Deployment**: Packaging Tesseract / TrOCR models optimized for regional language affidavits and municipal stamps.
+- **Phase 5: National Rollout**: Phased migration across all regional scrutiny cells with HSM-backed Ed25519 signing keys.
+
+---
+
+## 🏆 Team AnomalyX & Statutory Disclaimer
+
+- **Hackathon**: Smart India Hackathon (SIH) 2026
+- **Problem Statement**: SIH26261 — AI-Powered Regulatory Scrutiny & Compliance Automation
+- **Organization**: All India Council for Technical Education (AICTE), Ministry of Education, Govt. of India
+- **Team**: **AnomalyX**
+
+> ⚖️ **Statutory Notice & Disclaimer**: *PRAMAAN-X is an academic research prototype developed for Smart India Hackathon 2026. All evaluation data and institutional filings are synthetic. PRAMAAN-X operates strictly as an advisory decision-support system and does not issue final statutory accreditation determinations.*

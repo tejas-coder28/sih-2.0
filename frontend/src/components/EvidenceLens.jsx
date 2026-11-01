@@ -385,7 +385,7 @@ export default function EvidenceLens({
               <div className="bg-surface-2 rounded-lg p-2.5 border border-border text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-text text-[11px]">
-                    {pipeline?.source_response?.issuer_name || 'Statutory Authority Registry Gateway'}
+                    {pipeline?.source_response?.issuer_name || 'Mock Statutory Authority Gateway (simulated)'}
                   </span>
                   <span className="text-[10px] font-mono text-text-muted">
                     {pipeline?.source_response?.latency_ms != null ? `${pipeline.source_response.latency_ms}ms` : '185ms'}

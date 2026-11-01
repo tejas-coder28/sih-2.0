@@ -191,6 +191,7 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                   <div className="text-slate-600">Chief Fire Officer</div>
                   <div className="text-slate-500">Karnataka State Fire Services</div>
                   <div className="text-[8px] font-mono text-emerald-700 mt-1">✓ Digital DSC Verified</div>
+                  <div className="text-[7.5px] font-sans text-slate-500 italic mt-0.5">(byte-range inspection real, PKI chain validation stubbed)</div>
                 </div>
               </div>
 
@@ -216,7 +217,7 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                   <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-600" />
 
                   {/* Floating Field Tag */}
-                  <div className="absolute -top-6 left-0 bg-amber-600 text-white text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-sm flex items-center space-x-1 whitespace-nowrap z-20">
+                  <div className="absolute -top-6 left-0 bg-amber-400 text-slate-950 text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-sm flex items-center space-x-1 whitespace-nowrap z-20">
                     <Target className="w-2.5 h-2.5" />
                     <span>EXTRACTED: {extracted_field.field_name}</span>
                     <span className="bg-amber-700 px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
@@ -313,7 +314,7 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                   <div className="absolute -top-6 left-0 bg-amber-500 text-slate-950 text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-sm flex items-center space-x-1 whitespace-nowrap z-20">
                     <Target className="w-2.5 h-2.5" />
                     <span>EXTRACTED: {extracted_field.field_name}</span>
-                    <span className="bg-amber-600 text-white px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
+                    <span className="bg-slate-900 text-amber-300 font-bold px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
                   </div>
                 </div>
               )}

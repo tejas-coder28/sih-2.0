@@ -573,7 +573,7 @@ export const MOCK_OFFICER_ACTIONS = [
     application_no: 'APP-2025-01290',
     institution_name: 'National College of Engineering & Research',
     action_type: 'ACCEPT',
-    comment: 'Dossier approved with conditions: All statutory certificates verified authentic via DigiLocker and state registries. Annual safety audit report mandatory by Dec 2026.',
+    comment: 'Dossier approved with conditions: All statutory certificates verified authentic via Mock Statutory Authority Gateway (simulated) and state registries. Annual safety audit report mandatory by Dec 2026.',
     officer_name: 'Smt. Ananya Sen',
     officer_email: 'ananya.sen@aicte-india.org',
     officer_role: 'senior_officer',
