@@ -450,8 +450,8 @@ main:not(#login-root *):not(.login-root *),
   color: var(--text) !important;
 }
 
-.bg-white:not(#login-root *):not(.login-root *),
-[class*="bg-white"]:not(#login-root *):not(.login-root *) {
+.bg-white:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+[class*="bg-white"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *) {
   background-color: var(--surface) !important;
 }
 
@@ -480,22 +480,54 @@ div[class*="h-1"][class*="absolute bottom-0"],
   box-shadow: none !important;
 }
 
+
 /* ==========================================================================
+   DOCUMENT PAPER & EVIDENCE VIEWER (Always White with Dark Text #111827 in BOTH themes)
+   ========================================================================== */
+.document-paper-canvas,
+.document-paper-canvas[class*="bg-"],
+[data-theme="dark"] .document-paper-canvas,
+.dark .document-paper-canvas {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+}
+
+.document-paper-canvas p,
+.document-paper-canvas span:not(#document-extracted-bounding-box *),
+.document-paper-canvas div:not(.document-paper-clause-callout):not(#document-extracted-bounding-box *),
+.document-paper-canvas strong {
+  color: #111827;
+}
+
+.document-paper-clause-callout,
+[data-theme="dark"] .document-paper-clause-callout,
+.dark .document-paper-clause-callout {
+  background-color: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout p,
+.document-paper-clause-callout span,
+.document-paper-clause-callout strong {
+  color: #111827 !important;
+}
+
 /* ==========================================================================
    CARDS, PANELS, MODALS, GRAPH CONTAINERS
    ========================================================================== */
-.card:not(#login-root *):not(.login-root *),
-[class*="card"]:not(#login-root *):not(.login-root *),
-div.bg-white.border:not(#login-root *):not(.login-root *),
-div[class*="rounded-2xl"].border:not(#login-root *):not(.login-root *),
-div[class*="rounded-xl"].border:not(#login-root *):not(.login-root *),
-div[role="dialog"]:not(#login-root *):not(.login-root *),
-.modal:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-xs:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-sm:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-md:not(#login-root *):not(.login-root *),
-div[class*="bg-white"][class*="border"]:not(#login-root *):not(.login-root *),
-div.overflow-hidden.border:not(#login-root *):not(.login-root *) {
+.card:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+[class*="card"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.bg-white.border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="rounded-2xl"].border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="rounded-xl"].border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[role="dialog"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+.modal:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-xs:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-sm:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-md:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="bg-white"][class*="border"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.overflow-hidden.border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *) {
   background-color: var(--surface) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
@@ -1841,7 +1873,7 @@ ol:not([class*="space-"]):not([class*="flex-row"]),
    ========================================================================== */
 
 /* Main surfaces and cards */
-div.bg-white,
+div.bg-white:not(.document-paper-canvas):not(.document-paper-canvas *),
 header.bg-white,
 header[class*="bg-white"],
 aside.bg-white,
@@ -3365,4 +3397,38 @@ a:not(.no-hover-transition),
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+
+/* ==========================================================================
+   DOCUMENT PAPER & EVIDENCE VIEWER (FIX 2 & FIX 4)
+   Paper is ALWAYS white with dark text (#111827) in BOTH light and dark themes.
+   ========================================================================== */
+.document-paper-canvas,
+div.document-paper-canvas,
+div[class*="document-paper-canvas"] {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+}
+
+.document-paper-canvas p,
+.document-paper-canvas strong,
+.document-paper-canvas em,
+.document-paper-canvas div:not(.document-paper-clause-callout):not(#document-extracted-bounding-box *),
+.document-paper-canvas span:not(#document-extracted-bounding-box *) {
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout,
+div.document-paper-clause-callout,
+div[class*="document-paper-clause-callout"] {
+  background-color: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout p,
+.document-paper-clause-callout span,
+.document-paper-clause-callout strong {
+  color: #111827 !important;
 }
