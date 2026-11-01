@@ -219,14 +219,15 @@ export default function Navbar({
     institution_user: 'bg-surface-2 text-text border-border'
   };
 
+  const roleName = roleLabels[currentRole] || currentRole;
   const rawName = typeof currentUser?.full_name === 'object' && currentUser?.full_name !== null
     ? (currentUser.full_name.en || Object.values(currentUser.full_name)[0] || '')
     : (currentUser?.full_name || '');
-  const userName = (typeof rawName === 'string' && rawName.trim().length > 0)
-    ? rawName
-    : (currentRole === 'institution_user' 
-        ? 'Apex Institute of Technology' 
-        : 'Shri R. K. Sharma, Scrutiny Cell');
+  const isNameMissing = !rawName || rawName.trim().length === 0 || rawName.trim().toLowerCase() === roleName.toLowerCase();
+  const userName = isNameMissing 
+    ? (currentRole === 'institution_user' ? 'Apex Institute of Technology' : roleName)
+    : rawName.trim();
+  const showSubRole = !isNameMissing && userName.toLowerCase() !== roleName.toLowerCase();
 
   const userInitial = typeof userName === 'string' && userName.trim().length > 0
     ? userName.trim().charAt(0).toUpperCase()
@@ -341,7 +342,11 @@ export default function Navbar({
 
             {/* Single Compact Status Pill with Two Small Dots */}
             <div id="header-status-pill" className="hidden md:flex items-center space-x-2.5 px-3 py-1.5 rounded-full border border-border bg-surface-2 text-xs font-medium text-text-muted shadow-xs">
-              <div className="flex items-center space-x-1.5">
+              <div 
+                className="flex items-center space-x-1.5 cursor-help"
+                title={isLiveMode ? "Backend operational: connected to FastAPI services on port 8000" : "Backend not connected: showing demo data"}
+                aria-label={isLiveMode ? "Backend operational: connected to FastAPI services on port 8000" : "Backend not connected: showing demo data"}
+              >
                 <span 
                   className={`w-2 h-2 rounded-full ${
                     isLiveMode ? 'bg-emerald-500' : 'bg-amber-500'
@@ -439,9 +444,11 @@ export default function Navbar({
                   <span className="text-xs font-bold text-text leading-tight truncate w-full">
                     {userName}
                   </span>
-                  <span className="text-[10px] font-medium text-text-muted truncate max-w-full leading-none mt-0.5">
-                    {roleLabels[currentRole] || currentRole}
-                  </span>
+                  {showSubRole && (
+                    <span className="text-[10px] font-medium text-text-muted truncate max-w-full leading-none mt-0.5">
+                      {roleName}
+                    </span>
+                  )}
                 </div>
 
                 <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${
