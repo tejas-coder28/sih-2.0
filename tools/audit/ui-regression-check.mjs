@@ -98,8 +98,10 @@ async function runRegressionCheck() {
           if (th === 'dark') document.documentElement.classList.add('dark');
           else document.documentElement.classList.remove('dark');
           localStorage.setItem('theme', th);
+          localStorage.setItem('pramaan_theme', th);
+          window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: th } }));
         }, theme);
-        await new Promise(res => setTimeout(res, 200));
+        await new Promise(res => setTimeout(res, 400));
 
         // 1. Contrast Check for active view
         const contrastItems = await page.evaluate(() => {
@@ -107,7 +109,10 @@ async function runRegressionCheck() {
           const targets = Array.from(document.querySelectorAll('button, [role="tab"], .tab, a.btn, [class*="badge"], [class*="pill"], input'));
           for (const el of targets) {
             if (!el.offsetParent && el.getBoundingClientRect().width === 0) continue;
-            let cur = el;
+            const csEl = window.getComputedStyle(el);
+            const childSpan = el.querySelector('span') || el;
+            const csChild = window.getComputedStyle(childSpan);
+            let cur = childSpan;
             let bg = 'rgba(0, 0, 0, 0)';
             while (cur && cur !== document.body) {
               const cs = window.getComputedStyle(cur);
@@ -120,9 +125,6 @@ async function runRegressionCheck() {
             if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
               bg = window.getComputedStyle(document.body).backgroundColor;
             }
-            const csEl = window.getComputedStyle(el);
-            const childSpan = el.querySelector('span') || el;
-            const csChild = window.getComputedStyle(childSpan);
             const fg = csChild.color || csEl.color;
             items.push({
               tag: el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''),

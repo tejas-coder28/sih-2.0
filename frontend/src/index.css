@@ -685,7 +685,7 @@ button[type="submit"]:not(#login-root *):not(.login-root *) *,
 }
 
 /* Secondary Buttons: white background, 1px solid #BFC5CC border, black text. Hover: #F1F3F5 */
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn),
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):not(#user-menu-btn),
 .btn-secondary,
 #launch-audit-ledger-btn {
   background-color: var(--surface) !important; /* #FFFFFF */
@@ -707,7 +707,7 @@ button:not(#login-root button):not(.login-root button):not(#login-root *):not(.l
   cursor: pointer !important;
 }
 
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):hover,
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):not(#user-menu-btn):hover,
 .btn-secondary:hover,
 #launch-audit-ledger-btn:hover {
   background-color: var(--secondary-hover) !important; /* #F1F3F5 */
@@ -1157,7 +1157,7 @@ aside {
 aside button[id^="sidebar-tab-"] {
   /* 40px item height handled by Tailwind */
   border-radius: var(--radius-md) !important;
-  color: #374151 !important;
+  color: var(--text-muted) !important;
   font-weight: 500 !important;
   background-color: transparent !important;
   border: 1px solid transparent !important;
@@ -1191,7 +1191,7 @@ aside button[id^="sidebar-tab-"][class*="font-semibold"] * {
 
 [data-theme="dark"] aside button[id^="sidebar-tab-"],
 .dark aside button[id^="sidebar-tab-"] {
-  color: #D1D5DB !important;
+  color: var(--text-muted) !important;
 }
 
 [data-theme="dark"] aside button[id^="sidebar-tab-"].active,
