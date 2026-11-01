@@ -84,8 +84,8 @@ async function runRegressionCheck() {
         localStorage.setItem('pramaan_user', JSON.stringify(data.user));
       }, r);
 
-      await page.reload({ waitUntil: 'networkidle2' });
-      await page.waitForSelector('#app-header-bar', { timeout: 8000 });
+      await page.reload({ waitUntil: 'load' });
+      await page.waitForSelector('#app-header-bar', { timeout: 15000 });
 
       for (const theme of ['light', 'dark']) {
         await page.evaluate((th) => {

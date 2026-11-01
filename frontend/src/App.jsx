@@ -439,7 +439,7 @@ export default function App() {
           ref={mainScrollRef}
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-y-auto min-h-0 bg-transparent p-3 sm:p-5 lg:p-6 pb-12 w-full min-w-0 scrollbar-slim relative z-10 focus:outline-none"
+          className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 bg-transparent p-3 sm:p-5 lg:p-6 pb-12 w-full min-w-0 scrollbar-slim relative z-10 focus:outline-none"
         >
           <div className="w-full max-w-[1600px] mx-auto flex flex-col gap-4 sm:gap-6 min-w-0">
             {!isTabAllowed ? (
