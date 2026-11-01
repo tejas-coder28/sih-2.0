@@ -68,3 +68,5 @@ dist/
 venv/
 node_modules/
 generated_data/keys/
+
+scratch/
