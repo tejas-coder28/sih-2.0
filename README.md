@@ -26,14 +26,31 @@
 
 ---
 
-## 📸 Screenshots Gallery
+## 📸 Screenshots Gallery & Interactive UI Tour
+
+### 1. Primary Operational Scrutiny Views
 
 | Screen & Focus | Screen & Focus |
 | :--- | :--- |
-| ![Scrutiny Dashboard](docs/screenshots/dashboard.png)<br>**Risk-Ranked Scrutiny Queue**: Real-time institutional triage, KPI cards, and anomaly flags. | ![Evidence Lens](docs/screenshots/evidence-lens.png)<br>**Evidence Lens**: Split-view document viewer with OCR bounding boxes and regulatory citations. |
-| ![Pre-Flight Scorecard](docs/screenshots/preflight-scorecard.png)<br>**Pre-Flight Scorecard**: College self-assessment radar, checklist readiness, and defect indicators. | ![Photo Reuse Radar](docs/screenshots/photo-reuse-radar.png)<br>**Photo Reuse Radar**: Cross-institution campus photo duplicate clusters and Hamming distances. |
-| ![Audit Ledger](docs/screenshots/audit-receipts.png)<br>**Tamper-Evident Ledger**: Ed25519 verification receipts, Merkle hash chain, and live tamper demo. | ![Impossibility Engine](docs/screenshots/impossibility-engine.png)<br>**Impossibility Engine Graph**: Relational network detecting ghost faculty and shared land parcels. |
-| ![Document Intelligence](docs/screenshots/document-intelligence.png)<br>**Document Intelligence**: Ingestion scanner with PyMuPDF text parsing, ELA forensics, and receipts. | ![Rules Catalog & What-If](docs/screenshots/rules-what-if.png)<br>**Rules Catalog & What-If**: Live YAML parameter tuning and cohort simulation across colleges. |
+| [![Scrutiny Dashboard](docs/screenshots/dashboard.png)](docs/screenshots/dashboard.png)<br>**Risk-Ranked Scrutiny Queue**: Real-time triage queue, KPI cards, anomaly severity distribution, and instant filter by deficiency type. | [![Evidence Lens](docs/screenshots/evidence-lens.png)](docs/screenshots/evidence-lens.png)<br>**Evidence Lens (Split-Viewer)**: Synchronized PDF canvas with bounding-box OCR highlights, regulatory clause citations, and officer action drawer. |
+| [![Pre-Flight Scorecard](docs/screenshots/preflight-scorecard.png)](docs/screenshots/preflight-scorecard.png)<br>**Pre-Flight Readiness Scorecard**: Self-service institutional portal with deficit radar, mandatory checklist tracking, and corrective hints. | [![Photo Reuse Radar](docs/screenshots/photo-reuse-radar.png)](docs/screenshots/photo-reuse-radar.png)<br>**National Photo Reuse Radar**: Interactive cluster graph discovering identical campus facilities and lab equipment claimed across separate colleges. |
+
+### 2. Deep Regulatory & Forensic Intelligence Views
+
+| Screen & Focus | Screen & Focus |
+| :--- | :--- |
+| [![Impossibility Engine Graph](docs/screenshots/impossibility-engine.png)](docs/screenshots/impossibility-engine.png)<br>**Impossibility Engine (vis-network)**: Relational twin graph flagging concurrent faculty dual-employment and spatial land plot overlap. | [![Document Intelligence](docs/screenshots/document-intelligence.png)](docs/screenshots/document-intelligence.png)<br>**Document Ingestion & Forensics**: Live PyMuPDF text parser, Error Level Analysis (ELA) heatmap scanner, and certificate integrity check. |
+| [![Rules Catalog & What-If](docs/screenshots/rules-what-if.png)](docs/screenshots/rules-what-if.png)<br>**Regulation-as-Code & What-If Simulator**: Declarative YAML handbook rule editor with hot reload and cohort-wide failure simulation. | [![Geospatial Inspection Planner](docs/screenshots/inspection-planner.png)](docs/screenshots/inspection-planner.png)<br>**Geospatial Inspection Planner**: Risk-prioritized regional inspection itinerary clustering high-deficit colleges for surprise physical visits. |
+| [![Manual Review Queue](docs/screenshots/manual-review-queue.png)](docs/screenshots/manual-review-queue.png)<br>**Manual Review Queue**: Dedicated workflow for ambiguous or degraded certificates requiring officer secondary determination. | [![Theme & Accessibility](docs/screenshots/dark-mode.png)](docs/screenshots/dark-mode.png)<br>**National Institutional Design System**: Accessible UI meeting WCAG 2.1 AA contrast standards with seamless Dark Mode support. |
+
+### 3. Cryptographic Tamper-Detection Demonstration
+
+PRAMAAN-X features an active mathematical verification ledger. The interactive tamper demo proves immediate severed-link detection if any record is mutated:
+
+| Step 1: Pristine Hash Chain | Step 2: Injected Tampering Detected | Step 3: Restored & Re-Verified |
+| :---: | :---: | :---: |
+| [![Tamper Demo Intact](docs/screenshots/tamper-demo-intact.png)](docs/screenshots/tamper-demo-intact.png) | [![Tamper Demo Tampered](docs/screenshots/tamper-demo-tampered.png)](docs/screenshots/tamper-demo-tampered.png) | [![Tamper Demo Restored](docs/screenshots/tamper-demo-restored.png)](docs/screenshots/tamper-demo-restored.png) |
+| **All Blocks Authentic**: SHA-256 Merkle chain and Ed25519 digital signatures verify authentic across all blocks. | **Link Severed**: Modifying Block #2 payload instantly invalidates downstream Block #3 parent hash in red. | **Restoration Verified**: Re-verifying pristine ledger plays green validation animation and restores integrity. |
 
 ---
 
@@ -127,7 +144,7 @@ sequenceDiagram
 
 ---
 
-## 📊 Benchmark Results
+## 📊 Benchmark Results & Performance Charts
 
 All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`evidence_pack/EVIDENCE_SUMMARY.md`](evidence_pack/EVIDENCE_SUMMARY.md).
 
@@ -147,6 +164,16 @@ All quantitative figures below are extracted directly from [`evidence_pack/metri
 | **Alert Dispatch Latency** | **Mean: 3.21 ms** / **Median: 3.20 ms** | In-app WebSocket notification and event bus latency |
 
 > ⚠️ **Important Disclosure**: *Synthetic benchmark (calibrated on Seed 42, evaluated on locked held-out Seed 7), not field accuracy on live production AICTE filings. The 180-minute manual scrutiny baseline is an assumed operational comparison, not an empirically timed study.*
+
+### Slide-Ready Evaluation Visualizations
+
+| Extraction Accuracy per Field | Defect Accuracy Across 20 Categories |
+| :---: | :---: |
+| [![Field Extraction](docs/charts/1_field_extraction_metrics.png)](docs/charts/1_field_extraction_metrics.png)<br>Macro $F_1$: 0.9013 across certificate numbers, dates, acreage & surveys. | [![Defect Detection](docs/charts/2_defect_type_accuracy.png)](docs/charts/2_defect_type_accuracy.png)<br>100.0% Recall across all 20 planted defect categories (240/240). |
+
+| 2.03s vs 180m Manual Baseline | Photo Radar & Anomaly Distribution |
+| :---: | :---: |
+| [![Processing Speedup](docs/charts/3_processing_time_comparison.png)](docs/charts/3_processing_time_comparison.png)<br>Automated pipeline turnaround of 2.03s per full dossier. | [![Radar & Anomaly](docs/charts/4_radar_and_anomaly_metrics.png)](docs/charts/4_radar_and_anomaly_metrics.png)<br>pHash precision: 0.8824, recall: 1.0000; anomaly precision: 0.9917. |
 
 <details>
 <summary><strong>Click to view Complete 20-Category Defect Coverage Breakdown</strong> (from <code>evidence_pack/defect_coverage.csv</code>)</summary>
@@ -290,7 +317,7 @@ SIH_AKXY/
 │   │   ├── pages/           # 11 scrutiny screens (Dashboard, Preflight, Ledger)
 │   │   └── services/        # API client and live/offline fallback connectors
 ├── evidence_pack/           # Ground truth metrics.json, defect_coverage.csv, reports
-├── docs/                    # Architecture diagrams and compressed gallery screenshots
+├── docs/                    # Architecture diagrams, screenshots, and evaluation charts
 └── AUDIT_REPORT.md          # 154-element end-to-end verification audit report
 ```
 
