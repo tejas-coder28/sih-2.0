@@ -102,17 +102,17 @@ export default function ExpandableFaq({ className = '' }) {
                 aria-expanded={isOpen}
                 aria-controls={`faq-content-${item.id}`}
                 onClick={() => toggleItem(item.id)}
-                className="w-full flex items-center justify-between p-3 sm:p-3.5 text-left transition-colors hover:bg-surface-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent gap-3"
+                className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left transition-colors hover:bg-surface-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent min-h-[52px]"
               >
-                <div className="flex items-center gap-3 pr-2 min-w-0 flex-1 text-left">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-surface border border-border text-text-muted shrink-0 w-36 text-center truncate">
+                <div className="flex items-center gap-3 pr-2 min-w-0 flex-1">
+                  <span className="w-36 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-surface border border-border text-text-muted shrink-0 text-center truncate">
                     {item.category}
                   </span>
-                  <span className="text-xs font-semibold text-text text-left flex-1 min-w-0 line-clamp-2 leading-snug">
+                  <span className="text-xs font-semibold text-text text-left line-clamp-2 leading-relaxed flex-1">
                     {item.question}
                   </span>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-text-muted shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-text-muted shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
               </button>
 
               {isOpen && (
@@ -120,7 +120,7 @@ export default function ExpandableFaq({ className = '' }) {
                   id={`faq-content-${item.id}`}
                   role="region"
                   aria-labelledby={`faq-btn-${item.id}`}
-                  className="px-4 pb-4 pt-2 text-xs text-text-muted leading-relaxed border-t border-border/50 bg-surface/50 animate-fadeIn pl-4 sm:pl-[168px]"
+                  className="px-4 pb-4 pt-1 text-xs text-text-muted leading-relaxed border-t border-border/50 bg-surface/50 animate-fadeIn"
                 >
                   <p>{item.answer}</p>
                 </div>
@@ -130,7 +130,7 @@ export default function ExpandableFaq({ className = '' }) {
         })}
       </div>
 
-      <div className="pt-2 flex items-center justify-between text-xs text-text-muted border-t border-border">
+      <div className="pt-2 text-xs text-text-muted border-t border-border">
         <span>Sourced from AICTE Evaluation & Regulatory Scrutiny Protocol</span>
       </div>
     </section>
