@@ -139,6 +139,25 @@ export default function App() {
   const isAdmin = actualUserRole === 'admin';
   const effectiveRole = adminPreviewRole || actualUserRole;
 
+  // URL Hash synchronization
+  useEffect(() => {
+    const syncFromHash = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (!hash) return;
+      if (hash === 'review-queue' || hash === 'manual-review-queue') {
+        setActiveTab('manual-review-queue');
+      } else {
+        const allowed = ROLE_PERMITTED_TABS[effectiveRole] || [];
+        if (allowed.includes(hash)) {
+          setActiveTab(hash);
+        }
+      }
+    };
+    syncFromHash();
+    window.addEventListener('hashchange', syncFromHash);
+    return () => window.removeEventListener('hashchange', syncFromHash);
+  }, [effectiveRole]);
+
   const handleToggleSidebarCollapse = () => {
     setIsSidebarCollapsed(prev => {
       const next = !prev;
@@ -498,9 +517,12 @@ export default function App() {
                   />
                 )}
 
-                {activeTab === 'manual-review-queue' && (
+                {(activeTab === 'manual-review-queue' || activeTab === 'review-queue') && (
                   <ManualReviewQueuePage 
                     currentUser={currentUser}
+                    applications={applications}
+                    onNavigateTab={setActiveTab}
+                    onSelectApplication={handleSelectApplication}
                     onNavigateToAudit={() => setActiveTab('audit-ledger')}
                   />
                 )}
