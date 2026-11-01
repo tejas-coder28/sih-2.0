@@ -323,7 +323,7 @@ export default function Dashboard({
     <div ref={dashboardContainerRef} className="flex flex-col gap-6 max-w-[1440px] mx-auto w-full">
 
       {/* 1. Official Government Hero Banner: Solid Surface with High-Contrast Tokens */}
-      <div data-reveal className="relative revealed">
+      <div data-reveal className="relative revealed overflow-hidden rounded-2xl">
         {/* Decorative Organic Blob behind hero (Step 4.8: Static, 40px blur, 0.14 opacity cobalt) */}
         <div 
           className="hero-backdrop-blob absolute -top-10 -right-10 w-80 h-80 pointer-events-none -z-10"
@@ -560,9 +560,9 @@ export default function Dashboard({
         </div>
 
         {/* Desktop Triage Table (>=1024px: No horizontal scroll at >= 1280px, No Overlap) */}
-        <div id="triage-table" className="hidden lg:block w-full">
+        <div id="triage-table" className="hidden lg:block w-full overflow-x-auto">
           {/* Sticky Header Row (Part 4.4): glass style when stuck, sentence case */}
-          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(260px,2fr)_150px_120px_minmax(220px,2fr)_200px_180px] grid-cols-[minmax(260px,2.5fr)_120px_minmax(220px,2.5fr)_200px_180px] px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
+          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(220px,2fr)_140px_110px_minmax(180px,2fr)_170px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_170px_160px] px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
             <div>Application & Institution</div>
             <div className="hidden xl:block">State & Category</div>
             <div>Risk Rank</div>
@@ -594,7 +594,7 @@ export default function Dashboard({
                 return (
                   <div 
                     key={app.id}
-                    className="relative grid xl:grid-cols-[minmax(260px,2fr)_150px_120px_minmax(220px,2fr)_200px_180px] grid-cols-[minmax(260px,2.5fr)_120px_minmax(220px,2.5fr)_200px_180px] px-5 py-3 items-center gap-2 min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
+                    className="relative grid xl:grid-cols-[minmax(220px,2fr)_140px_110px_minmax(180px,2fr)_170px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_170px_160px] px-5 py-3 items-center gap-2 min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
                   >
                     {/* Animated 3px Primary Left Bar (Part 3: scaleY 0 to 1, 150ms) */}
                     <span 
