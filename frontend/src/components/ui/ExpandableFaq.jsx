@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronDown, HelpCircle, ShieldCheck } from 'lucide-react';
-import LastUpdated from './LastUpdated';
 
 const FAQ_ITEMS = [
   {
@@ -103,17 +102,17 @@ export default function ExpandableFaq({ className = '' }) {
                 aria-expanded={isOpen}
                 aria-controls={`faq-content-${item.id}`}
                 onClick={() => toggleItem(item.id)}
-                className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left transition-colors hover:bg-surface-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left transition-colors hover:bg-surface-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent min-h-[52px]"
               >
-                <div className="flex items-center gap-3 pr-2 min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-surface border border-border text-text-muted shrink-0 hidden sm:inline-block">
+                <div className="flex items-center gap-3 pr-2 min-w-0 flex-1">
+                  <span className="w-36 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-surface border border-border text-text-muted shrink-0 text-center truncate">
                     {item.category}
                   </span>
-                  <span className="text-xs font-semibold text-text">
+                  <span className="text-xs font-semibold text-text text-left line-clamp-2 leading-relaxed flex-1">
                     {item.question}
                   </span>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-text-muted shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-text-muted shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-primary' : ''}`} />
               </button>
 
               {isOpen && (
@@ -131,9 +130,8 @@ export default function ExpandableFaq({ className = '' }) {
         })}
       </div>
 
-      <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-text-muted border-t border-border gap-2">
+      <div className="pt-2 text-xs text-text-muted border-t border-border">
         <span>Sourced from AICTE Evaluation & Regulatory Scrutiny Protocol</span>
-        <LastUpdated />
       </div>
     </section>
   );

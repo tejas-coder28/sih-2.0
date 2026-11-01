@@ -323,7 +323,7 @@ export default function Dashboard({
     <div ref={dashboardContainerRef} className="flex flex-col gap-6 max-w-[1440px] mx-auto w-full">
 
       {/* 1. Official Government Hero Banner: Solid Surface with High-Contrast Tokens */}
-      <div data-reveal className="relative revealed">
+      <div data-reveal className="relative revealed overflow-hidden rounded-2xl">
         {/* Decorative Organic Blob behind hero (Step 4.8: Static, 40px blur, 0.14 opacity cobalt) */}
         <div 
           className="hero-backdrop-blob absolute -top-10 -right-10 w-80 h-80 pointer-events-none -z-10"
@@ -334,7 +334,7 @@ export default function Dashboard({
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative">
             <div className="max-w-2xl">
               {/* Short Eyebrow: primary navy (#0B3D91) in light, cobalt (#3B6CFF) in dark */}
-              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#0B3D91] dark:text-[#3B6CFF] uppercase tracking-wider mb-1.5">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-primary dark:text-accent uppercase tracking-wider mb-1.5">
                 <span>
                   {isInstitutionUser 
                     ? 'Institution Scrutiny Portal' 
@@ -560,9 +560,9 @@ export default function Dashboard({
         </div>
 
         {/* Desktop Triage Table (>=1024px: No horizontal scroll at >= 1280px, No Overlap) */}
-        <div id="triage-table" className="hidden lg:block w-full">
+        <div id="triage-table" className="hidden lg:block w-full overflow-x-auto scrollbar-slim">
           {/* Sticky Header Row (Part 4.4): glass style when stuck, sentence case */}
-          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(260px,2fr)_150px_120px_minmax(220px,2fr)_200px_180px] grid-cols-[minmax(260px,2.5fr)_120px_minmax(220px,2.5fr)_200px_180px] px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
+          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(220px,2fr)_130px_110px_minmax(180px,2fr)_180px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_180px_160px] px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
             <div>Application & Institution</div>
             <div className="hidden xl:block">State & Category</div>
             <div>Risk Rank</div>
@@ -594,7 +594,7 @@ export default function Dashboard({
                 return (
                   <div 
                     key={app.id}
-                    className="relative grid xl:grid-cols-[minmax(260px,2fr)_150px_120px_minmax(220px,2fr)_200px_180px] grid-cols-[minmax(260px,2.5fr)_120px_minmax(220px,2.5fr)_200px_180px] px-5 py-3 items-center gap-2 min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
+                    className="relative grid xl:grid-cols-[minmax(220px,2fr)_130px_110px_minmax(180px,2fr)_180px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_180px_160px] px-5 py-3 items-center gap-2 min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
                   >
                     {/* Animated 3px Primary Left Bar (Part 3: scaleY 0 to 1, 150ms) */}
                     <span 
@@ -719,7 +719,7 @@ export default function Dashboard({
                               onSelectApplication(app);
                               onNavigateTab('evidence-lens');
                             }}
-                            className="group/btn h-9 px-3.5 rounded-lg border border-[#0B3D91] text-[#0B3D91] dark:border-border-strong dark:text-white hover:bg-[#0B3D91]/10 dark:hover:bg-surface-2 text-xs font-semibold transition-colors inline-flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                            className="group/btn h-9 px-3.5 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold transition-colors inline-flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                             title="Inspect application dossier in Evidence Lens"
                           >
                             <span>Evidence Lens</span>
@@ -825,7 +825,7 @@ export default function Dashboard({
                               onSelectApplication(app);
                               onNavigateTab('evidence-lens');
                             }}
-                            className="h-9 px-3 rounded-lg border border-[#0B3D91] text-[#0B3D91] dark:border-border-strong dark:text-white hover:bg-[#0B3D91]/10 dark:hover:bg-surface-2 text-xs font-semibold flex items-center space-x-1 cursor-pointer"
+                            className="h-9 px-3 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold flex items-center space-x-1 cursor-pointer"
                           >
                             <span>Evidence Lens</span>
                             <ChevronRight className="w-3.5 h-3.5" />
@@ -1039,7 +1039,7 @@ export default function Dashboard({
                   <button
                     type="submit"
                     disabled={submittingAction || !officerComment.trim()}
-                    className="h-10 px-5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors shadow-xs disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
+                    className="h-10 px-5 rounded-lg bg-primary hover:bg-primary-hover text-[var(--on-primary,#FFFFFF)] text-xs font-semibold transition-colors shadow-xs disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
                   >
                     <span>{submittingAction ? 'Signing Action...' : 'Sign & Record Determination'}</span>
                   </button>
