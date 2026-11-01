@@ -7,10 +7,10 @@ echo.
 set PYTHONPATH=.
 
 echo [1/3] Starting Mock Issuer Gateway on port 8001...
-start "PRAMAAN-X Mock Issuer (Port 8001)" cmd /k "set PYTHONPATH=. && python -m uvicorn mock_issuer.app.main:app --host 127.0.0.1 --port 8001"
+start "PRAMAAN-X Mock Issuer (Port 8001)" cmd /k "set PYTHONPATH=. && py -m uvicorn mock_issuer.app.main:app --host 127.0.0.1 --port 8001"
 
 echo [2/3] Starting FastAPI Backend on port 8000...
-start "PRAMAAN-X Backend (Port 8000)" cmd /k "set PYTHONPATH=. && python -m uvicorn backend.app.main:app --reload-dir backend --host 127.0.0.1 --port 8000"
+start "PRAMAAN-X Backend (Port 8000)" cmd /k "set PYTHONPATH=. && py -m uvicorn backend.app.main:app --reload-dir backend --host 127.0.0.1 --port 8000"
 
 echo [3/3] Starting Vite Frontend on port 5173...
 start "PRAMAAN-X Frontend (Port 5173)" cmd /k "cd frontend && npm run dev -- --host 127.0.0.1 --port 5173"
