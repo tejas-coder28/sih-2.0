@@ -261,7 +261,7 @@ def format_evidence_lens_findings(app: Application, db: Session) -> List[Dict[st
                 "extracted_text": str(f.evidence_details) if f.evidence_details else f.claim_summary,
                 "normalized_value": f.claim_summary,
                 "field_name": dec_field,
-                "ocr_engine": "PaddleOCR v3.0 / NetworkX Institutional Twin",
+                "ocr_engine": (matched_doc.ocr_engine if matched_doc and matched_doc.ocr_engine else "PyMuPDF text layer"),
                 "ocr_confidence": f.confidence or 0.95,
                 "sha256": doc_dict["file_hash"] if doc_dict else None
             },

@@ -254,7 +254,6 @@ export default function App() {
         } catch (_cntErr) {}
       } else {
         setApplications([]);
-        setIsLiveMode(false);
         import('./data/mockOfficerData').then(({ MOCK_TRIAGE_APPLICATIONS }) => {
           if (MOCK_TRIAGE_APPLICATIONS && MOCK_TRIAGE_APPLICATIONS.length > 0) {
             setActiveApplication(prev => prev || MOCK_TRIAGE_APPLICATIONS[0]);
@@ -339,9 +338,14 @@ export default function App() {
     let isMounted = true;
     const checkBackendHealth = async () => {
       try {
-        const h = (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1') ? '127.0.0.1' : 'localhost';
-        const res = await fetch(`http://${h}:8000/health`).catch(() => fetch('http://127.0.0.1:8000/health'));
-        if (isMounted) setIsLiveMode(res.ok);
+        let res = null;
+        try {
+          res = await fetch('/health');
+        } catch (_e) {
+          const h = (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1') ? '127.0.0.1' : 'localhost';
+          res = await fetch(`http://${h}:8000/health`).catch(() => fetch('http://127.0.0.1:8000/health')).catch(() => null);
+        }
+        if (isMounted) setIsLiveMode(Boolean(res && res.ok));
       } catch (e) {
         if (isMounted) setIsLiveMode(false);
       }

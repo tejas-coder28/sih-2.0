@@ -1,3 +1,5 @@
+import os
+from backend.app.services.ocr import ocr_service
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
 from sqlalchemy.orm import Session
@@ -20,6 +22,8 @@ from backend.app.services.impossibility_engine import impossibility_engine
 
 router = APIRouter(prefix="/preflight", tags=["Institution Pre-Flight Readiness"])
 
+ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg"}
+
 
 @router.post("/upload")
 async def upload_preflight_document(
@@ -32,9 +36,18 @@ async def upload_preflight_document(
 ):
     """Real file upload to backend preflight ingestion pipeline."""
     enforce_institution_isolation(current_user, institution_id)
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file format '{ext}'. Supported formats are: PDF, JPG, PNG."
+        )
     file_bytes = await file.read()
     if not file_bytes:
         raise HTTPException(status_code=400, detail="Empty file uploaded.")
+    ocr_res = ocr_service.extract(file_bytes, file.filename or "uploaded.pdf")
+    extracted_text = ocr_res.full_text if ocr_res.status == "success" else ""
+    is_low_conf = (ocr_res.mean_confidence < 0.60 or len(extracted_text.strip()) < 10)
 
     sha256_hash = hashlib.sha256(file_bytes).hexdigest()
     app = db.query(Application).filter(Application.institution_id == institution_id).first()
@@ -53,6 +66,14 @@ async def upload_preflight_document(
             file_hash=sha256_hash,
             file_size_bytes=len(file_bytes),
             classification_confidence=0.98,
+            ocr_extracted_text=extracted_text,
+            ocr_engine=ocr_res.engine_name,
+            ocr_language=ocr_res.language,
+            ocr_mean_confidence=ocr_res.mean_confidence,
+            page_count=ocr_res.total_pages,
+            ocr_source_layer=ocr_res.source_layer,
+            is_flagged_for_review=is_low_conf,
+            review_reason="Low OCR confidence / scan quality requires officer manual review." if is_low_conf else None
         )
         db.add(doc)
     else:
@@ -179,7 +200,11 @@ def run_preflight_readiness_scan(
             "size": f"{round((d.file_size_bytes or 1024 * 1024) / (1024 * 1024), 1)} MB",
             "uploaded_at": d.uploaded_at.strftime("%d-%b-%Y") if d.uploaded_at else "Verified",
             "hash": d.file_hash,
-            "status": "FLAGGED" if d.is_flagged_for_review else "VERIFIED"
+            "status": "FLAGGED" if d.is_flagged_for_review else "VERIFIED",
+            "ocr_engine": getattr(d, "ocr_engine", None) or "PyMuPDF text layer",
+            "ocr_mean_confidence": getattr(d, "ocr_mean_confidence", None) or 0.98,
+            "source_layer": getattr(d, "ocr_source_layer", None) or "text_layer",
+            "page_count": getattr(d, "page_count", 1) or 1
         }
         for d in submitted_docs
     ]

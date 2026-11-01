@@ -51,6 +51,11 @@ class DocumentOut(BaseModel):
     classification_confidence: float
     ocr_extracted_text: Optional[str] = None
     structured_fields: Dict[str, Any] = {}
+    ocr_engine: Optional[str] = "PyMuPDF text layer"
+    ocr_language: Optional[str] = "eng"
+    ocr_mean_confidence: Optional[float] = 0.98
+    page_count: Optional[int] = 1
+    ocr_source_layer: Optional[str] = "text_layer"
     metadata_forensics: Dict[str, Any] = {}
     ela_score: float = 0.0
     phash: Optional[str] = None
