@@ -208,6 +208,17 @@ const MOCK_PLANNER_DATA = {
   ]
 };
 
+const formatUrgency = (tier) => {
+  if (!tier) return 'Normal';
+  switch (tier) {
+    case 'CRITICAL_URGENCY': return 'Critical urgency';
+    case 'HIGH_PRIORITY': return 'High priority';
+    case 'MODERATE_REVIEW': return 'Moderate review';
+    case 'ROUTINE_AUDIT': return 'Routine audit';
+    default: return tier.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase());
+  }
+};
+
 export default function InspectionPlannerPage() {
   const [plannerData, setPlannerData] = useState(MOCK_PLANNER_DATA);
   const [isDemoData, setIsDemoData] = useState(true);
@@ -262,9 +273,9 @@ export default function InspectionPlannerPage() {
   const statesList = ['ALL', 'Karnataka', 'Delhi', 'Maharashtra', 'Telangana'];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+    <div className="space-y-4 2xl:space-y-6 max-w-7xl mx-auto pb-16">
       {/* 1. Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-sky-400 text-xs font-bold uppercase tracking-wider">
@@ -272,12 +283,11 @@ export default function InspectionPlannerPage() {
               <span>AICTE Scrutiny & Vigilance Bureau</span>
               {isDemoData && <DemoDataBadge reason="Fallback Mock Data" />}
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               Surprise Inspection Planner
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Geographical clustering of flagged institutions by State and District.
-              Automated sequencing orders inspection itineraries to minimize officer travel time while prioritizing high-urgency regulatory discrepancies.
+            <p className="text-xs sm:text-sm text-slate-200 max-w-2xl leading-relaxed">
+              Optimal physical inspection routing with geographical clustering of flagged institutions by State and District. Automated sequencing orders inspection itineraries to minimize officer travel time while prioritizing high-urgency regulatory discrepancies.
             </p>
           </div>
 
@@ -285,7 +295,7 @@ export default function InspectionPlannerPage() {
             <button
               onClick={loadPlanner}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl bg-surface/10 hover:bg-surface/20 border border-white/10 text-white font-bold text-xs flex items-center space-x-2 transition-all cursor-pointer"
+              className="h-10 px-4 rounded-lg bg-surface/10 hover:bg-surface/20 border border-white/10 text-white font-semibold text-xs flex items-center space-x-2 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span>Refresh Clusters</span>
@@ -297,69 +307,82 @@ export default function InspectionPlannerPage() {
         <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-sky-500/10 to-transparent pointer-events-none" />
       </div>
 
-      {/* 2. Key Metrics Ribbon */}
+      {/* 2. Key Metrics Ribbon (FIX 6: flat tinted icon square, 28px/700 tabular-nums, muted 12px label, no glows) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Metric 1 */}
         <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>Flagged Institutions</span>
-            <Building2 className="w-4 h-4 text-primary" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-text-muted">Institutions Flagged</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-2 text-primary">
+              <Building2 className="w-5 h-5" />
+            </div>
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
+          <div className="text-[28px] font-bold text-text tabular-nums mt-2 leading-none">
             {plannerData.total_flagged_institutions || 0}
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Across {plannerData.total_states || 0} States</div>
+          <div className="text-xs text-text-muted mt-1.5">Across {plannerData.total_states || 0} States</div>
         </div>
 
+        {/* Metric 2 */}
         <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>District Clusters</span>
-            <MapPin className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-text-muted">High-Risk Clusters</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-2 text-emerald-600 dark:text-emerald-400">
+              <MapPin className="w-5 h-5" />
+            </div>
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
+          <div className="text-[28px] font-bold text-text tabular-nums mt-2 leading-none">
             {plannerData.total_clusters || 0}
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Optimal Itinerary Routes</div>
+          <div className="text-xs text-text-muted mt-1.5">Optimal Itinerary Routes</div>
         </div>
 
+        {/* Metric 3 */}
         <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>Critical Urgency</span>
-            <ShieldAlert className="w-4 h-4 text-rose-600" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-text-muted">Priority Visits</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-2 text-rose-600 dark:text-rose-400">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-rose-600 mt-2">
+          <div className="text-[28px] font-bold text-text tabular-nums mt-2 leading-none">
             3
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Mandatory Physical Audits</div>
+          <div className="text-xs text-text-muted mt-1.5">Mandatory Physical Audits</div>
         </div>
 
+        {/* Metric 4 */}
         <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>AI Sequencing Engine</span>
-            <Route className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-text-muted">Estimated Days</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-2 text-primary">
+              <Route className="w-5 h-5" />
+            </div>
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
-            Active
+          <div className="text-[28px] font-bold text-text tabular-nums mt-2 leading-none">
+            4 Days
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Prioritized by Risk & Proximity</div>
+          <div className="text-xs text-text-muted mt-1.5">Prioritized by Risk & Proximity</div>
         </div>
       </div>
 
-      {/* 3. Filter Controls Deck */}
+      {/* 3. Filter Controls Deck (FIX 6: state pills left, min risk right, 40px height, 8px radius) */}
       <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-text">
+        {/* State Filter Pills (Left) */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center space-x-1.5 text-xs font-semibold text-text mr-1">
             <Filter className="w-3.5 h-3.5 text-primary" />
-            <span>State Cluster:</span>
+            <span>State:</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {statesList.map(st => (
               <button
                 key={st}
                 onClick={() => setSelectedState(st)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`h-10 px-3.5 rounded-lg text-xs font-semibold transition-all flex items-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                   selectedState === st
-                    ? 'bg-primary text-white shadow-2xs font-semibold'
-                    : 'bg-surface-2 text-muted hover:text-text'
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'bg-surface-2 text-text-muted hover:text-text border border-border'
                 }`}
               >
                 {st}
@@ -368,38 +391,53 @@ export default function InspectionPlannerPage() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 text-xs">
-          <span className="font-semibold text-muted">Min Risk Priority:</span>
-          <select
-            value={minPriority}
-            onChange={(e) => setMinPriority(Number(e.target.value))}
-            className="bg-surface border border-border rounded-lg px-3 py-1.5 text-xs font-medium text-text"
+        {/* Right Controls: Min Risk Select + Export Plan Button */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center space-x-2">
+            <label htmlFor="min-risk-select" className="text-xs font-medium text-text-muted whitespace-nowrap">
+              Minimum risk score:
+            </label>
+            <select
+              id="min-risk-select"
+              aria-label="Minimum risk score"
+              value={minPriority}
+              onChange={(e) => setMinPriority(Number(e.target.value))}
+              className="h-10 px-3 bg-surface border border-border rounded-lg text-xs font-medium text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+            >
+              <option value="0">All Priorities</option>
+              <option value="40">Moderate+ (≥ 40)</option>
+              <option value="60">High Priority (≥ 60)</option>
+              <option value="80">Critical Only (≥ 80)</option>
+            </select>
+          </div>
+
+          <button
+            onClick={() => alert('Inspection itinerary exported')}
+            className="h-10 px-4 rounded-lg bg-surface border border-border hover:bg-surface-2 text-text font-semibold text-xs flex items-center space-x-2 transition-all cursor-pointer shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <option value="0">All Priorities</option>
-            <option value="40">Moderate+ (≥ 40)</option>
-            <option value="60">High Priority (≥ 60)</option>
-            <option value="80">Critical Only (≥ 80)</option>
-          </select>
+            <FileText className="w-3.5 h-3.5 text-text-muted" />
+            <span>Export Plan</span>
+          </button>
         </div>
       </div>
 
       {/* 4. State & District Clusters Accordions */}
-      <div className="space-y-6">
+      <div className="space-y-4 2xl:space-y-6">
         {(plannerData.state_clusters || []).map((stateCluster, stIdx) => (
           <div key={stateCluster.state || stIdx} className="bg-surface border border-border rounded-xl p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-sm">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-sm">
                   {stateCluster.state.substring(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-text">{stateCluster.state} Region</h2>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-text-muted">
                     {stateCluster.total_institutions} Flagged Institutions across {stateCluster.districts_count} District Clusters
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-mono font-bold bg-surface-2 text-muted px-3 py-1 rounded-full border border-border">
+              <span className="text-xs font-mono font-semibold bg-surface-2 text-text-muted px-3 py-1 rounded-full border border-border">
                 {stateCluster.total_institutions} Inspections Pending
               </span>
             </div>
@@ -420,18 +458,18 @@ export default function InspectionPlannerPage() {
                       <div className="flex items-center space-x-3">
                         <MapPin className="w-4 h-4 text-primary" />
                         <span className="font-semibold text-sm text-text">{dist.district} Cluster</span>
-                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-primary/20">
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                           {dist.institution_count} Stops in Route
                         </span>
                       </div>
 
-                      <div className="flex items-center space-x-3 text-xs text-muted">
-                        <span>Highest Urgency: <strong>{dist.highest_priority}/100</strong></span>
+                      <div className="flex items-center space-x-3 text-xs text-text-muted">
+                        <span>Highest Urgency: <strong className="text-text">{dist.highest_priority}/100</strong></span>
                         {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                       </div>
                     </div>
 
-                    {/* Institutions Itinerary Sequence */}
+                    {/* Institutions Itinerary Sequence (FIX 6: Building2 icon, formatted urgency, separated right controls) */}
                     {isExpanded && (
                       <div className="p-4 bg-surface divide-y divide-border">
                         {(dist.institutions || []).map((inst) => {
@@ -441,14 +479,20 @@ export default function InspectionPlannerPage() {
 
                           return (
                             <div key={inst.institution_id} className="py-4 first:pt-1 last:pb-1 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                              {/* Left: Sequence badge & details */}
+                              {/* Left: Sequence badge, Building2 icon & details */}
                               <div className="flex items-start space-x-3.5">
-                                <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-black text-xs shadow-2xs border ${
+                                {/* Sequence # Badge */}
+                                <div className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center font-bold text-xs shadow-2xs border ${
                                   inst.sequence_in_district === 1 
-                                    ? 'bg-rose-600 text-white border-rose-700 ring-2 ring-rose-500/20' 
-                                    : 'bg-slate-900 text-white border-slate-800'
+                                    ? 'bg-rose-600 text-white border-rose-700' 
+                                    : 'bg-surface-2 text-text border-border'
                                 }`}>
                                   #{inst.sequence_in_district}
+                                </div>
+
+                                {/* Building2 Icon */}
+                                <div className="w-9 h-9 rounded-lg bg-surface-2 border border-border flex items-center justify-center text-primary shrink-0">
+                                  <Building2 className="w-4 h-4" />
                                 </div>
 
                                 <div className="space-y-1">
@@ -457,30 +501,33 @@ export default function InspectionPlannerPage() {
                                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-2 text-text-muted border border-border">
                                       AICTE: {inst.aicte_id}
                                     </span>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                                      isCritical ? 'bg-rose-50 text-rose-800 border-rose-300' :
-                                      isHigh ? 'bg-amber-50 text-amber-800 border-amber-300' :
-                                      'bg-surface-2 text-text border-border'
+                                    {/* Formatted Urgency Badge */}
+                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
+                                      isCritical 
+                                        ? 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-200 dark:border-rose-900/60'
+                                        : isHigh 
+                                          ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-200 dark:border-amber-900/60'
+                                          : 'bg-surface-2 text-text-muted border-border'
                                     }`}>
-                                      {inst.risk_tier}
+                                      {formatUrgency(inst.risk_tier)}
                                     </span>
                                   </div>
 
-                                  <div className="text-xs text-muted flex flex-wrap items-center gap-2">
+                                  <div className="text-xs text-text-muted flex flex-wrap items-center gap-2">
                                     <span>{inst.category}</span>
                                     <span>•</span>
                                     <span>Intake: {inst.approved_intake}</span>
                                     <span>•</span>
                                     <span className="font-mono text-primary">{inst.application_no}</span>
                                     <span>•</span>
-                                    <span className="text-text-subtle">{inst.address}</span>
+                                    <span>{inst.address}</span>
                                   </div>
 
                                   {/* Flagged issues */}
                                   <div className="pt-1 flex flex-wrap gap-1.5">
                                     {(inst.flagged_issues || []).map((iss, iIdx) => (
-                                      <span key={iIdx} className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-1">
-                                        <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
+                                      <span key={iIdx} className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-rose-50/80 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-900/50 flex items-center space-x-1">
+                                        <AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400 shrink-0" />
                                         <span>{iss}</span>
                                       </span>
                                     ))}
@@ -488,22 +535,22 @@ export default function InspectionPlannerPage() {
                                 </div>
                               </div>
 
-                              {/* Right: Scores & Actions */}
-                              <div className="flex flex-wrap items-center gap-4 lg:self-center shrink-0">
+                              {/* Right: Scores & Actions separated with a clean vertical divider on large screens */}
+                              <div className="flex flex-wrap items-center gap-4 lg:self-center shrink-0 lg:border-l lg:border-border lg:pl-5">
                                 <div className="text-right">
                                   <div className="text-xs font-semibold text-text">Urgency Score</div>
-                                  <div className={`text-base font-black ${
-                                    inst.priority_score >= 80 ? 'text-rose-600' :
-                                    inst.priority_score >= 50 ? 'text-amber-600' : 'text-text-muted'
+                                  <div className={`text-base font-bold tabular-nums ${
+                                    inst.priority_score >= 80 ? 'text-rose-600 dark:text-rose-400' :
+                                    inst.priority_score >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-text-muted'
                                   }`}>
                                     {inst.priority_score}/100
                                   </div>
                                 </div>
 
                                 <div className="text-right border-l border-border pl-3">
-                                  <div className="text-[10px] font-bold text-text-subtle uppercase">Recommended Mode</div>
-                                  <div className="text-xs font-bold text-text font-mono">
-                                    {inst.recommended_inspection_type.replace(/_/g, ' ')}
+                                  <div className="text-[10px] font-bold text-text-muted uppercase">Turnaround</div>
+                                  <div className="text-xs font-semibold text-text tabular-nums">
+                                    {inst.sequence_in_district === 1 ? '1 Day' : `${inst.sequence_in_district} Days`}
                                   </div>
                                 </div>
 
@@ -511,21 +558,21 @@ export default function InspectionPlannerPage() {
                                   id={`btn-schedule-inspection-${inst.institution_id}`}
                                   onClick={() => handleScheduleOrder(inst.institution_id)}
                                   disabled={isOrdered}
-                                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer ${
+                                  className={`h-10 px-4 rounded-lg text-xs font-semibold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                                     isOrdered 
-                                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default'
-                                      : 'bg-slate-900 hover:bg-slate-800 text-white'
+                                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:border-emerald-900/60 cursor-default'
+                                      : 'bg-primary hover:bg-primary-hover text-white'
                                   }`}
                                 >
                                   {isOrdered ? (
                                     <>
-                                      <Check className="w-3.5 h-3.5 text-emerald-700" />
+                                      <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                                       <span>Order Dispatched</span>
                                     </>
                                   ) : (
                                     <>
-                                      <Navigation className="w-3.5 h-3.5" />
-                                      <span>Dispatch Squad Order</span>
+                                      <Route className="w-3.5 h-3.5" />
+                                      <span>View Route</span>
                                     </>
                                   )}
                                 </button>
