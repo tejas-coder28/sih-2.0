@@ -94,7 +94,7 @@ const SCREENSHOT_CATALOG = [
     summary: 'Perceptual pHash similarity detection and Error-Level Analysis (ELA) for detecting reused campus photos and spliced documents.',
     features: [
       'Multi-hash perceptual matching (pHash & dHash) across 12,000+ photos',
-      'FAISS similarity vector index for <250ms cross-college clustering',
+      'Perceptual pHash index (Hamming &le; 10) for cross-college clustering',
       'Error-Level Analysis heatmap revealing modified JPEG compression blocks',
       'Side-by-side visual comparison panel with match similarity percentages'
     ]
@@ -202,7 +202,7 @@ const SCREENSHOT_CATALOG = [
     filename: '/screenshots/rbac_roles.png',
     tabTarget: 'dashboard',
     badge: 'Security & RBAC',
-    badgeColor: 'bg-slate-100 text-slate-800 border-slate-300',
+    badgeColor: 'bg-surface-2 text-slate-800 border-slate-300',
     summary: 'Strict 5-tier role-based access control isolating duties between Scrutiny Officers, Senior Officers, Admins, Auditors, and Institutions.',
     features: [
       'Separation of duties: Scrutiny vs Senior Approval vs Auditor',
@@ -250,7 +250,7 @@ const SCREENSHOT_CATALOG = [
     filename: '/screenshots/dark_mode_check.png',
     tabTarget: 'dashboard',
     badge: 'Accessibility',
-    badgeColor: 'bg-slate-100 text-slate-800 border-slate-300',
+    badgeColor: 'bg-surface-2 text-slate-800 border-slate-300',
     summary: 'Integrated high-contrast theme maintaining WCAG 2.1 AA text ratios for intensive long-session scrutiny.',
     features: [
       'Contrast ratio > 4.5:1 on all text and status badges',
@@ -310,7 +310,7 @@ const ARCHITECTURE_NODES = [
     color: 'from-purple-600 to-rose-600',
     accent: 'border-rose-300 bg-rose-50/50',
     desc: 'Multi-hash visual deduplication and Error-Level Analysis (ELA) for detecting reused infrastructure photos.',
-    tech: ['FAISS (IndexFlatL2)', 'pHash & dHash (ImageHash)', 'OpenCV', 'Pillow'],
+    tech: ['imagehash pHash', 'pHash & dHash (ImageHash)', 'OpenCV', 'Pillow'],
     sla: '< 250ms over 12K+ Photos',
     endpoint: '/api/v1/photo-radar/search',
     details: 'Generates 7 geometric/photometric invariant hash variants. Performs sub-millisecond nearest neighbor lookup across nationwide college image catalogs.'
@@ -369,7 +369,7 @@ const PIPELINE_STEPS = [
     category: 'Forensics',
     icon: ScanEye,
     description: 'Photos undergo multi-hash generation (pHash, dHash) and Error-Level Analysis (ELA) to identify tampering.',
-    metrics: '<250ms FAISS search across 12,000+ catalog images • 7 invariant transform variants',
+    metrics: 'Sub-second perceptual pHash matching across catalog images • 7 invariant transform variants',
     systemAction: 'Flags duplicate library, computer lab, or building photos reused across multiple colleges.'
   },
   {
@@ -423,52 +423,72 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
   return (
     <div className="w-full flex flex-col gap-6 font-sans">
       {/* Page Title & Hero Header */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-sky-400/10 via-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-surface rounded-2xl border border-border p-5 sm:p-6 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 via-indigo-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded-md bg-sky-50 border border-sky-200 text-sky-800 text-xs font-bold tracking-wide uppercase flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              <span className="px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
                 Live Architecture & Verification Evidence
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-900/60 text-[11px] font-semibold flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 Zero Auto-Rejection
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-semibold font-mono">
+              <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-900/60 text-[11px] font-semibold font-mono">
                 SHA-256 Merkle Ledger
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-text tracking-tight">
               PRAMAAN-X System Architecture & Evidence Showcase
             </h1>
-            <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+            <p className="text-sm text-text-muted max-w-3xl leading-relaxed">
               Explore the end-to-end technical blueprint of PRAMAAN-X: multi-modal document intelligence, perceptual photo deduplication, cross-institutional twin graph verification, and tamper-evident cryptographic audit receipts.
             </p>
           </div>
 
-          {/* Quick Metrics Badge Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 shrink-0">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center">
-              <div className="text-lg font-extrabold text-slate-800 font-mono">10 Modules</div>
-              <div className="text-[10px] uppercase font-bold text-slate-500">Full Scrutiny Suite</div>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center">
-              <div className="text-lg font-extrabold text-emerald-600 font-mono">&lt; 250ms</div>
-              <div className="text-[10px] uppercase font-bold text-slate-500">FAISS Radar Match</div>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center col-span-2 sm:col-span-1">
-              <div className="text-lg font-extrabold text-sky-600 font-mono">100%</div>
-              <div className="text-[10px] uppercase font-bold text-slate-500">Audit Verifiability</div>
-            </div>
+          {/* Top Action Button (FIX 7: solid primary #0B3D91 light / #2F5BE8 dark, 40px height, white text) */}
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              id="btn-deep-dive-specifications"
+              onClick={() => setActiveSection('components')}
+              className="h-10 px-4 rounded-lg bg-[#0B3D91] dark:bg-[#2F5BE8] hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <Cpu className="w-4 h-4 text-white" />
+              <span>Deep-Dive Specifications</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Stat Cards (FIX 7: equal-width grid, 16px gap, 28px/700 tabular-nums, 12px muted sentence-case labels) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
+            <div className="text-xs font-medium text-text-muted">Total system engines</div>
+            <div className="text-[28px] font-bold text-text tabular-nums mt-1.5 leading-none">6</div>
+            <div className="text-xs text-text-muted mt-1">Checklist to Ledger</div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
+            <div className="text-xs font-medium text-text-muted">API endpoints</div>
+            <div className="text-[28px] font-bold text-text tabular-nums mt-1.5 leading-none">85</div>
+            <div className="text-xs text-text-muted mt-1">Operational routes</div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
+            <div className="text-xs font-medium text-text-muted">Rule modules</div>
+            <div className="text-[28px] font-bold text-text tabular-nums mt-1.5 leading-none">12</div>
+            <div className="text-xs text-text-muted mt-1">Declarative APH packs</div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
+            <div className="text-xs font-medium text-text-muted">Subsystems</div>
+            <div className="text-[28px] font-bold text-text tabular-nums mt-1.5 leading-none">10</div>
+            <div className="text-xs text-text-muted mt-1">Verification modules</div>
           </div>
         </div>
 
         {/* Navigation Mode Tabs */}
-        <div className="flex flex-wrap items-center gap-2 mt-6 pt-5 border-t border-slate-100">
+        <div className="flex flex-wrap items-center gap-2 mt-6 pt-5 border-t border-border">
           {[
             { id: 'architecture', label: 'Interactive Architecture', icon: Workflow },
             { id: 'pipeline', label: 'End-to-End Pipeline Simulator', icon: Activity },
@@ -483,12 +503,12 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 key={tab.id}
                 id={`tab-${tab.id}`}
                 onClick={() => setActiveSection(tab.id)}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 cursor-pointer ${isActive
-                    ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-600/20'
-                    : 'bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900'
+                className={`h-10 px-3.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
+                    ? 'bg-primary text-white shadow-xs'
+                    : 'bg-surface-2 text-text-muted hover:bg-surface-3 hover:text-text border border-border'
                   }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-text-muted'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -502,15 +522,16 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Interactive Multi-Tier Block Diagram */}
             <div className="lg:col-span-7 flex flex-col gap-3">
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Workflow className="w-5 h-5 text-sky-600" />
-                    <h2 className="text-base font-bold text-slate-800">
-                      Multi-Tier Architecture Diagram
-                    </h2>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-semibold text-text">Multi-tier architecture diagram</h2>
+                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary border border-primary/20">6 Tiers</span>
+                    </div>
                   </div>
-                  <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                  <span className="text-xs font-mono text-text-muted bg-surface-2 px-2.5 py-1 rounded-md">
                     Click a tier to inspect
                   </span>
                 </div>
@@ -525,8 +546,8 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                         id={`arch-node-${node.id}`}
                         onClick={() => setSelectedNode(node)}
                         className={`p-3.5 rounded-xl border transition-all cursor-pointer relative overflow-hidden group ${isSelected
-                            ? 'bg-sky-50/70 border-sky-400 ring-2 ring-sky-300/40 shadow-xs'
-                            : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
+                            ? 'bg-primary/10 border-primary ring-2 ring-primary/20 shadow-xs'
+                            : 'bg-surface border-border hover:border-border-muted hover:bg-surface-2'
                           }`}
                       >
                         <div className="flex items-center justify-between gap-3">
@@ -535,20 +556,20 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                               <Icon className="w-5 h-5" />
                             </div>
                             <div className="min-w-0">
-                              <span className="text-[10px] font-bold text-sky-700 tracking-wider uppercase block">
+                              <span className="text-[10px] font-bold text-primary tracking-wider uppercase block">
                                 {node.tier}
                               </span>
-                              <h3 className="text-sm font-bold text-slate-800 truncate">
+                              <h3 className="text-sm font-bold text-text truncate">
                                 {node.name}
                               </h3>
-                              <p className="text-xs text-slate-500 truncate mt-0.5">
+                              <p className="text-xs text-text-muted truncate mt-0.5">
                                 {node.desc}
                               </p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="hidden sm:inline-block text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                            <span className="hidden sm:inline-block text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-surface-2 text-text-muted border border-border">
                               {node.sla}
                             </span>
                             <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'text-sky-600 translate-x-0.5' : 'text-slate-400'}`} />
@@ -568,8 +589,8 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
 
             {/* Selected Node Technical Inspection Drawer */}
             <div className="lg:col-span-5 flex flex-col gap-4">
-              <div className="bg-white rounded-2xl border border-sky-200 p-5 shadow-xs sticky top-20">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs sticky top-20">
+                <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
                   <div className="flex items-center gap-2">
                     <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${selectedNode.color} text-white flex items-center justify-center shrink-0 shadow-xs`}>
                       {React.createElement(selectedNode.icon, { className: 'w-4 h-4' })}
@@ -578,7 +599,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                       <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wide">
                         {selectedNode.tier}
                       </span>
-                      <h3 className="text-base font-bold text-slate-900 leading-tight">
+                      <h3 className="text-base font-bold text-text leading-tight">
                         {selectedNode.name}
                       </h3>
                     </div>
@@ -588,18 +609,18 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                <p className="text-xs text-text-muted leading-relaxed mb-4">
                   {selectedNode.details}
                 </p>
 
                 <div className="flex flex-col gap-3">
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1.5">
+                  <div className="bg-surface-2 border border-border rounded-xl p-3">
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-wide block mb-1.5">
                       Core Technologies & Libraries
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedNode.tech.map((t) => (
-                        <span key={t} className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-800 font-mono text-xs font-semibold">
+                        <span key={t} className="px-2 py-0.5 rounded-md bg-surface border border-border text-text font-mono text-xs font-semibold">
                           {t}
                         </span>
                       ))}
@@ -607,13 +628,13 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block">Performance SLA</span>
+                    <div className="bg-surface-2 border border-border rounded-xl p-2.5">
+                      <span className="text-[10px] font-bold text-text-muted uppercase block">Performance SLA</span>
                       <span className="text-xs font-extrabold font-mono text-emerald-700">{selectedNode.sla}</span>
                     </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block">Service Interface</span>
-                      <span className="text-xs font-bold text-slate-800 truncate block">{selectedNode.endpoint.split(',')[0]}</span>
+                    <div className="bg-surface-2 border border-border rounded-xl p-2.5">
+                      <span className="text-[10px] font-bold text-text-muted uppercase block">Service Interface</span>
+                      <span className="text-xs font-bold text-text truncate block">{selectedNode.endpoint.split(',')[0]}</span>
                     </div>
                   </div>
 
@@ -638,14 +659,15 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
       {/* SECTION 2: END-TO-END PIPELINE SIMULATOR */}
       {activeSection === 'pipeline' && (
         <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs">
+          <div className="bg-surface rounded-2xl border border-border p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-sky-600" />
-                  Interactive Regulatory Scrutiny Pipeline
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <div className="flex items-center gap-2.5">
+                  <Activity className="w-5 h-5 text-primary" />
+                  <h2 className="text-lg font-semibold text-text">End-to-end pipeline simulator</h2>
+                  <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary border border-primary/20">6 Stages</span>
+                </div>
+                <p className="text-sm leading-relaxed max-w-prose text-text-muted mt-1">
                   Step through the six automated verification stages that execute upon institutional document ingestion.
                 </p>
               </div>
@@ -656,12 +678,12 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   id="pipeline-prev-btn"
                   onClick={() => setActivePipelineStep((prev) => Math.max(0, prev - 1))}
                   disabled={activePipelineStep === 0}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 disabled:opacity-40 text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg border border-border text-text disabled:opacity-40 text-xs font-semibold hover:bg-surface-2 transition cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4 inline mr-1" />
                   Previous
                 </button>
-                <span className="text-xs font-mono font-bold text-slate-600 px-2">
+                <span className="text-xs font-mono font-bold text-text-muted px-2">
                   Stage {activePipelineStep + 1} of {PIPELINE_STEPS.length}
                 </span>
                 <button
@@ -686,14 +708,14 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                     key={s.step}
                     onClick={() => setActivePipelineStep(idx)}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${isCurrent
-                        ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300/40'
+                        ? 'bg-primary/10 border-primary ring-2 ring-primary/20'
                         : isCompleted
-                          ? 'bg-emerald-50/50 border-emerald-200 text-slate-700'
-                          : 'bg-slate-50 border-slate-200 opacity-60'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50 text-text'
+                          : 'bg-surface-2 border-border opacity-70'
                       }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-mono font-bold text-slate-500">
+                      <span className="text-[10px] font-mono font-bold text-text-muted">
                         0{s.step}
                       </span>
                       {isCompleted ? (
@@ -702,7 +724,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                         <span className={`w-2 h-2 rounded-full ${isCurrent ? 'bg-sky-600 animate-pulse' : 'bg-slate-300'}`} />
                       )}
                     </div>
-                    <div className="text-xs font-bold text-slate-800 truncate">{s.category}</div>
+                    <div className="text-xs font-bold text-text truncate">{s.category}</div>
                   </button>
                 );
               })}
@@ -775,7 +797,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
       {/* SECTION 3: VISUAL EVIDENCE & SCREENSHOT GALLERY */}
       {activeSection === 'gallery' && (
         <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+          <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs">
             {/* Filter and Search Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div className="flex flex-wrap items-center gap-2">
@@ -792,7 +814,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${selectedCategory === cat.id
                         ? 'bg-sky-600 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
+                        : 'bg-surface-2 text-text-muted hover:bg-slate-200/80 hover:text-text'
                       }`}
                   >
                     {cat.label}
@@ -807,7 +829,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   placeholder="Search screens..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full bg-surface border border-border rounded-lg pl-9 pr-3 py-2 text-xs text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
             </div>
@@ -818,12 +840,12 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 <div
                   key={item.id}
                   id={`gallery-card-${item.id}`}
-                  className="bg-white rounded-xl border border-slate-200/90 hover:border-sky-300 shadow-2xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
+                  className="bg-surface rounded-xl border border-border hover:border-primary shadow-2xs hover:shadow-md transition-all flex flex-col overflow-hidden group"
                 >
                   {/* Thumbnail with Lightbox Hover Trigger */}
                   <div
                     onClick={() => setActiveLightboxImage(item)}
-                    className="relative aspect-video bg-slate-100 border-b border-slate-200 overflow-hidden cursor-pointer"
+                    className="relative aspect-video bg-surface-2 border-b border-border overflow-hidden cursor-pointer"
                   >
                     <img
                       src={item.filename}
@@ -836,7 +858,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                       }}
                     />
                     <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                      <span className="px-3 py-1.5 rounded-lg bg-white/95 text-slate-900 text-xs font-bold shadow-md flex items-center gap-1.5">
+                      <span className="px-3 py-1.5 rounded-lg bg-white/95 text-text text-xs font-bold shadow-md flex items-center gap-1.5">
                         <Maximize2 className="w-3.5 h-3.5" />
                         Inspect High-Res
                       </span>
@@ -850,18 +872,18 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                   {/* Card Body */}
                   <div className="p-4 flex-1 flex flex-col justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900 leading-snug">
+                      <h3 className="text-sm font-bold text-text leading-snug">
                         {item.title}
                       </h3>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-text-muted mt-1 line-clamp-2 leading-relaxed">
                         {item.summary}
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div className="pt-3 border-t border-border flex items-center justify-between">
                       <button
                         onClick={() => setActiveLightboxImage(item)}
-                        className="text-xs font-semibold text-sky-600 hover:text-sky-800 transition inline-flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-semibold text-primary hover:underline transition inline-flex items-center gap-1 cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         Inspect Details
@@ -870,7 +892,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                       {onNavigateTab && (
                         <button
                           onClick={() => onNavigateTab(item.tabTarget)}
-                          className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 hover:border-sky-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-surface-2 hover:bg-surface-3 text-text border border-border text-xs font-semibold transition flex items-center gap-1 cursor-pointer"
                           title={`Navigate to live ${item.title}`}
                         >
                           <span>Live Module</span>
@@ -884,7 +906,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
             </div>
 
             {filteredScreenshots.length === 0 && (
-              <div className="text-center py-12 text-slate-500">
+              <div className="text-center py-12 text-text-muted">
                 <p className="text-sm font-semibold">No screenshots match your search query.</p>
                 <button
                   onClick={() => {
@@ -904,68 +926,68 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
       {/* SECTION 4: DEEP-DIVE SPECIFICATIONS */}
       {activeSection === 'components' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col gap-3">
+          <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs flex flex-col gap-3">
             <div className="flex items-center gap-2 text-sky-700">
               <FileSearch className="w-5 h-5" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-text uppercase tracking-wide">
                 1. Multi-Modal Document Extraction Engine
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed max-w-prose">
               Native Python PyMuPDF engine extracts vector-embedded text directly from compliance PDFs. For scanned submissions, Tier-2 TF-IDF classifiers cross-check token n-grams against Land Deeds, Fire NOCs, Building Approvals, and Faculty Lists with &gt;96% precision.
             </p>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 font-mono text-xs text-slate-700 space-y-1">
+            <div className="bg-surface-2 rounded-xl p-3 border border-border font-mono text-xs text-text space-y-1">
               <div>• Throughput: 450ms / document</div>
               <div>• Bounding Box Precision: Sub-pixel resolution</div>
               <div>• ML Fallback: Logistic Regression document classifier</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col gap-3">
+          <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs flex flex-col gap-3">
             <div className="flex items-center gap-2 text-amber-700">
               <ScanEye className="w-5 h-5" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-text uppercase tracking-wide">
                 2. Perceptual Radar & Error-Level Analysis (ELA)
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Combines 64-bit DCT perceptual hashing (pHash) and difference hashing (dHash) with 7 geometric and photometric perturbations (rotations, cropping, JPEG compression). A FAISS L2 vector index enables sub-second nearest-neighbor visual search across 12,000+ national campus photos.
+            <p className="text-xs text-text-muted leading-relaxed max-w-prose">
+              Combines 64-bit DCT perceptual hashing (pHash) and difference hashing (dHash) with 7 geometric and photometric perturbations (rotations, cropping, JPEG compression). 64-bit DCT perceptual hashing (pHash) enables rapid visual collision search across campus photos.
             </p>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 font-mono text-xs text-slate-700 space-y-1">
-              <div>• Vector Index: FAISS IndexFlatL2 (12,000+ catalog)</div>
+            <div className="bg-surface-2 rounded-xl p-3 border border-border font-mono text-xs text-text space-y-1">
+              <div>• Hash Index: 64-bit DCT pHash (Hamming &le; 10)</div>
               <div>• Query Latency: &lt; 250ms</div>
               <div>• Forensic ELA: 95% JPEG quality delta resaving</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col gap-3">
+          <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs flex flex-col gap-3">
             <div className="flex items-center gap-2 text-rose-700">
               <Network className="w-5 h-5" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-text uppercase tracking-wide">
                 3. Cross-College Twin Graph Impossibility Engine
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed max-w-prose">
               Constructed via NetworkX, the heterogeneous twin graph correlates institutions, faculty identities, and land survey parcels nationwide. Detects impossibility conflicts such as faculty registered at two colleges &gt;300km apart within the same academic semester.
             </p>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 font-mono text-xs text-slate-700 space-y-1">
+            <div className="bg-surface-2 rounded-xl p-3 border border-border font-mono text-xs text-text space-y-1">
               <div>• Graph Structure: NetworkX MultiDiGraph</div>
               <div>• Privacy: SHA-256 salted Aadhaar/PAN indexing</div>
               <div>• Conflict Types: Moonlighting, Land Collocation</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col gap-3">
+          <div className="bg-surface rounded-2xl border border-border p-5 shadow-xs flex flex-col gap-3">
             <div className="flex items-center gap-2 text-emerald-700">
               <FileCheck2 className="w-5 h-5" />
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-text uppercase tracking-wide">
                 4. Cryptographic SHA-256 Merkle Audit Ledger
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Every regulatory determination, OCR extraction, and officer comment is sealed in a recursive cryptographic hash chain: <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-800">H_n = SHA-256(Block_n || H_{'{n-1}'})</code>. Any direct tampering with the database instantly breaks the hash sequence and triggers a visual tamper alert.
+            <p className="text-xs text-text-muted leading-relaxed max-w-prose">
+              Every regulatory determination, OCR extraction, and officer comment is sealed in a recursive cryptographic hash chain: <code className="bg-surface-2 px-1 py-0.5 rounded text-slate-800">H_n = SHA-256(Block_n || H_{'{n-1}'})</code>. Any direct tampering with the database instantly breaks the hash sequence and triggers a visual tamper alert.
             </p>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 font-mono text-xs text-slate-700 space-y-1">
+            <div className="bg-surface-2 rounded-xl p-3 border border-border font-mono text-xs text-text space-y-1">
               <div>• Immutability: Cryptographic Merkle State Hashing</div>
               <div>• Verification SLA: Instant (&lt; 5ms)</div>
               <div>• Compliance: Non-repudiation for appellate tribunals</div>
@@ -977,12 +999,13 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
       {/* SECTION 5: STATUTORY SAFEGUARDS & RBAC */}
       {activeSection === 'safeguards' && (
         <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs">
-            <h2 className="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Scale className="w-5 h-5 text-sky-600" />
-              Statutory Safeguards & Role Separation
-            </h2>
-            <p className="text-xs text-slate-600 leading-relaxed mb-6 max-w-3xl">
+          <div className="bg-surface rounded-2xl border border-border p-5 sm:p-6 shadow-xs">
+            <div className="flex items-center gap-2.5 mb-2">
+              <Scale className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold text-text">Statutory safeguards & role separation</h2>
+              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary border border-primary/20">Safeguards</span>
+            </div>
+            <p className="text-xs text-text-muted leading-relaxed mb-6 max-w-3xl">
               PRAMAAN-X adheres strictly to the legal principle that artificial intelligence serves as non-punitive decision support. No applicant is ever disqualified by automated threshold alone.
             </p>
 
@@ -991,7 +1014,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 <span className="text-xs font-bold text-sky-800 block mb-1">
                   1. Zero Auto-Rejection
                 </span>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-text-muted leading-relaxed max-w-prose">
                   Every algorithmic output is labeled strictly as an <strong>"Indicator for review"</strong>. Final determinations require human scrutinizing officer signatures.
                 </p>
               </div>
@@ -1000,7 +1023,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 <span className="text-xs font-bold text-indigo-800 block mb-1">
                   2. Mandatory Officer Remarks
                 </span>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-text-muted leading-relaxed max-w-prose">
                   Officers cannot close or approve an application with outstanding anomalies without providing a detailed, auditable written justification.
                 </p>
               </div>
@@ -1009,16 +1032,16 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 <span className="text-xs font-bold text-emerald-800 block mb-1">
                   3. Self-Assessment Sandbox
                 </span>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-text-muted leading-relaxed max-w-prose">
                   Institutions receive access to the Pre-Flight Scorecard to test their compliance and resolve deficiency gaps without prejudice before deadline.
                 </p>
               </div>
             </div>
 
             {/* RBAC Matrix Table */}
-            <div className="border border-slate-200 rounded-xl overflow-x-auto">
+            <div className="border border-border rounded-xl overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] font-bold border-b border-slate-200">
+                <thead className="bg-surface-2 text-text-muted uppercase tracking-wider text-[10px] font-bold border-b border-border">
                   <tr>
                     <th className="py-3 px-4">Role Persona</th>
                     <th className="py-3 px-4">Primary Jurisdiction</th>
@@ -1026,36 +1049,36 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                     <th className="py-3 px-4">Audit Authority</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 text-slate-700">
+                <tbody className="divide-y divide-border text-text">
                   <tr>
-                    <td className="py-3 px-4 font-bold text-slate-900">Scrutiny Officer</td>
+                    <td className="py-3 px-4 font-bold text-text">Scrutiny Officer</td>
                     <td className="py-3 px-4">Primary desk review & bounding box audit</td>
                     <td className="py-3 px-4">Triage, Evidence Lens, Photo Radar, Impossibility</td>
                     <td className="py-3 px-4 text-emerald-700 font-semibold">Sign Initial Scrutiny</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-bold text-slate-900">Senior Officer</td>
+                    <td className="py-3 px-4 font-bold text-text">Senior Officer</td>
                     <td className="py-3 px-4">Escalations, approvals & what-if policy</td>
                     <td className="py-3 px-4">All Modules + Regulation-as-Code & Approvals</td>
                     <td className="py-3 px-4 text-emerald-700 font-semibold">Final Approval Authority</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-bold text-slate-900">Central Admin</td>
+                    <td className="py-3 px-4 font-bold text-text">Central Admin</td>
                     <td className="py-3 px-4">System rules, thresholds & registry configuration</td>
                     <td className="py-3 px-4">All Modules + System Administration</td>
                     <td className="py-3 px-4 text-indigo-700 font-semibold">Configuration Logs</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-bold text-slate-900">Independent Auditor</td>
+                    <td className="py-3 px-4 font-bold text-text">Independent Auditor</td>
                     <td className="py-3 px-4">Post-hoc inspection & non-repudiation audit</td>
                     <td className="py-3 px-4">Audit Ledger, Evidence Lens (Read-Only)</td>
                     <td className="py-3 px-4 text-purple-700 font-semibold">Verify Hash Integrity</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-bold text-slate-900">Institution User</td>
+                    <td className="py-3 px-4 font-bold text-text">Institution User</td>
                     <td className="py-3 px-4">Dossier preparation & pre-flight self-check</td>
                     <td className="py-3 px-4">Own Application, Pre-Flight Scorecard</td>
-                    <td className="py-3 px-4 text-slate-500 font-semibold">View Own Receipts Only</td>
+                    <td className="py-3 px-4 text-text-muted font-semibold">View Own Receipts Only</td>
                   </tr>
                 </tbody>
               </table>
@@ -1071,7 +1094,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
           onClick={() => setActiveLightboxImage(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-700 animate-scaleUp"
+            className="bg-surface rounded-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-border animate-scaleUp"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -1118,14 +1141,14 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
             </div>
 
             {/* Modal Footer with Feature Bullets */}
-            <div className="p-4 sm:p-5 bg-white border-t border-slate-200">
-              <p className="text-xs text-slate-600 mb-3">
+            <div className="p-4 sm:p-5 bg-white border-t border-border">
+              <p className="text-xs text-text-muted mb-3">
                 {activeLightboxImage.summary}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {activeLightboxImage.features?.map((feat, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-slate-700">
+                  <div key={i} className="flex items-start gap-2 text-xs text-text">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>

@@ -171,7 +171,7 @@ export default function Sidebar({
       items: [
         {
           id: 'system-architecture',
-          label: 'System Architecture',
+          label: 'Architecture',
           icon: Workflow,
           badge: 'Interactive',
           badgeColor: 'bg-sky-50 text-sky-700 border-sky-200',
