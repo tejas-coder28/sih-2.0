@@ -1,8 +1,8 @@
 {
   "harness_metadata": {
-    "evaluation_timestamp": "2026-10-27T20:01:51.319148+00:00",
+    "evaluation_timestamp": "2026-11-01T14:40:49.400295+00:00",
     "system_name": "PRAMAAN-X Regulatory Decision-Support Framework",
-    "evaluation_runtime_seconds": 27.12,
+    "evaluation_runtime_seconds": 24.07,
     "tuning_set_seed": 42,
     "test_set_seed": 7,
     "manual_baseline_minutes": 180.0,
@@ -259,7 +259,7 @@
     "total_verification_calls": 7,
     "successful_determinations": 7,
     "success_rate_percent": 100.0,
-    "mean_connector_latency_ms": 2.79,
+    "mean_connector_latency_ms": 1.64,
     "channels_tested": [
       "REST_API_LOOKUP",
       "QR_CODE_PAYLOAD_DECODE",
@@ -268,11 +268,11 @@
     "fallback_routing": "Inconclusive and timeout cases automatically enqueued to Scrutiny Officer ManualReviewQueue."
   },
   "processing_time_comparison": {
-    "automated_seconds_per_application": 2.08,
-    "automated_minutes_per_application": 0.0346,
+    "automated_seconds_per_application": 2.04,
+    "automated_minutes_per_application": 0.034,
     "manual_baseline_minutes": 180.0,
     "minutes_saved_per_application": 179.97,
-    "speedup_factor": 5203.1,
+    "speedup_factor": 5289.1,
     "efficiency_gain_percent": 99.98,
     "dossier_stages_timed": [
       "Multi-Page OCR Text Extraction",
@@ -284,9 +284,9 @@
     ]
   },
   "alert_latency": {
-    "mean_latency_ms": 3.21,
-    "median_latency_ms": 3.21,
-    "p95_latency_ms": 3.22,
+    "mean_latency_ms": 3.2,
+    "median_latency_ms": 3.2,
+    "p95_latency_ms": 3.21,
     "alert_deduplication_efficiency_percent": 100.0,
     "notification_channels": [
       "IN_APP_STATUS_BELL",
