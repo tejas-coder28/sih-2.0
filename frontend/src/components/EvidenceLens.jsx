@@ -335,7 +335,7 @@ export default function EvidenceLens({
                   {pipeline?.evidence?.extracted_text || 'No extracted evidence text available'}
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-text-muted pt-0.5">
-                  <span>Engine: {pipeline?.evidence?.ocr_engine || 'PaddleOCR / Regulatory Twin'}</span>
+                  <span>Engine: {pipeline?.evidence?.ocr_engine || 'PyMuPDF Text Engine / Regulatory Twin'}</span>
                   <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                     Confidence: {pipeline?.evidence?.ocr_confidence != null ? (pipeline.evidence.ocr_confidence * 100).toFixed(1) : '95.0'}%
                   </span>

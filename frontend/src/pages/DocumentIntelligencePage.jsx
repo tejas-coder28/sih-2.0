@@ -841,7 +841,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 <div>
                   <span className="text-muted text-[11px] block font-medium">Engine</span>
                   <span className="font-medium text-text block mt-0.5">
-                    PyMuPDF + PaddleOCR
+                    PyMuPDF Text Engine
                   </span>
                 </div>
               </div>

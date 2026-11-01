@@ -481,9 +481,9 @@ export default function PhotoComparisonPanel({
 
             {/* OpenCLIP Cosine */}
             <div className="bg-surface p-2.5 rounded-lg border border-border">
-              <div className="text-[10px] text-text-subtle uppercase font-medium">OpenCLIP Cosine</div>
+              <div className="text-[10px] text-text-subtle uppercase font-medium">Cosine Similarity (Simulated Heuristic)</div>
               <div className="text-base font-black text-indigo-700">{pairData.clip_cosine}</div>
-              <div className="text-[9px] text-text-subtle font-mono">ViT-B-32 Vector</div>
+              <div className="text-[9px] text-text-subtle font-mono">Simulated Vector Metric</div>
             </div>
           </div>
 

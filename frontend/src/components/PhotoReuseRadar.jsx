@@ -374,7 +374,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
               </span>
               <span className="text-xs text-text-subtle">•</span>
               <span className="text-xs font-semibold text-text-muted">
-                OpenCLIP ViT-B-32 & Invariant Perceptual Hashing (pHash)
+                Invariant Perceptual Hashing (pHash / dHash) & Simulated Feature Vector Radar
               </span>
               {isDemoData && (
                 <DemoDataBadge message="Demo data (live radar fallback)" />
