@@ -47,10 +47,11 @@
 
 PRAMAAN-X features an active mathematical verification ledger. The interactive tamper demo proves immediate severed-link detection if any record is mutated:
 
-| Step 1: Pristine Hash Chain | Step 2: Injected Tampering Detected | Step 3: Restored & Re-Verified |
-| :---: | :---: | :---: |
-| [![Tamper Demo Intact](docs/screenshots/tamper-demo-intact.png)](docs/screenshots/tamper-demo-intact.png) | [![Tamper Demo Tampered](docs/screenshots/tamper-demo-tampered.png)](docs/screenshots/tamper-demo-tampered.png) | [![Tamper Demo Restored](docs/screenshots/tamper-demo-restored.png)](docs/screenshots/tamper-demo-restored.png) |
-| **All Blocks Authentic**: SHA-256 Merkle chain and Ed25519 digital signatures verify authentic across all blocks. | **Link Severed**: Modifying Block #2 payload instantly invalidates downstream Block #3 parent hash in red. | **Restoration Verified**: Re-verifying pristine ledger plays green validation animation and restores integrity. |
+| Step 1: Pristine Hash Chain Verified | Step 2: Adversarial Mutation Trigger |
+| :---: | :---: |
+| [![Step 1: Pristine Hash Chain](docs/screenshots/tamper-demo-intact.png)](docs/screenshots/tamper-demo-intact.png)<br>**All Blocks Authentic**: SHA-256 Merkle chain and Ed25519 digital signatures verify authentic across all blocks. | [![Step 2: Adversarial Mutation Trigger](docs/screenshots/tamper-demo-modal.png)](docs/screenshots/tamper-demo-modal.png)<br>**Tamper Simulation Modal**: Evaluator injects an adversarial payload modification into Block #2. |
+| **Step 3: Cryptographic Link Breach Pinpointed** | **Step 4: Pristine Ledger Restored & Re-Verified** |
+| [![Step 3: Cryptographic Link Breach Pinpointed](docs/screenshots/tamper-demo-tampered.png)](docs/screenshots/tamper-demo-tampered.png)<br>**Link Severed**: Modifying Block #2 payload instantly invalidates downstream Block #3 parent hash in red. | [![Step 4: Pristine Ledger Restored & Re-Verified](docs/screenshots/tamper-demo-restored.png)](docs/screenshots/tamper-demo-restored.png)<br>**Restoration Verified**: Re-verifying pristine ledger plays green validation animation and restores integrity. |
 
 ---
 
@@ -80,7 +81,9 @@ PRAMAAN-X features an active mathematical verification ledger. The interactive t
 
 ## 🏗️ System Architecture
 
-[![System Architecture Overview](docs/architecture.png)](docs/architecture.png)
+| Logical Service Blueprint & Dataflow | Live Multi-Tier Architecture & Node Inspector |
+| :---: | :---: |
+| [![Logical Service Blueprint](docs/architecture.png)](docs/architecture.png)<br>**Analytical Core Topology**: FastAPI gateway orchestrating the 6 statutory engines, SQLite/PostgreSQL persistence, and local mock statutory issuer. | [![Live Multi-Tier Architecture](docs/screenshots/system-architecture.png)](docs/screenshots/system-architecture.png)<br>**Interactive System Inspector**: Live tier inspection with performance SLAs, service interfaces, technology stacks, and statutory safeguards. |
 
 ```mermaid
 flowchart TB
@@ -325,7 +328,7 @@ SIH_AKXY/
 To execute the complete 177 automated test suite:
 ```bash
 # Run all tests across backend and mock issuer:
-pytest backend/tests mock_issuer -q
+pytest backend/tests mock_issuer/test_mock_issuer.py -q
 ```
 *Expected Result: `177 passed in ~130s`*
 
