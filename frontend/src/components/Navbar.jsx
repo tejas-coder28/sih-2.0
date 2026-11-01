@@ -219,13 +219,18 @@ export default function Navbar({
     institution_user: 'bg-surface-2 text-text border-border'
   };
 
-  const userName = currentUser?.full_name || (
-    currentRole === 'institution_user' 
-      ? 'Apex Institute of Technology' 
-      : 'Shri R. K. Sharma, Scrutiny Cell'
-  );
+  const rawName = typeof currentUser?.full_name === 'object' && currentUser?.full_name !== null
+    ? (currentUser.full_name.en || Object.values(currentUser.full_name)[0] || '')
+    : (currentUser?.full_name || '');
+  const userName = (typeof rawName === 'string' && rawName.trim().length > 0)
+    ? rawName
+    : (currentRole === 'institution_user' 
+        ? 'Apex Institute of Technology' 
+        : 'Shri R. K. Sharma, Scrutiny Cell');
 
-  const userInitial = userName.trim().charAt(0).toUpperCase();
+  const userInitial = typeof userName === 'string' && userName.trim().length > 0
+    ? userName.trim().charAt(0).toUpperCase()
+    : 'U';
 
   return (
     <>

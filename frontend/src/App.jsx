@@ -236,10 +236,20 @@ export default function App() {
       } else {
         setApplications([]);
         setIsLiveMode(false);
+        import('./data/mockOfficerData').then(({ MOCK_TRIAGE_APPLICATIONS }) => {
+          if (MOCK_TRIAGE_APPLICATIONS && MOCK_TRIAGE_APPLICATIONS.length > 0) {
+            setActiveApplication(prev => prev || MOCK_TRIAGE_APPLICATIONS[0]);
+          }
+        }).catch(() => {});
       }
     } catch (err) {
       console.warn('Backend applications offline or empty, falling back to mock mode:', err.message);
       setIsLiveMode(false);
+      import('./data/mockOfficerData').then(({ MOCK_TRIAGE_APPLICATIONS }) => {
+        if (MOCK_TRIAGE_APPLICATIONS && MOCK_TRIAGE_APPLICATIONS.length > 0) {
+          setActiveApplication(prev => prev || MOCK_TRIAGE_APPLICATIONS[0]);
+        }
+      }).catch(() => {});
     } finally {
       setLoading(false);
     }
@@ -253,6 +263,13 @@ export default function App() {
       return;
     }
 
+    // Check for cached user in localStorage (for offline/demo mode)
+    let cachedUser = null;
+    try {
+      const stored = localStorage.getItem('pramaan_user');
+      if (stored) cachedUser = JSON.parse(stored);
+    } catch (_e) {}
+
     try {
       const user = await api.getMe();
       if (user && user.role) {
@@ -264,12 +281,28 @@ export default function App() {
           setActiveTab('dashboard');
         }
         await loadData(user.role);
+      } else if (cachedUser && cachedUser.role) {
+        setCurrentUser(cachedUser);
+        setCurrentRole(cachedUser.role);
+        setIsAuthenticated(true);
+        await loadData(cachedUser.role);
       } else {
         handleLogout();
       }
     } catch (err) {
-      console.warn('Stored token invalid or session expired:', err.message);
-      handleLogout();
+      console.warn('Stored token invalid or backend offline:', err.message);
+      if (cachedUser && cachedUser.role) {
+        setCurrentUser(cachedUser);
+        setCurrentRole(cachedUser.role);
+        setIsAuthenticated(true);
+        const allowed = ROLE_PERMITTED_TABS[cachedUser.role] || ROLE_PERMITTED_TABS.scrutiny_officer;
+        if (!allowed.includes(activeTab)) {
+          setActiveTab('dashboard');
+        }
+        await loadData(cachedUser.role);
+      } else {
+        handleLogout();
+      }
     } finally {
       setAuthLoading(false);
     }

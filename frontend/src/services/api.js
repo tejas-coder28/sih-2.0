@@ -2,8 +2,15 @@ import axios from 'axios';
 
 const getDefaultBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined' && window.location && (window.location.port === '5173' || window.location.port === '3000')) {
-    return '/api/v1';
+  if (typeof window !== 'undefined') {
+    // If running in development on port 5173 or 3000, Vite proxies /api/v1 to port 8000
+    if (window.location.port === '5173' || window.location.port === '3000') {
+      return '/api/v1';
+    }
+    // If deployed on HTTPS or a remote host without VITE_API_URL, default to relative /api/v1 to prevent mixed-content blocking
+    if (window.location.protocol === 'https:' || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')) {
+      return '/api/v1';
+    }
   }
   return 'http://127.0.0.1:8000/api/v1';
 };
