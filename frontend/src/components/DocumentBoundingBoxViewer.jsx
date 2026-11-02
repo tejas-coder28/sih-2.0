@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -41,6 +41,32 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
   const handleResetZoom = () => setZoomLevel(1);
 
   const isFireSafety = findingId === 'FINDING-DOC-001';
+  const targetEvidenceRef = useRef(null);
+  const paperContainerRef = useRef(null);
+  const [measuredBBox, setMeasuredBBox] = useState(null);
+
+  useEffect(() => {
+    if (targetEvidenceRef.current) {
+      targetEvidenceRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [findingId, zoomLevel]);
+
+  useEffect(() => {
+    if (targetEvidenceRef.current && paperContainerRef.current) {
+      const parentRect = paperContainerRef.current.getBoundingClientRect();
+      const targetRect = targetEvidenceRef.current.getBoundingClientRect();
+      if (parentRect.height > 0 && parentRect.width > 0) {
+        setMeasuredBBox({
+          x: Number((((targetRect.left - parentRect.left) / parentRect.width) * 100).toFixed(2)),
+          y: Number((((targetRect.top - parentRect.top) / parentRect.height) * 100).toFixed(2)),
+          width: Number(((targetRect.width / parentRect.width) * 100).toFixed(2)),
+          height: Number(((targetRect.height / parentRect.height) * 100).toFixed(2)),
+        });
+      }
+    }
+  }, [findingId, zoomLevel]);
+
+  const activeBox = measuredBBox || bbox;
 
   return (
     <div className="flex flex-col h-full bg-surface border border-border rounded-xl shadow-xs overflow-hidden">
@@ -51,7 +77,7 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
             <FileText className="w-4 h-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs font-semibold text-text break-words" title={filename}>
+            <div className="text-xs font-semibold text-text truncate max-w-[280px]" title={filename}>
               {filename}
             </div>
             <div className="text-[10px] text-text-muted flex flex-wrap items-center gap-2">
@@ -119,7 +145,7 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
           {/* Certificate / Document Paper Scan Representation */}
           {isFireSafety ? (
             /* Fire Safety Certificate Visual Scan */
-            <div className="bg-[#fffdfa] border-2 border-amber-950/20 rounded p-6 font-serif text-slate-800 text-[11px] leading-relaxed relative min-h-[560px] shadow-md border-t-4 border-t-amber-800">
+            <div ref={paperContainerRef} className="bg-white border-2 border-slate-300 rounded p-6 font-serif text-[#111827] text-[11px] leading-relaxed relative min-h-[560px] shadow-md border-t-4 border-t-slate-800">
               {/* Official Seal Watermark */}
               <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
                 <ShieldCheck className="w-64 h-64 text-amber-950" />
@@ -163,11 +189,15 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                 </p>
 
                 {/* Statutory Validity Clause (Target Field) */}
-                <div className="my-4 py-2 px-3 bg-slate-50 border border-slate-200 rounded">
+                <div className="my-4 py-2 px-3 bg-slate-50 border border-slate-200 rounded text-slate-900">
                   <div className="font-sans text-[10px] text-slate-500 uppercase font-bold">Clause 4: Validity & Expiration</div>
                   <p className="mt-1 text-slate-900 font-medium">
                     The certificate is valid for educational occupancy subject to adherence to maintenance norms.{' '}
-                    <span className="font-semibold underline decoration-amber-600">
+                    <span 
+                      id="target-validity-text" 
+                      ref={targetEvidenceRef}
+                      className="font-semibold underline decoration-[#1F4BFF] text-slate-950 px-1 py-0.5 rounded bg-[#1F4BFF]/5 inline-block"
+                    >
                       Valid up to: 14/06/2025 for academic premises block A & B.
                     </span>
                   </p>
@@ -195,44 +225,38 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                 </div>
               </div>
 
-              {/* INTERACTIVE BOUNDING BOX HIGHLIGHT OVERLAY */}
+              {/* INTERACTIVE BOUNDING BOX HIGHLIGHT OVERLAY (1.5px cobalt outline + 10% fill, label ABOVE) */}
               {showHighlight && (
                 <div
                   id="document-extracted-bounding-box"
-                  className="absolute pointer-events-auto transition-all group"
+                  className="absolute pointer-events-auto transition-all group z-20"
                   style={{
-                    left: `${bbox.x}%`,
-                    top: `${bbox.y}%`,
-                    width: `${bbox.width}%`,
-                    height: `${bbox.height}%`,
+                    left: `${activeBox.x}%`,
+                    top: `${activeBox.y}%`,
+                    width: `${activeBox.width}%`,
+                    height: `${activeBox.height}%`,
                   }}
                 >
-                  {/* Glowing Box Border with Pulse Animation */}
-                  <div className="absolute inset-0 rounded-md border-2 border-amber-500 bg-amber-500/15 shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-pulse" />
-                  
-                  {/* Corner Target Handles */}
-                  <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-600" />
-                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-600" />
-                  <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-600" />
-                  <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-600" />
+                  {/* Clean 1.5px cobalt outline + 10% fill (No looping pulse / No glow shadow per Rule 4) */}
+                  <div className="absolute inset-0 rounded-md border-[1.5px] border-[#1F4BFF] bg-[#1F4BFF]/10 pointer-events-none" />
 
-                  {/* Floating Field Tag */}
-                  <div className="absolute -top-6 left-0 bg-amber-400 text-slate-950 text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-sm flex items-center space-x-1 whitespace-nowrap z-20">
+                  {/* Floating Field Tag strictly ABOVE the box so it never covers document text */}
+                  <div className="absolute bottom-full mb-1.5 left-0 bg-[#1F4BFF] text-white text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-xs flex items-center space-x-1 whitespace-nowrap z-30 pointer-events-none">
                     <Target className="w-2.5 h-2.5" />
                     <span>EXTRACTED: {extracted_field.field_name}</span>
-                    <span className="bg-amber-700 px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
+                    <span className="bg-white/20 text-white px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
                   </div>
 
                   {/* Tooltip on Hover */}
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white text-[#000000] border border-[#D5D9DE] text-[9px] font-mono px-2 py-1 rounded shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30">
-                    Value: "{extracted_field.normalized_value}" • BBox: [{bbox.x}%, {bbox.y}%, {bbox.width}%, {bbox.height}%]
+                  <div className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-1 rounded shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30">
+                    Value: "{extracted_field.normalized_value}" • BBox: [{activeBox.x}%, {activeBox.y}%, {activeBox.width}%, {activeBox.height}%]
                   </div>
                 </div>
               )}
             </div>
           ) : (
             /* Master Building Plan Visual Scan (for Area finding) */
-            <div className="bg-white border border-[#D5D9DE] rounded p-6 font-mono text-[#000000] text-[10px] leading-relaxed relative min-h-[560px] shadow-xs">
+            <div ref={paperContainerRef} className="bg-white border border-slate-300 rounded p-6 font-mono text-[#111827] text-[10px] leading-relaxed relative min-h-[560px] shadow-xs">
               {/* Technical Blueprint Grid Pattern */}
               <div 
                 className="absolute inset-0 opacity-15 pointer-events-none"
@@ -281,7 +305,10 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
               </div>
 
               {/* Statutory Built-Up Area Statement */}
-              <div className="my-4 py-2.5 px-3 bg-[#FFF1CC] border border-[rgba(92,67,0,0.2)] rounded">
+              <div 
+                ref={!isFireSafety ? targetEvidenceRef : null}
+                className="my-4 py-2.5 px-3 bg-[#FFF1CC] border border-[rgba(92,67,0,0.2)] rounded text-[#5C4300]"
+              >
                 <div className="text-[#5C4300] text-[9px] font-bold">TOTAL CERTIFIED INSTRUCTIONAL BUILT-UP AREA:</div>
                 <div className="text-[#5C4300] font-bold text-xs mt-0.5">
                   TOTAL PROPOSED BUILT-UP AREA: 18,200.00 SQ.M (BLOCK A, B, C & LAB COMPLEX)
@@ -293,28 +320,24 @@ export default function DocumentBoundingBoxViewer({ documentData, findingId }) {
                 <span className="text-emerald-700 font-bold">✓ SANCTIONED UNDER KTCP ACT 1961</span>
               </div>
 
-              {/* INTERACTIVE BOUNDING BOX FOR AREA */}
+              {/* INTERACTIVE BOUNDING BOX FOR AREA (1.5px cobalt outline + 10% fill, label ABOVE) */}
               {showHighlight && (
                 <div
                   id="document-extracted-bounding-box"
-                  className="absolute pointer-events-auto transition-all group"
+                  className="absolute pointer-events-auto transition-all group z-20"
                   style={{
-                    left: `${bbox.x}%`,
-                    top: `${bbox.y}%`,
-                    width: `${bbox.width}%`,
-                    height: `${bbox.height}%`,
+                    left: `${activeBox.x}%`,
+                    top: `${activeBox.y}%`,
+                    width: `${activeBox.width}%`,
+                    height: `${activeBox.height}%`,
                   }}
                 >
-                  <div className="absolute inset-0 rounded-md border-2 border-amber-400 bg-amber-400/20 shadow-[0_0_15px_rgba(251,191,36,0.7)] animate-pulse" />
-                  <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400" />
-                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400" />
-                  <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400" />
-                  <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400" />
+                  <div className="absolute inset-0 rounded-md border-[1.5px] border-[#1F4BFF] bg-[#1F4BFF]/10 pointer-events-none" />
 
-                  <div className="absolute -top-6 left-0 bg-amber-500 text-slate-950 text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-sm flex items-center space-x-1 whitespace-nowrap z-20">
+                  <div className="absolute bottom-full mb-1.5 left-0 bg-[#1F4BFF] text-white text-[9px] font-bold font-sans px-2 py-0.5 rounded shadow-xs flex items-center space-x-1 whitespace-nowrap z-30 pointer-events-none">
                     <Target className="w-2.5 h-2.5" />
                     <span>EXTRACTED: {extracted_field.field_name}</span>
-                    <span className="bg-slate-900 text-amber-300 font-bold px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
+                    <span className="bg-white/20 text-white px-1 rounded text-[8px]">{(extracted_field.ocr_confidence * 100).toFixed(1)}%</span>
                   </div>
                 </div>
               )}

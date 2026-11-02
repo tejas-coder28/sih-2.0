@@ -244,7 +244,7 @@ export default function Navbar({
       {/* Dynamic Glass / Sticky Header (64px shrinks to 56px when scrolled) */}
       <header 
         id="app-header-bar"
-        className={`shrink-0 z-40 relative select-none border-b border-border text-text transition-all duration-200 ${
+        className={`shrink-0 z-40 sticky top-0 select-none border-b border-border text-text transition-all duration-200 ${
           isScrolled 
             ? 'h-14 glass-surface shadow-md border-border/80' 
             : 'h-16 bg-header-bg shadow-xs border-border'
