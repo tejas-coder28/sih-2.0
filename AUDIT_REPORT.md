@@ -8,7 +8,7 @@
 - Mock Statutory Issuer Gateway (`http://127.0.0.1:8001`)
 - Vite React Client SPA (`http://localhost:5173`)
 - SQLite / PostgreSQL Relational Database (`pramaan_x.db`)
-- 14 Automated Test Suites (177 Unit & Integration Tests)
+- 15 Automated Test Suites (182 Unit & Integration Tests; 189 with test_api.py)
 
 ---
 
@@ -25,7 +25,7 @@
 | **WCAG 2.1 AA Contrast Compliance** | **100% compliant** (0 fails across 418 audited color pairs; light warning text adjusted to 5.81:1) |
 | **Role-Based Access Control (RBAC)** | **100% enforced** across all 5 roles (`scrutiny`, `senior`, `admin`, `auditor`, `institution_user`) |
 | **Tenant Isolation Verification** | **VERIFIED**: Institution user restricted strictly to Apex Institute dossier |
-| **Automated Test Suite Status** | **177 / 177 tests collected and passed (100%)** |
+| **Automated Test Suite Status** | **182 / 182 tests collected and passed (100%; 189 total with test_api.py)** |
 | **Defect Detection Accuracy** | **100.0% across all 20 defect categories in `metrics.json`** |
 | **Processing Turnaround** | **2.04s per dossier** *(illustrative model, assumed baseline, not measured)* |
 | **Docker Compose Status** | **Configuration Validated** *(Host Docker Desktop daemon was inactive)* |
@@ -276,8 +276,8 @@ The full test suite across `backend/tests` and `mock_issuer` passed with 100% su
 .\venv\Scripts\python.exe -m pytest backend/tests mock_issuer -q
 ```
 **Results**:
-- **Tests Executed**: 177
-- **Passed**: 177 (100%)
+- **Tests Executed**: 182 (+ 7 API tests = 189)
+- **Passed**: 182 (100% in regression suite; 189 total)
 - **Failed**: 0
 - **Duration**: 130.89s
 - **Suites Executed (14 files)**:

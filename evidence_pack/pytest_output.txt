@@ -1,6 +1,25 @@
-﻿........................................................................ [ 40%]
-........................................................................ [ 81%]
-.................................                                        [100%]
+============================= test session starts =============================
+platform win32 -- Python 3.12.8, pytest-8.3.4, pluggy-1.7.0
+rootdir: A:\SIH_AKXY
+plugins: anyio-4.15.1, Faker-33.1.0
+collected 182 items
+
+backend\tests\test_alert_service.py .............                        [  7%]
+backend\tests\test_built_up_area_service.py ..............               [ 14%]
+backend\tests\test_document_forensics.py ..........                      [ 20%]
+backend\tests\test_evidence_lens_endpoint.py .....                       [ 23%]
+backend\tests\test_institution_twin.py ...................               [ 33%]
+backend\tests\test_issuer_connectors.py .......................          [ 46%]
+backend\tests\test_phase5.py ..........                                  [ 51%]
+backend\tests\test_photo_radar.py ...........                            [ 57%]
+backend\tests\test_pluggable_ocr.py .....                                [ 60%]
+backend\tests\test_rbac_and_endpoints.py .................               [ 69%]
+backend\tests\test_rectification_and_features.py ............            [ 76%]
+backend\tests\test_rules_engine.py .............                         [ 83%]
+backend\tests\test_sun_shadow_plausibility.py ..........                 [ 89%]
+backend\tests\test_verification_receipts.py ...........                  [ 95%]
+mock_issuer\test_mock_issuer.py .........                                [100%]
+
 ============================== warnings summary ===============================
 .venv\Lib\site-packages\pydantic\_internal\_config.py:295
 .venv\Lib\site-packages\pydantic\_internal\_config.py:295
@@ -29,8 +48,8 @@
 <frozen importlib._bootstrap>:488
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
 
-backend\app\main.py:111
-  A:\SIH_AKXY\backend\app\main.py:111: DeprecationWarning: 
+backend\app\main.py:119
+  A:\SIH_AKXY\backend\app\main.py:119: DeprecationWarning: 
           on_event is deprecated, use lifespan event handlers instead.
   
           Read more about it in the
@@ -80,4 +99,5 @@ backend/tests/test_photo_radar.py::test_ground_truth_precision_recall_benchmark
     "evaluation_timestamp": datetime.utcnow().isoformat(),
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-177 passed, 132 warnings in 166.68s (0:02:46)
+=============== 182 passed, 132 warnings in 2192.24s (0:36:32) ================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
