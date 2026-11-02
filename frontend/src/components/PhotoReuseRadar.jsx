@@ -460,7 +460,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
                 {simulationBanner.details}
               </p>
               <div className="mt-2 flex items-center space-x-2 text-[11px] font-bold text-rose-900">
-                <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-rose-600" />
                 <span>Selected and displayed in Side-by-Side Comparison Panel below</span>
               </div>
             </div>

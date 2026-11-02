@@ -160,35 +160,15 @@ export default function ConflictingSubgraphNetwork({
           idLower.startsWith('doc_') ||
           (level > 0 && (outDegree[node.id] || 0) > 0);
 
-        // Palette configuration
-        let bgColor = '#0284C7';
-        let borderColor = isDark ? '#38BDF8' : '#0369A1';
-        let fontColor = '#FFFFFF';
-        let shape = node.shape || 'box';
-        let size = 28;
+        // Palette configuration: light surface fill (#FFFFFF light / #1A1A1D dark), 1.5px accent/conflict border, text token font
+        const nodeBg = isDark ? '#1A1A1D' : '#FFFFFF';
+        const nodeText = isDark ? '#F4F4F5' : '#111827';
+        const accentBorder = isDark ? '#3B82F6' : '#2563EB';
+        const conflictBorder = isDark ? '#F87171' : '#C0262D';
+        const conflictBg = isDark ? 'rgba(248, 113, 113, 0.15)' : 'rgba(192, 38, 45, 0.08)';
 
-        if (isConflictNode) {
-          bgColor = isDark ? '#BE123C' : '#E11D48';
-          borderColor = isDark ? '#FB7185' : '#9F1239';
-          shape = node.shape || 'dot';
-          size = 32;
-        } else if (isIntermediary) {
-          bgColor = isDark ? '#B45309' : '#D97706';
-          borderColor = isDark ? '#FBBF24' : '#92400E';
-          shape = node.shape || 'box';
-          size = 24;
-        } else if (isRootNode) {
-          bgColor = isDark ? '#0369A1' : '#0284C7';
-          borderColor = isDark ? '#38BDF8' : '#075985';
-          shape = node.shape || 'box';
-          size = 32;
-        } else {
-          bgColor = isDark ? '#334155' : '#475569';
-          borderColor = isDark ? '#64748B' : '#334155';
-          shape = node.shape || 'box';
-          size = 26;
-        }
-
+        const borderColor = isConflictNode ? conflictBorder : accentBorder;
+        const bgColor = isConflictNode ? conflictBg : nodeBg;
         const displayName = node.label || node.name || node.doc_number || node.id || 'Node';
 
         return {
@@ -196,26 +176,30 @@ export default function ConflictingSubgraphNetwork({
           label: displayName,
           level,
           rawNode: node,
+          shape: 'box',
+          shapeProperties: {
+            borderRadius: 8,
+          },
           color: {
-            background: node.color || bgColor,
+            background: bgColor,
             border: borderColor,
             highlight: { 
-              background: '#F43F5E', 
-              border: '#E11D48' 
+              background: conflictBg, 
+              border: borderColor 
             },
             hover: {
-              background: node.color || bgColor,
-              border: '#38BDF8'
+              background: bgColor,
+              border: borderColor
             }
           },
-          shape,
-          size,
+          borderWidth: 1.5,
+          margin: { top: 8, bottom: 8, left: 12, right: 12 },
+          widthConstraint: { min: 140 },
           font: { 
-            color: fontColor, 
-            size: shape === 'dot' ? 12 : 12.5, 
+            color: nodeText, 
+            size: 13, 
             face: 'Inter, system-ui, -apple-system, sans-serif', 
             bold: true,
-            vadjust: shape === 'dot' ? 8 : 0,
           },
           // Auto-wrap box text cleanly within generic bounded width
           widthConstraint: shape === 'box' ? {
