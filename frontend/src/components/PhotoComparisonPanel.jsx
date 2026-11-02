@@ -136,8 +136,8 @@ export default function PhotoComparisonPanel({
       </div>
 
       {/* Mandatory Statutory Advisory Banner */}
-      <div className="bg-[#FFF1F2] dark:bg-rose-950/40 px-4 py-2.5 border-b border-[#FECDD3] dark:border-rose-900/60 text-[#9F1239] dark:text-rose-200 text-xs flex items-center space-x-2">
-        <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+      <div className="bg-amber-50 dark:bg-amber-950/40 px-4 py-2.5 border-b border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200 text-xs flex items-center space-x-2">
+        <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
         <span className="font-bold text-[11px] leading-tight">
           {pairData.ai_wording}
         </span>
@@ -184,7 +184,7 @@ export default function PhotoComparisonPanel({
                       </div>
                       <div className="flex items-center space-x-1 text-[10px] mt-0.5">
                         <span className="text-text-muted truncate max-w-[65px]">{photo.category}</span>
-                        <span className="text-rose-600 font-mono font-bold">{photo.similarity}%</span>
+                        <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">{photo.similarity}%</span>
                       </div>
                     </div>
                   </button>
@@ -292,13 +292,13 @@ export default function PhotoComparisonPanel({
               </div>
 
               {/* Near-Duplicate Photo Card */}
-              <div className="bg-surface border-2 border-rose-300 dark:border-rose-900/60 rounded-xl overflow-hidden shadow-2xs flex flex-col">
-                <div className="bg-rose-100/80 dark:bg-rose-950/60 px-3 py-1.5 text-[10px] font-bold text-rose-800 dark:text-rose-200 uppercase flex items-center justify-between border-b border-rose-200 dark:border-rose-900/60">
+              <div className="bg-surface border-2 border-amber-300 dark:border-amber-900/60 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+                <div className="bg-amber-100/80 dark:bg-amber-950/60 px-3 py-1.5 text-[10px] font-bold text-amber-800 dark:text-amber-200 uppercase flex items-center justify-between border-b border-amber-200 dark:border-amber-900/60">
                   <span className="flex items-center space-x-1">
-                    <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                     <span>Flagged Near-Duplicate</span>
                   </span>
-                  <span className="font-mono text-rose-700 dark:text-rose-300">{duplicate_photo.academic_year || '2025-26'}</span>
+                  <span className="font-mono text-amber-700 dark:text-amber-300">{duplicate_photo.academic_year || '2025-26'}</span>
                 </div>
 
                 <div className="relative aspect-[4/3] bg-[#F4F6F8] dark:bg-zinc-900 overflow-hidden group">
@@ -316,7 +316,7 @@ export default function PhotoComparisonPanel({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
-                  <div className="absolute top-2 right-2 bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+                  <div className="absolute top-2 right-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
                     {pairData.similarity_score}% RE-USE
                   </div>
                   <div className="absolute bottom-2 left-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
@@ -331,7 +331,7 @@ export default function PhotoComparisonPanel({
                   <div className="text-[11px] text-text-subtle">
                     {duplicate_photo.city || 'Applicant Campus'}
                   </div>
-                  <div className="text-[11px] text-rose-900 dark:text-rose-200 bg-rose-50/60 dark:bg-rose-950/40 p-1.5 rounded border border-rose-200 dark:border-rose-900/60 font-medium">
+                  <div className="text-[11px] text-amber-900 dark:text-amber-200 bg-amber-50/60 dark:bg-amber-950/40 p-1.5 rounded border border-amber-200 dark:border-amber-900/60 font-medium">
                     {currentSubPhoto?.name || duplicate_photo.facility_name || pairData.category}
                   </div>
                   <div className="pt-1.5 border-t border-border flex items-center justify-between text-[10px] font-mono text-text-subtle">
@@ -383,10 +383,10 @@ export default function PhotoComparisonPanel({
                 />
 
                 <div 
-                  className="absolute border-2 border-rose-500 bg-rose-500/20 rounded shadow-[0_0_12px_rgba(244,63,94,0.8)]"
+                  className="absolute border-2 border-amber-500 bg-amber-500/20 rounded shadow-[0_0_12px_rgba(245,158,11,0.5)]"
                   style={{ top: '15%', left: '10%', width: '35%', height: '25%' }}
                 >
-                  <span className="absolute -top-5 left-0 bg-rose-600 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
+                  <span className="absolute -top-5 left-0 bg-amber-600 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
                     CROPPED REGION (ΔE = 14.2)
                   </span>
                 </div>
@@ -479,7 +479,7 @@ export default function PhotoComparisonPanel({
                   </div>
                 </div>
 
-                <div className="absolute top-2 right-2 bg-rose-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10">
+                <div className="absolute top-2 right-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10">
                   Reused ({duplicate_photo.institution_name?.split(' ')[0] || 'Applicant'})
                 </div>
               </div>
@@ -504,7 +504,7 @@ export default function PhotoComparisonPanel({
         <div className="bg-surface-2 border border-border rounded-xl p-3.5 space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-text">Perceptual & Semantic Similarity Metrics</span>
-            <span className="text-[10px] font-bold text-rose-800 dark:text-rose-200 bg-rose-100 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-300 dark:border-rose-900/60">
+            <span className="text-[10px] font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-900/60">
               {pairData.match_type}
             </span>
           </div>
@@ -512,7 +512,7 @@ export default function PhotoComparisonPanel({
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-surface p-2.5 rounded-lg border border-border">
               <div className="text-[10px] text-text-subtle uppercase font-medium">Visual Similarity</div>
-              <div className="text-base font-black text-rose-600">{pairData.similarity_score}%</div>
+              <div className="text-base font-black text-amber-600 dark:text-amber-400">{pairData.similarity_score}%</div>
               <div className="text-[9px] text-text-subtle font-mono">Inverted Hamming</div>
             </div>
 
@@ -555,14 +555,14 @@ export default function PhotoComparisonPanel({
             <button
               onClick={() => handleOpenApp(duplicate_photo.application_no, duplicate_photo.institution_name)}
               id="open-app-duplicate-btn"
-              className="p-2.5 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/30 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
+              className="p-2.5 rounded-xl border border-amber-300 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-50 dark:hover:bg-amber-950/50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
             >
               <div className="min-w-0 pr-1">
-                <div className="text-[10px] text-rose-600 font-mono font-bold">Current Flagged Dossier</div>
+                <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-bold">Current Flagged Dossier</div>
                 <div className="font-bold text-text leading-snug">{duplicate_photo.institution_name}</div>
-                <div className="text-[10px] text-rose-700 dark:text-rose-400 font-mono">{duplicate_photo.application_no}</div>
+                <div className="text-[10px] text-amber-700 dark:text-amber-400 font-mono">{duplicate_photo.application_no}</div>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-rose-500 group-hover:text-rose-700 shrink-0" />
+              <ExternalLink className="w-3.5 h-3.5 text-amber-500 group-hover:text-amber-700 shrink-0" />
             </button>
           </div>
 

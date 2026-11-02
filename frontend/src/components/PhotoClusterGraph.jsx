@@ -153,7 +153,7 @@ export default function PhotoClusterGraph({
           },
           color: {
             background: isDark ? '#1A1A1D' : '#FFFFFF',
-            border: isConflict ? '#EF4444' : isClean ? '#10B981' : (isDark ? '#52525B' : '#94A3B8'),
+            border: isConflict ? '#D97706' : isClean ? '#10B981' : (isDark ? '#52525B' : '#94A3B8'),
             highlight: {
               background: isDark ? '#1A1A1D' : '#FFFFFF',
               border: '#2563EB',
@@ -196,7 +196,7 @@ export default function PhotoClusterGraph({
         
         // Edge color by max similarity: >=95% red, 85-94% amber, else muted grey
         let edgeColor = '#64748B';
-        if (simNum >= 95) edgeColor = '#EF4444';
+        if (simNum >= 95) edgeColor = '#D97706';
         else if (simNum >= 85) edgeColor = '#F59E0B';
 
         // Edge width scales with shared count (2px to 6px)
@@ -211,16 +211,16 @@ export default function PhotoClusterGraph({
           pairId: edge.pairId,
           width: isSelected ? Math.max(edgeWidth, 3.5) : edgeWidth,
           color: {
-            color: isSelected ? '#E11D48' : edgeColor,
-            highlight: '#E11D48',
-            hover: '#E11D48',
+            color: isSelected ? '#B45309' : edgeColor,
+            highlight: '#B45309',
+            hover: '#B45309',
           },
           font: {
             size: 11,
-            color: simNum >= 95 ? '#EF4444' : simNum >= 85 ? (isDark ? '#FBBF24' : '#B45309') : (isDark ? '#D1D5DB' : '#475569'),
+            color: simNum >= 95 ? (isDark ? '#FBBF24' : '#B45309') : simNum >= 85 ? (isDark ? '#FBBF24' : '#B45309') : (isDark ? '#D1D5DB' : '#475569'),
             background: isDark ? '#1A1A1D' : '#FFFFFF',
             strokeWidth: 1.5,
-            strokeColor: simNum >= 95 ? '#EF4444' : simNum >= 85 ? '#F59E0B' : (isDark ? '#3F3F46' : '#CBD5E1'),
+            strokeColor: simNum >= 95 ? '#D97706' : simNum >= 85 ? '#F59E0B' : (isDark ? '#3F3F46' : '#CBD5E1'),
             face: 'Inter, system-ui, sans-serif',
             bold: true,
             align: 'middle'
@@ -311,7 +311,7 @@ export default function PhotoClusterGraph({
 
         // Card Border
         let borderColor = isDark ? '#3F3F46' : '#E2E8F0';
-        if (data.isConflict) borderColor = '#EF4444';
+        if (data.isConflict) borderColor = '#D97706';
         else if (data.isClean) borderColor = '#10B981';
         else if (data.isWarning) borderColor = '#F59E0B';
         if (isNodeHighlighted) borderColor = '#2563EB';
@@ -353,7 +353,7 @@ export default function PhotoClusterGraph({
         ctx.beginPath();
         ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = data.isConflict ? '#EF4444' : data.isClean ? '#10B981' : (isDark ? '#3F3F46' : '#CBD5E1');
+        ctx.strokeStyle = data.isConflict ? '#D97706' : data.isClean ? '#10B981' : (isDark ? '#3F3F46' : '#CBD5E1');
         ctx.stroke();
 
         // Institution Name (13px, font-semibold, 2 lines max)
@@ -490,8 +490,8 @@ export default function PhotoClusterGraph({
       <div className="border-t border-border bg-surface-2 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs text-text-muted">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center space-x-1.5">
-            <span className="w-3 h-3 rounded-full border-2 border-[#EF4444] bg-surface" />
-            <span className="text-[11px] font-medium text-text">Conflict (&gt;90% match)</span>
+            <span className="w-3 h-3 rounded-full border-2 border-[#D97706] bg-surface" />
+            <span className="text-[11px] font-medium text-text">Review Indicator (&gt;90% match)</span>
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-3 h-3 rounded-full border-2 border-[#F59E0B] bg-surface" />

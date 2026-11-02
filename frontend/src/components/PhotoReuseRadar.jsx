@@ -124,7 +124,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
       title: 'Metro Institute of Technology (New Applicant)\nApplication: APP-2025-TN-9988\nFlag: 99.1% Exact Photo Re-use',
       group: 'new_applicant',
       shape: 'box',
-      color: { background: '#f43f5e', border: '#be123c' },
+      color: { background: '#D97706', border: '#B45309' },
       size: 32,
     };
 
@@ -135,7 +135,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
       to: 'INST_002',
       label: 'Computer Lab A\n(99.1% Exact Re-use)',
       pairId: newPairId,
-      color: { color: '#f43f5e', highlight: '#fda4af' },
+      color: { color: '#D97706', highlight: '#F59E0B' },
       width: 4.0,
       dashes: false,
     };
@@ -419,12 +419,12 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
 
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
             <div className="text-[10px] text-muted uppercase font-semibold">Shared Photo Edges</div>
-            <div className="text-lg font-black text-rose-600 mt-0.5">{conflictLinksCount} Shared Links</div>
+            <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">{conflictLinksCount} Shared Links</div>
           </div>
 
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
             <div className="text-[10px] text-muted uppercase font-semibold">Max Visual Similarity</div>
-            <div className="text-lg font-black text-rose-700 mt-0.5">{maxSimilarity}% Match</div>
+            <div className="text-lg font-black text-amber-600 dark:text-amber-400 mt-0.5">{maxSimilarity}% Match</div>
           </div>
 
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
@@ -439,27 +439,27 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
 
       {/* Simulated Upload Alert Feedback Banner */}
       {simulationBanner && (
-        <div className="bg-rose-50 border-2 border-rose-300 rounded-xl p-4 shadow-sm flex items-start justify-between gap-3 animate-fadeIn">
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 shadow-sm flex items-start justify-between gap-3 animate-fadeIn">
           <div className="flex items-start space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0">
               <Zap className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-black text-rose-900 uppercase tracking-wide">
+              <div className="text-xs font-black text-amber-900 uppercase tracking-wide">
                 {simulationBanner.title}
               </div>
-              <p className="text-xs text-rose-800 mt-0.5">
+              <p className="text-xs text-amber-800 mt-0.5">
                 {simulationBanner.details}
               </p>
-              <div className="mt-2 flex items-center space-x-2 text-[11px] font-bold text-rose-900">
-                <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping" />
+              <div className="mt-2 flex items-center space-x-2 text-[11px] font-bold text-amber-900">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
                 <span>Selected and displayed in Side-by-Side Comparison Panel below</span>
               </div>
             </div>
           </div>
           <button
             onClick={() => setSimulationBanner(null)}
-            className="text-xs font-bold text-rose-700 hover:text-rose-900 px-2 py-1"
+            className="text-xs font-bold text-rose-700 hover:text-amber-900 px-2 py-1"
           >
             ✕
           </button>
@@ -506,7 +506,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
                     }`}
                   >
                     <span>{pair.category}</span>
-                    <span className="ml-1.5 text-[10px] font-mono text-rose-500 font-bold">
+                    <span className="ml-1.5 text-[10px] font-mono text-amber-600 dark:text-amber-400 font-bold">
                       {pair.similarity_score}%
                     </span>
                   </button>
