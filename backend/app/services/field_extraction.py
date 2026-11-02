@@ -481,6 +481,21 @@ class FieldExtractionEngine:
                 extraction_method="regex_rule"
             )
 
+        # Common 4: AICTE Permanent / Application ID
+        aicte_match = re.search(r"(?:AICTE\s*(?:Permanent\s*)?ID|AICTE\s*Application\s*ID|AICTE\s*Ref)[:\s]+([0-9\-_A-Za-z]+)", full_text, re.IGNORECASE)
+        if aicte_match:
+            raw_aicte = aicte_match.group(1).strip()
+            page_num, bbox = find_line_bbox(raw_aicte)
+            extracted["aicte_id"] = ExtractedField(
+                field_name="aicte_id",
+                value=raw_aicte,
+                raw_value=raw_aicte,
+                confidence=0.98,
+                source_page=page_num,
+                bounding_box=bbox,
+                extraction_method="regex_rule"
+            )
+
         # Document Specific Rules:
         if doc_type == "Fire Safety Certificate":
             extracted["issuing_authority"] = ExtractedField(
