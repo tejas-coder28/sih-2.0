@@ -196,6 +196,11 @@ class Document(Base):
     classification_confidence = Column(Float, default=0.95)
     ocr_extracted_text = Column(Text, nullable=True)
     structured_fields = Column(JSON_TYPE, default=dict)
+    ocr_engine = Column(String(100), nullable=True, default="PyMuPDF text layer")
+    ocr_language = Column(String(50), nullable=True, default="eng")
+    ocr_mean_confidence = Column(Float, nullable=True, default=0.98)
+    page_count = Column(Integer, nullable=True, default=1)
+    ocr_source_layer = Column(String(50), nullable=True, default="text_layer")
     
     # Forensics & Integrity
     metadata_forensics = Column(JSON_TYPE, default=dict) # Producer tool, EXIF, creation dates

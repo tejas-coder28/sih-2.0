@@ -1,3 +1,4 @@
+from backend.app.services.ocr import ocr_service
 """
 PRAMAAN-X Document Ingestion & Classification Pipeline (Prompt 5.1):
 1. Ingestion: Accepts PDF/Image -> Converts pages to images (pdf2image with PyMuPDF fallback)
@@ -423,54 +424,118 @@ class IngestionPipeline:
 
     def ingest_document(self, file_bytes: bytes, filename: str) -> Dict[str, Any]:
         """
-        Complete Ingestion Pipeline execution (Prompt 5.1):
-        Converts file -> OCR per page -> Classifies Document Type -> Measures processing time.
+        Complete Ingestion Pipeline execution:
+        Invokes Pluggable OCR layer -> Classifies Document Type ->
+        Extracts structured fields -> Measures processing time.
         """
         start_time = time.perf_counter()
 
-        # Step 1: Render pages
-        rendered_pages = self.convert_to_images(file_bytes, filename)
-        if not rendered_pages:
-            # Create a fallback placeholder image
-            placeholder = Image.new("RGB", (595, 842), color=(255, 255, 255))
-            rendered_pages = [(1, placeholder, 595, 842)]
+        # Step 1: Run Pluggable OCR Layer
+        ocr_res = ocr_service.extract(file_bytes, filename)
+        duration_ms = max(12, int((time.perf_counter() - start_time) * 1000))
 
-        # Open PyMuPDF doc if PDF for high-speed block extraction
-        fitz_doc = None
-        if fitz and (filename.lower().endswith(".pdf") or file_bytes[:4] == b"%PDF"):
-            try:
-                fitz_doc = fitz.open(stream=file_bytes, filetype="pdf")
-            except Exception:
-                pass
+        if ocr_res.status == "ocr_unavailable":
+            return {
+                "status": "ocr_unavailable",
+                "status_message": ocr_res.status_message,
+                "filename": filename,
+                "doc_type": "Unprocessed Scan",
+                "classifier_confidence": 0.0,
+                "classifier_method": "ocr_unavailable",
+                "total_pages": ocr_res.total_pages,
+                "page_count": ocr_res.total_pages,
+                "per_page_ocr": [],
+                "pages": [],
+                "full_extracted_text": "",
+                "engine": "None",
+                "ocr_engine": "None",
+                "language": "und",
+                "mean_confidence": 0.0,
+                "ocr_confidence": 0.0,
+                "source_layer": "none",
+                "is_ocr": False,
+                "manual_review_required": True,
+                "review_reason": ocr_res.status_message,
+                "extracted_fields": [],
+                "processing_time_ms": duration_ms
+            }
 
-        # Step 2: Run OCR on each page
-        pages_ocr: List[Dict[str, Any]] = []
-        combined_full_text: List[str] = []
+        # Step 2: Format per-page OCR and word boxes
+        pages_ocr = []
+        for p in ocr_res.pages:
+            wb_list = [{"text": wb.text, "x0": wb.x0, "y0": wb.y0, "x1": wb.x1, "y1": wb.y1, "confidence": wb.confidence} for wb in p.word_boxes]
+            pages_ocr.append({
+                "page_number": p.page_number,
+                "width": p.width,
+                "height": p.height,
+                "full_text": p.text,
+                "lines": p.lines,
+                "word_boxes": wb_list,
+                "engine": p.engine_name,
+                "language": p.language,
+                "confidence": p.mean_confidence,
+                "source_layer": p.source_layer
+            })
 
-        for page_num, img, w, h in rendered_pages:
-            pdf_page = fitz_doc[page_num - 1] if fitz_doc and len(fitz_doc) >= page_num else None
-            page_data = self.perform_ocr_on_page(img, page_num, pdf_page)
-            pages_ocr.append(page_data)
-            if page_data["full_text"]:
-                combined_full_text.append(page_data["full_text"])
+        aggregate_text = ocr_res.full_text
 
         # Step 3: Classify Document
-        aggregate_text = "\n".join(combined_full_text)
         doc_type, conf, method = self.classifier.classify(aggregate_text, filename)
 
-        duration_ms = int((time.perf_counter() - start_time) * 1000)
+        # Step 4: Extract structured fields
+        extracted_fields_list = []
+        low_confidence_detected = False
+        if ocr_res.mean_confidence < 0.60 or len(aggregate_text.strip()) < 10:
+            low_confidence_detected = True
+
+        try:
+            from backend.app.services.field_extraction import field_extraction_engine
+            extracted_dict = field_extraction_engine.extract_fields(
+                doc_type,
+                {"pages": pages_ocr, "full_extracted_text": aggregate_text, "filename": filename},
+                filename=filename
+            )
+            for k, f_obj in extracted_dict.items():
+                f_conf = getattr(f_obj, "confidence", 0.95)
+                if f_conf < 0.60:
+                    low_confidence_detected = True
+                bbox = getattr(f_obj, "bounding_box", None)
+                extracted_fields_list.append({
+                    "key": k,
+                    "label": k.replace("_", " ").title(),
+                    "value": getattr(f_obj, "value", ""),
+                    "confidence": round(f_conf * 100, 1) if f_conf <= 1.0 else f_conf,
+                    "page": getattr(f_obj, "page", 1),
+                    "box": {"x": bbox[1], "y": bbox[0], "w": bbox[3] - bbox[1], "h": bbox[2] - bbox[0]} if bbox and len(bbox) == 4 else None
+                })
+        except Exception as e:
+            logger.debug(f"Field extraction error: {e}")
 
         return {
+            "status": "success",
+            "status_message": "Document processed successfully.",
             "filename": filename,
             "doc_type": doc_type,
             "classifier_confidence": conf,
             "classifier_method": method,
             "total_pages": len(pages_ocr),
+            "page_count": len(pages_ocr),
             "per_page_ocr": pages_ocr,
             "pages": pages_ocr,
             "full_extracted_text": aggregate_text,
-            "processing_time_ms": max(12, duration_ms)
+            "engine": ocr_res.engine_name,
+            "ocr_engine": ocr_res.engine_name,
+            "language": ocr_res.language,
+            "mean_confidence": ocr_res.mean_confidence,
+            "ocr_confidence": ocr_res.mean_confidence,
+            "source_layer": ocr_res.source_layer,
+            "is_ocr": ocr_res.is_ocr,
+            "manual_review_required": low_confidence_detected,
+            "review_reason": "Low confidence OCR extraction or illegible scan requires officer review." if low_confidence_detected else None,
+            "extracted_fields": extracted_fields_list,
+            "processing_time_ms": duration_ms
         }
+
 
 # Global Singleton
 ingestion_pipeline = IngestionPipeline()

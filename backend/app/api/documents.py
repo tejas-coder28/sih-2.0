@@ -1,3 +1,4 @@
+from backend.app.services.ocr import ocr_service
 import os
 import shutil
 from typing import List, Dict, Any, Optional
@@ -26,14 +27,22 @@ from backend.app.services.ingestion_pipeline import ingestion_pipeline
 
 router = APIRouter(prefix="/documents", tags=["Documents & OCR Intelligence"])
 
+ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg"}
+
 
 @router.post("/ingest")
 async def ingest_document_api(file: UploadFile = File(...)):
     """
-    Ingestion Pipeline Endpoint (Prompt 5.1):
-    Accepts PDF/Image -> converts pages -> PaddleOCR / Tesseract / Vector blocks
+    Ingestion Pipeline Endpoint:
+    Accepts PDF, JPG, PNG -> Pluggable OCR layer (PyMuPDF -> Tesseract -> RapidOCR)
     -> returns doc_type, per-page OCR (lines with bounding boxes & confidence), and processing time.
     """
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file format '{ext}'. Supported formats are: PDF, JPG, PNG."
+        )
     file_bytes = await file.read()
     if not file_bytes:
         raise HTTPException(status_code=400, detail="Empty file uploaded.")
@@ -62,6 +71,13 @@ async def upload_document(
     # Enforce tenant isolation for institution user
     enforce_institution_isolation(current_user, app.institution_id)
 
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file format '{ext}'. Supported formats are: PDF, JPG, PNG."
+        )
+
     file_bytes = await file.read()
     file_size = len(file_bytes)
     file_hash = forensics_engine.compute_sha256(file_bytes)
@@ -72,9 +88,10 @@ async def upload_document(
     with open(saved_path, "wb") as f:
         f.write(file_bytes)
 
-    # 1. OCR Text Extraction & Classification
-    extracted_text = ocr_intelligence.extract_text_from_file(saved_path, file.filename)
-    classified_type, confidence = ocr_intelligence.classify_document(extracted_text, file.filename)
+    # 1. Pluggable OCR Text Extraction & Classification
+    ocr_res = ocr_service.extract(file_bytes, file.filename or "uploaded.pdf")
+    extracted_text = ocr_res.full_text if ocr_res.status == "success" else ""
+    classified_type, confidence = ocr_intelligence.classify_document(extracted_text, file.filename or "")
     actual_type = document_type if (document_type and document_type != "Auto-Detect") else classified_type
     structured_fields = ocr_intelligence.extract_structured_fields(actual_type, extracted_text)
 
@@ -112,6 +129,11 @@ async def upload_document(
         classification_confidence=confidence,
         ocr_extracted_text=extracted_text,
         structured_fields=structured_fields,
+        ocr_engine=ocr_res.engine_name,
+        ocr_language=ocr_res.language,
+        ocr_mean_confidence=ocr_res.mean_confidence,
+        page_count=ocr_res.total_pages,
+        ocr_source_layer=ocr_res.source_layer,
         metadata_forensics=metadata_forensics,
         ela_score=ela_score,
         phash=phash_str,
