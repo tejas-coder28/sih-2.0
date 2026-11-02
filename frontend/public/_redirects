@@ -1,0 +1,4 @@
+/api/v1/*   https://pramaan-backend.onrender.com/api/v1/:splat  200
+/health     https://pramaan-backend.onrender.com/health         200
+/uploads/*  https://pramaan-backend.onrender.com/uploads/:splat 200
+/*          /index.html                                         200

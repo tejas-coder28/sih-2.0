@@ -14,8 +14,7 @@ import {
   Building2, 
   Clock, 
   ChevronRight,
-  Maximize2,
-  Image as ImageIcon
+  Maximize2
 } from 'lucide-react';
 
 /**
@@ -128,9 +127,9 @@ export default function PhotoComparisonPanel({
         </div>
       </div>
 
-      {/* Mandatory Statutory Advisory Banner */}
-      <div className="bg-rose-50 px-4 py-2.5 border-b border-rose-200 text-rose-900 text-xs flex items-center space-x-2">
-        <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+      {/* Mandatory Statutory Advisory Banner (Accessible in both themes) */}
+      <div className="bg-[#FFF1F2] dark:bg-rose-950/40 px-4 py-2.5 border-b border-[#FECDD3] dark:border-rose-900/60 text-[#9F1239] dark:text-rose-200 text-xs flex items-center space-x-2">
+        <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
         <span className="font-bold text-[11px] leading-tight">
           {pairData.ai_wording}
         </span>
@@ -138,47 +137,47 @@ export default function PhotoComparisonPanel({
 
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         
-        {/* View Mode Switcher: Single-Row Segmented Control, Equal Widths */}
-        <div className="space-y-1.5">
-          <div className="text-[11px] font-bold text-text px-0.5">Comparison View:</div>
-          <div className="grid grid-cols-3 gap-1 bg-surface-2 p-1 rounded-xl border border-border w-full">
+        {/* View Mode Switcher Toolbar: Single-Row Segmented Control (Dual | Split | Difference) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 bg-surface-2 p-1.5 rounded-xl border border-border text-xs">
+          <span className="text-[11px] font-bold text-text px-1 shrink-0">Comparison View:</span>
+          <div className="inline-flex rounded-lg border border-border bg-surface p-0.5 divide-x divide-border shadow-2xs">
             <button
               id="view-mode-side-by-side"
               onClick={() => setViewMode('side_by_side')}
-              className={`h-8 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-l-md ${
                 viewMode === 'side_by_side'
-                  ? 'bg-primary text-white shadow-xs font-semibold'
-                  : 'text-text-muted hover:text-text hover:bg-surface/50'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
               }`}
             >
-              <Split className="w-3.5 h-3.5" />
-              <span>Side-by-Side</span>
-            </button>
-
-            <button
-              id="view-mode-difference-overlay"
-              onClick={() => setViewMode('difference_overlay')}
-              className={`h-8 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
-                viewMode === 'difference_overlay'
-                  ? 'bg-primary text-white shadow-xs font-semibold'
-                  : 'text-text-muted hover:text-text hover:bg-surface/50'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Difference</span>
+              <Split className="w-3 h-3" />
+              <span>Dual</span>
             </button>
 
             <button
               id="view-mode-wipe-slider"
               onClick={() => setViewMode('wipe_slider')}
-              className={`h-8 px-2 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                 viewMode === 'wipe_slider'
-                  ? 'bg-primary text-white shadow-xs font-semibold'
-                  : 'text-text-muted hover:text-text hover:bg-surface/50'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
               }`}
             >
-              <Sliders className="w-3.5 h-3.5" />
-              <span>Wipe Slider</span>
+              <Sliders className="w-3 h-3" />
+              <span>Split</span>
+            </button>
+
+            <button
+              id="view-mode-difference-overlay"
+              onClick={() => setViewMode('difference_overlay')}
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-r-md ${
+                viewMode === 'difference_overlay'
+                  ? 'bg-primary text-white font-bold shadow-xs'
+                  : 'text-text-muted hover:text-text'
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              <span>Difference</span>
             </button>
           </div>
         </div>
@@ -213,7 +212,7 @@ export default function PhotoComparisonPanel({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
-                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate" title={original_photo.file_name || original_photo.filename || 'original_image.jpg'}>
+                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
                     {original_photo.file_name || original_photo.filename || 'original_image.jpg'}
                   </div>
                 </div>
@@ -263,7 +262,7 @@ export default function PhotoComparisonPanel({
                   <div className="absolute top-2 right-2 bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
                     {pairData.similarity_score}% RE-USE
                   </div>
-                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate" title={original_photo.file_name || original_photo.filename || 'original_image.jpg'}>
+                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
                     {duplicate_photo.file_name || duplicate_photo.filename || 'reused_image.jpg'}
                   </div>
                 </div>

@@ -17,9 +17,9 @@ The raw, unedited terminal output is persisted in [`evidence_pack/pytest_output.
 
 | Metric | Measured Value | Source File & Line / Reference |
 | :--- | :--- | :--- |
-| **Test Files Executed** | **14 files** (13 backend + 1 mock issuer) | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L1-L15) |
-| **Total Tests Collected** | **177 tests** | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L16) |
-| **Tests Passed** | **177 passed** | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L16) |
+| **Test Files Executed** | **15 files** (14 backend + 1 mock issuer) | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L1-L21) |
+| **Total Tests Collected** | **182 tests** (+ 7 in `backend/test_api.py` = **189 tests**) | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L102) |
+| **Tests Passed** | **182 passed** (100% in regression suite; **189 passed** total) | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L102) |
 | **Tests Failed** | **0 failed** | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L16) |
 | **Tests Skipped** | **0 skipped** | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L16) |
 | **Pytest Warnings** | **132 warnings** (Pydantic v2 & SQLAlchemy deprecation notices) | [`evidence_pack/pytest_output.txt`](file:///a:/SIH_AKXY/evidence_pack/pytest_output.txt#L16) |

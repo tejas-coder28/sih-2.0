@@ -85,13 +85,9 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
   const loadData = async () => {
     // Detect database engine from backend health check
     try {
-      const h = (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1') ? '127.0.0.1' : 'localhost';
-      const healthRes = await fetch(`http://${h}:8000/health`).catch(() => fetch('http://127.0.0.1:8000/health').catch(() => null));
-      if (healthRes && healthRes.ok) {
-        const healthData = await healthRes.json();
-        if (healthData.database_engine) {
-          setDbEngineName(healthData.database_engine);
-        }
+      const healthData = await api.getHealth().catch(() => null);
+      if (healthData && healthData.database_engine) {
+        setDbEngineName(healthData.database_engine);
       }
     } catch (_e) {
       // fallback to isDev check

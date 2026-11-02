@@ -1,6 +1,11 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const puppeteer = require('c:/Users/Tejas/Desktop/sih-2.0/frontend/node_modules/puppeteer-core');
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const puppeteer = require(path.join(__dirname, '..', '..', 'frontend', 'node_modules', 'puppeteer-core'));
 
 function getLuminance(r, g, b) {
   const [rs, gs, bs] = [r, g, b].map(c => {
@@ -72,7 +77,7 @@ async function runRegressionCheck() {
     await page.setViewport(vp);
     for (const r of ROLES) {
       // Login as role
-      await page.goto('http://127.0.0.1:5173', { waitUntil: 'networkidle2' });
+      await page.goto('http://localhost:5173', { waitUntil: 'networkidle2' });
       await page.evaluate(async (credentials) => {
         const res = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
           method: 'POST',
@@ -93,8 +98,10 @@ async function runRegressionCheck() {
           if (th === 'dark') document.documentElement.classList.add('dark');
           else document.documentElement.classList.remove('dark');
           localStorage.setItem('theme', th);
+          localStorage.setItem('pramaan_theme', th);
+          window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: th } }));
         }, theme);
-        await new Promise(res => setTimeout(res, 200));
+        await new Promise(res => setTimeout(res, 400));
 
         // 1. Contrast Check for active view
         const contrastItems = await page.evaluate(() => {
@@ -102,7 +109,10 @@ async function runRegressionCheck() {
           const targets = Array.from(document.querySelectorAll('button, [role="tab"], .tab, a.btn, [class*="badge"], [class*="pill"], input'));
           for (const el of targets) {
             if (!el.offsetParent && el.getBoundingClientRect().width === 0) continue;
-            let cur = el;
+            const csEl = window.getComputedStyle(el);
+            const childSpan = el.querySelector('span') || el;
+            const csChild = window.getComputedStyle(childSpan);
+            let cur = childSpan;
             let bg = 'rgba(0, 0, 0, 0)';
             while (cur && cur !== document.body) {
               const cs = window.getComputedStyle(cur);
@@ -115,9 +125,6 @@ async function runRegressionCheck() {
             if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
               bg = window.getComputedStyle(document.body).backgroundColor;
             }
-            const csEl = window.getComputedStyle(el);
-            const childSpan = el.querySelector('span') || el;
-            const csChild = window.getComputedStyle(childSpan);
             const fg = csChild.color || csEl.color;
             items.push({
               tag: el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''),

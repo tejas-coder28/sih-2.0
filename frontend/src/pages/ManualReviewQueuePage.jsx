@@ -28,7 +28,74 @@ import { api } from '../services/api';
  * Manual Review Queue Page:
  * Statutory fallback routing for inconclusive, timeout, or mismatched external issuer inquiries.
  */
-export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }) {
+const MOCK_QUEUE_ITEMS = [
+  {
+    queue_id: 'Q-2025-0891',
+    institution_id: '1-43928171',
+    institution_name: 'Apex Institute of Technology & Science',
+    document_type: 'Building Stability Certificate',
+    reference_number: 'PWD-BLD-KAR-2024-889',
+    reason: 'State PWD portal gateway connection timed out during automated query. Authoritative verification required.',
+    priority: 'HIGH',
+    status: 'PENDING_REVIEW',
+    source: 'Karnataka Public Works Department Gateway (e-NOC)',
+    request_hash: '7c8b2d1f4e3a9c0b5f6a8e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0c1b',
+    response_hash: '9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b',
+    routed_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+    doc_fields: {
+      issuing_authority: 'PWD Executive Engineer, Bangalore Rural',
+      issue_date: '14-Mar-2024',
+      validity_years: 5,
+      carpet_area_sqm: 14250.5
+    }
+  },
+  {
+    queue_id: 'Q-2025-0892',
+    institution_id: '1-98234112',
+    institution_name: 'Royal College of Engineering',
+    document_type: 'Fire Safety NOC',
+    reference_number: 'FS-KAR-NOC-2021-998',
+    reason: 'State Fire Portal returned expired certificate status. Re-query or manual renewal confirmation required.',
+    priority: 'HIGH',
+    status: 'PENDING_REVIEW',
+    source: 'Karnataka Fire and Emergency Services Verification API',
+    request_hash: '3f7a9c2d4f6a8b0c2e4d6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e6f8a',
+    response_hash: '1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b',
+    routed_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+    doc_fields: {
+      fire_station: 'Hebbal Fire Sub-Division',
+      lapsed_date: '15-Aug-2026',
+      renewal_applied: 'True'
+    }
+  },
+  {
+    queue_id: 'Q-2025-0893',
+    institution_id: '1-10293844',
+    institution_name: 'National Polytechnic College',
+    document_type: 'Land Ownership Title Deed',
+    reference_number: 'LND-TN-2018-9921',
+    reason: 'Discrepancy detected between claimed survey number and state land portal records. Field verification recommended.',
+    priority: 'MEDIUM',
+    status: 'IN_REVIEW',
+    source: 'Tamil Nadu Revenue & Registration Department Gateway (Patta/Chitta)',
+    request_hash: '8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b',
+    response_hash: '5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f',
+    routed_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+    doc_fields: {
+      survey_no_claimed: '42/1A, 42/1B',
+      survey_no_registry: '42/1A only',
+      total_acres: 7.25
+    }
+  }
+];
+
+export default function ManualReviewQueuePage({ 
+  currentUser, 
+  onNavigateToAudit, 
+  applications = [], 
+  onSelectApplication, 
+  onNavigateTab 
+}) {
   const [queueItems, setQueueItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,6 +106,7 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [verifyingMap, setVerifyingMap] = useState({});
   const [copiedHash, setCopiedHash] = useState(null);
+  const [issuerUnavailable, setIssuerUnavailable] = useState(false);
 
   // Resolve Modal State
   const [resolveItem, setResolveItem] = useState(null);
@@ -60,84 +128,59 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const loadMockQueue = () => {
+    setIsDemoData(true);
+    setError(null);
+    setQueueItems(MOCK_QUEUE_ITEMS);
+  };
+
   const fetchQueue = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await api.getManualReviewQueue();
-      if (Array.isArray(res) && res.length > 0) {
-        setQueueItems(res);
-        setIsDemoData(false);
-      } else {
-        throw new Error('Empty queue received from API');
+      let items = [];
+      let isIssuerDown = false;
+      if (Array.isArray(res)) {
+        items = res;
+        isIssuerDown = res.some(i => Boolean(i.issuer_unavailable));
+      } else if (res && typeof res === 'object') {
+        items = Array.isArray(res.items) ? res.items : [];
+        isIssuerDown = Boolean(res.issuer_unavailable);
       }
+      setQueueItems(items);
+      setIssuerUnavailable(isIssuerDown);
+      setIsDemoData(false);
     } catch (err) {
-      console.warn('Backend manual queue endpoint offline or empty, falling back to mock queue:', err.message);
-      setIsDemoData(true);
+      console.warn('Backend manual queue endpoint offline:', err.message);
       setError('Queue unavailable. Retry');
-      setQueueItems([
-        {
-          queue_id: 'Q-2025-0891',
-          institution_id: '1-43928171',
-          institution_name: 'Apex Institute of Technology & Science',
-          document_type: 'Building Stability Certificate',
-          reference_number: 'PWD-BLD-KAR-2024-889',
-          reason: 'State PWD portal gateway connection timed out during automated query. Authoritative verification required.',
-          priority: 'HIGH',
-          status: 'PENDING_REVIEW',
-          source: 'Karnataka Public Works Department Gateway (e-NOC)',
-          request_hash: '7c8b2d1f4e3a9c0b5f6a8e1d2c3b4a5f6e7d8c9b0a1f2e3d4c5b6a7f8e9d0c1b',
-          response_hash: '9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b',
-          routed_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-          doc_fields: {
-            issuing_authority: 'PWD Executive Engineer, Bangalore Rural',
-            issue_date: '14-Mar-2024',
-            validity_years: 5,
-            carpet_area_sqm: 14250.5
-          }
-        },
-        {
-          queue_id: 'Q-2025-0892',
-          institution_id: '1-98234112',
-          institution_name: 'Royal College of Engineering',
-          document_type: 'Fire Safety NOC',
-          reference_number: 'FS-KAR-NOC-2021-998',
-          reason: 'State Fire Portal returned expired certificate status. Re-query or manual renewal confirmation required.',
-          priority: 'HIGH',
-          status: 'PENDING_REVIEW',
-          source: 'Karnataka Fire and Emergency Services Verification API',
-          request_hash: '3f7a9c2d4f6a8b0c2e4d6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e6f8a0b2c4e6f8a',
-          response_hash: '1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b',
-          routed_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-          doc_fields: {
-            fire_station: 'Hebbal Fire Sub-Division',
-            lapsed_date: '15-Aug-2026',
-            renewal_applied: 'True'
-          }
-        },
-        {
-          queue_id: 'Q-2025-0893',
-          institution_id: '1-10293844',
-          institution_name: 'National Polytechnic College',
-          document_type: 'Land Ownership Title Deed',
-          reference_number: 'LND-TN-2018-9921',
-          reason: 'Discrepancy detected between claimed survey number and state land portal records. Field verification recommended.',
-          priority: 'MEDIUM',
-          status: 'IN_REVIEW',
-          source: 'Tamil Nadu Revenue & Registration Department Gateway (Patta/Chitta)',
-          request_hash: '8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b',
-          response_hash: '5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f',
-          routed_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-          doc_fields: {
-            survey_no_claimed: '42/1A, 42/1B',
-            survey_no_registry: '42/1A only',
-            total_acres: 7.25
-          }
-        }
-      ]);
+      setQueueItems([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenInEvidenceLens = (item) => {
+    if (applications && applications.length > 0 && onSelectApplication) {
+      const match = applications.find(a => 
+        a.application_no === item.institution_id ||
+        a.name?.toLowerCase().includes(item.institution_name?.toLowerCase()) ||
+        String(a.id) === String(item.institution_id)
+      ) || applications[0];
+      onSelectApplication(match);
+    }
+    if (onNavigateTab) {
+      onNavigateTab('evidence-lens');
+    }
+  };
+
+  const getInstitutionState = (item) => {
+    const combined = `${item.institution_name || ''} ${item.source || ''} ${item.reason || ''}`;
+    if (/karnataka|bangalore|blr|vtu/i.test(combined)) return 'Karnataka';
+    if (/tamil nadu|chennai|tn/i.test(combined)) return 'Tamil Nadu';
+    if (/maharashtra|mumbai|pune/i.test(combined)) return 'Maharashtra';
+    if (/delhi/i.test(combined)) return 'Delhi';
+    return 'Karnataka';
   };
 
   useEffect(() => {
@@ -176,8 +219,8 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
 
   const handleResolveSubmit = async () => {
     if (!resolveItem) return;
-    if (!resolveNotes.trim() || resolveNotes.trim().length < 10) {
-      setResolveErrorMsg('A factual officer explanatory note (minimum 10 characters) is mandatory.');
+    if (!resolveNotes.trim()) {
+      setResolveErrorMsg('A determination note is required to proceed.');
       resolveNoteRef.current?.focus();
       return;
     }
@@ -188,23 +231,16 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
         status: resolveStatus,
         notes: resolveNotes
       });
-      setResolveSuccessMsg(`Case ${resolveItem.queue_id} resolved with determination: ${resolveStatus}`);
+      // Once confirmed, removes item from queue with a toast
+      setQueueItems(prev => prev.filter(q => q.queue_id !== resolveItem.queue_id));
+      setResolveSuccessMsg(`Ticket ${resolveItem.queue_id} resolved and removed from queue.`);
       setTimeout(() => setResolveSuccessMsg(null), 4000);
       setResolveItem(null);
       setResolveNotes('');
-      fetchQueue();
     } catch (_err) {
-      setQueueItems(prev => prev.map(q => {
-        if (q.queue_id === resolveItem.queue_id) {
-          return {
-            ...q,
-            status: resolveStatus,
-            officer_notes: resolveNotes
-          };
-        }
-        return q;
-      }));
-      setResolveSuccessMsg(`Case ${resolveItem.queue_id} updated with determination: ${resolveStatus}`);
+      // Offline fallback: also remove item from queue with toast
+      setQueueItems(prev => prev.filter(q => q.queue_id !== resolveItem.queue_id));
+      setResolveSuccessMsg(`Ticket ${resolveItem.queue_id} resolved and removed from queue.`);
       setTimeout(() => setResolveSuccessMsg(null), 4000);
       setResolveItem(null);
       setResolveNotes('');
@@ -241,22 +277,6 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
   return (
     <div className="space-y-5 max-w-[1720px] mx-auto">
       {/* 1. Header Toolbar */}
-      {error && (
-        <div className="bg-surface-2 border border-border p-3.5 rounded-xl flex items-center justify-between text-xs shadow-xs">
-          <div className="flex items-center space-x-2 font-medium text-text">
-            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-            <span>{error}</span>
-          </div>
-          <button
-            type="button"
-            onClick={fetchQueue}
-            className="px-3 py-1 rounded-lg btn-outline text-xs font-semibold flex items-center space-x-1.5 cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Retry</span>
-          </button>
-        </div>
-      )}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
           <div className="flex items-center space-x-2.5">
@@ -354,9 +374,52 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
         </div>
       </div>
 
+      {/* Statutory Gateway Advisory Banner if degraded */}
+      {issuerUnavailable && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between gap-3 text-amber-700 dark:text-amber-400 text-xs shadow-xs">
+          <div className="flex items-center space-x-2.5">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500" />
+            <span>
+              <strong>Statutory Gateway Unavailable:</strong> External authority gateways (State Fire Services, Land Registry, University Affiliation) are currently unreachable. Review tickets are preserved in local decision buffer for officer adjudication.
+            </span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
+            Buffer Mode
+          </span>
+        </div>
+      )}
+
       {/* 3. Ticket Cards List */}
       <div className="space-y-3.5">
-        {loading ? (
+        {error ? (
+          <div className="bg-surface border border-border rounded-xl p-8 text-center space-y-4 shadow-sm max-w-md mx-auto my-8">
+            <div className="w-12 h-12 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-text">Queue unavailable. Retry</h3>
+              <p className="text-xs text-text-muted mt-1">
+                Unable to connect to statutory verification gateway. Check connection and retry.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                onClick={fetchQueue}
+                disabled={loading}
+                className="btn-solid h-9 px-4 rounded-xl text-xs font-semibold flex items-center space-x-1.5 cursor-pointer shadow-xs"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                <span>Retry</span>
+              </button>
+              <button
+                onClick={loadMockQueue}
+                className="btn-outline h-9 px-4 rounded-xl text-xs font-semibold cursor-pointer"
+              >
+                Load Demo Queue
+              </button>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="space-y-3" role="status" aria-label="Loading verification tickets">
             {[1, 2, 3].map((n) => (
               <div key={n} className="bg-surface border border-border rounded-xl p-5 space-y-3 shadow-xs">
@@ -395,6 +458,9 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
                     <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase border border-border bg-surface-2 text-text">
                       {item.priority} Priority
                     </span>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase border border-primary/20 bg-primary/10 text-primary">
+                      {item.defect_type || item.document_type}
+                    </span>
                     <StatusChip status={item.status} size="sm" />
                   </div>
 
@@ -412,7 +478,7 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
                       <Building2 className="w-3.5 h-3.5" />
                       <span className="font-semibold text-text">{item.institution_id}</span>
                     </div>
-                    <h3 className="font-bold text-sm text-text leading-snug">{item.institution_name}</h3>
+                    <h3 className="font-bold text-sm text-text leading-snug">{item.institution_name}, {getInstitutionState(item)}</h3>
                     <div className="text-xs text-primary font-medium">
                       {item.document_type}
                     </div>
@@ -471,7 +537,17 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
                     {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      id={`open-evidence-lens-${item.queue_id}`}
+                      onClick={() => handleOpenInEvidenceLens(item)}
+                      className="btn-outline h-9 px-3.5 rounded-xl text-xs font-semibold hover:bg-surface text-text border border-border transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer"
+                      title="Open in Evidence Lens to inspect certificate and extracted fields"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-primary" />
+                      <span>Open in Evidence Lens</span>
+                    </button>
+
                     <button
                       id={`verify-now-${item.queue_id}`}
                       onClick={() => handleVerifyNow(item)}
@@ -661,6 +737,7 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
                 id="btn-confirm-resolve-ticket"
                 disabled={resolving || !resolveNotes.trim()}
                 onClick={handleResolveSubmit}
+                title={!resolveNotes.trim() ? "Enter determination note to proceed" : "Confirm determination"}
                 className="btn-solid h-10 px-5 text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center space-x-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {resolving && <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />}

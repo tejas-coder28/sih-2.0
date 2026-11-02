@@ -1,0 +1,61 @@
+services:
+  # 1. FastAPI Scrutiny Core Backend
+  - type: web
+    name: pramaan-backend
+    env: python
+    buildCommand: pip install -r requirements-ml.txt
+    startCommand: python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 10000
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DATABASE_URL
+        value: sqlite:///./pramaan_x.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: MOCK_ISSUER_URL
+        fromService:
+          type: web
+          name: pramaan-mock-issuer
+          property: host
+      - key: MOCK_ISSUER_INTERNAL_ROUTER
+        value: "true"
+      - key: ISSUER_API_KEY
+        value: pramaanx-mock-key-2025
+
+  # 2. Standalone Mock Statutory Issuer Gateway
+  - type: web
+    name: pramaan-mock-issuer
+    env: python
+    buildCommand: pip install -r mock_issuer/requirements.txt
+    startCommand: python -m uvicorn mock_issuer.app.main:app --host 0.0.0.0 --port 10000
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ISSUER_API_KEY
+        value: pramaanx-mock-key-2025
+      - key: CORS_ORIGINS
+        value: "*"
+
+  # 3. React Frontend Static Site
+  - type: web
+    name: pramaan-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: pramaan-backend
+          property: host

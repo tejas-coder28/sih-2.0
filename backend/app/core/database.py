@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from .config import settings
 
@@ -30,3 +30,23 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def ensure_document_ocr_columns(eng):
+    try:
+        with eng.connect() as conn:
+            for col_name, col_def in [
+                ("ocr_engine", "VARCHAR(100) DEFAULT 'PyMuPDF text layer'"),
+                ("ocr_language", "VARCHAR(50) DEFAULT 'eng'"),
+                ("ocr_mean_confidence", "FLOAT DEFAULT 0.98"),
+                ("page_count", "INTEGER DEFAULT 1"),
+                ("ocr_source_layer", "VARCHAR(50) DEFAULT 'text_layer'")
+            ]:
+                try:
+                    conn.execute(text(f"ALTER TABLE documents ADD COLUMN {col_name} {col_def}"))
+                    conn.commit()
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+ensure_document_ocr_columns(engine)

@@ -217,31 +217,33 @@ body {
   }
 
   /* Global headings hierarchy */
-  h1:not(#login-root *):not(.login-root *) {
+  h1:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 22px !important;
     font-weight: 600 !important;
     line-height: 1.3 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h2:not(#login-root *):not(.login-root *) {
+  h2:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 18px !important;
     font-weight: 600 !important;
     line-height: 1.35 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h3:not(#login-root *):not(.login-root *) {
+  h3:not(#login-root *):not(.login-root *):not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 15px !important;
     font-weight: 600 !important;
     line-height: 1.4 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
-  h4, h5, h6 {
+  h4:not(.document-paper-canvas *):not(.document-paper-sheet *), 
+  h5:not(.document-paper-canvas *):not(.document-paper-sheet *), 
+  h6:not(.document-paper-canvas *):not(.document-paper-sheet *) {
     font-size: 14px !important;
     font-weight: 600 !important;
-    color: var(--text) !important;
+    color: var(--text);
   }
 
   button,
@@ -450,8 +452,8 @@ main:not(#login-root *):not(.login-root *),
   color: var(--text) !important;
 }
 
-.bg-white:not(#login-root *):not(.login-root *),
-[class*="bg-white"]:not(#login-root *):not(.login-root *) {
+.bg-white:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+[class*="bg-white"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *) {
   background-color: var(--surface) !important;
 }
 
@@ -480,22 +482,54 @@ div[class*="h-1"][class*="absolute bottom-0"],
   box-shadow: none !important;
 }
 
+
 /* ==========================================================================
+   DOCUMENT PAPER & EVIDENCE VIEWER (Always White with Dark Text #111827 in BOTH themes)
+   ========================================================================== */
+.document-paper-canvas,
+.document-paper-canvas[class*="bg-"],
+[data-theme="dark"] .document-paper-canvas,
+.dark .document-paper-canvas {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+}
+
+.document-paper-canvas p,
+.document-paper-canvas span:not(#document-extracted-bounding-box *),
+.document-paper-canvas div:not(.document-paper-clause-callout):not(#document-extracted-bounding-box *),
+.document-paper-canvas strong {
+  color: #111827;
+}
+
+.document-paper-clause-callout,
+[data-theme="dark"] .document-paper-clause-callout,
+.dark .document-paper-clause-callout {
+  background-color: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout p,
+.document-paper-clause-callout span,
+.document-paper-clause-callout strong {
+  color: #111827 !important;
+}
+
 /* ==========================================================================
    CARDS, PANELS, MODALS, GRAPH CONTAINERS
    ========================================================================== */
-.card:not(#login-root *):not(.login-root *),
-[class*="card"]:not(#login-root *):not(.login-root *),
-div.bg-white.border:not(#login-root *):not(.login-root *),
-div[class*="rounded-2xl"].border:not(#login-root *):not(.login-root *),
-div[class*="rounded-xl"].border:not(#login-root *):not(.login-root *),
-div[role="dialog"]:not(#login-root *):not(.login-root *),
-.modal:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-xs:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-sm:not(#login-root *):not(.login-root *),
-div.border-slate-200.shadow-md:not(#login-root *):not(.login-root *),
-div[class*="bg-white"][class*="border"]:not(#login-root *):not(.login-root *),
-div.overflow-hidden.border:not(#login-root *):not(.login-root *) {
+.card:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+[class*="card"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.bg-white.border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="rounded-2xl"].border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="rounded-xl"].border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[role="dialog"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+.modal:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-xs:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-sm:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.border-slate-200.shadow-md:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div[class*="bg-white"][class*="border"]:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *),
+div.overflow-hidden.border:not(#login-root *):not(.login-root *):not(.document-paper-canvas):not(.document-paper-canvas *) {
   background-color: var(--surface) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
@@ -651,7 +685,7 @@ button[type="submit"]:not(#login-root *):not(.login-root *) *,
 }
 
 /* Secondary Buttons: white background, 1px solid #BFC5CC border, black text. Hover: #F1F3F5 */
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn),
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):not(#user-menu-btn),
 .btn-secondary,
 #launch-audit-ledger-btn {
   background-color: var(--surface) !important; /* #FFFFFF */
@@ -673,7 +707,7 @@ button:not(#login-root button):not(.login-root button):not(#login-root *):not(.l
   cursor: pointer !important;
 }
 
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):hover,
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(#theme-toggle-btn):not(#user-menu-btn):hover,
 .btn-secondary:hover,
 #launch-audit-ledger-btn:hover {
   background-color: var(--secondary-hover) !important; /* #F1F3F5 */
@@ -1123,7 +1157,7 @@ aside {
 aside button[id^="sidebar-tab-"] {
   /* 40px item height handled by Tailwind */
   border-radius: var(--radius-md) !important;
-  color: #374151 !important;
+  color: var(--text-muted) !important;
   font-weight: 500 !important;
   background-color: transparent !important;
   border: 1px solid transparent !important;
@@ -1157,7 +1191,7 @@ aside button[id^="sidebar-tab-"][class*="font-semibold"] * {
 
 [data-theme="dark"] aside button[id^="sidebar-tab-"],
 .dark aside button[id^="sidebar-tab-"] {
-  color: #D1D5DB !important;
+  color: var(--text-muted) !important;
 }
 
 [data-theme="dark"] aside button[id^="sidebar-tab-"].active,
@@ -1841,7 +1875,7 @@ ol:not([class*="space-"]):not([class*="flex-row"]),
    ========================================================================== */
 
 /* Main surfaces and cards */
-div.bg-white,
+div.bg-white:not(.document-paper-canvas):not(.document-paper-canvas *),
 header.bg-white,
 header[class*="bg-white"],
 aside.bg-white,
@@ -2763,8 +2797,8 @@ body:has(#login-root),
 .dark .app-shell-bg,
 [data-theme="dark"] .app-shell-bg {
   background-image: 
-    radial-gradient(ellipse at 20% 0%, rgba(31, 75, 255, 0.10) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 0%, rgba(31, 75, 255, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
   background-attachment: fixed;
 }
 
@@ -2895,8 +2929,12 @@ html[data-theme="dark"] div#document-page-canvas,
 #document-page-canvas h2,
 #document-page-canvas span,
 #document-page-canvas div,
-#document-page-canvas p {
-  color: #111827;
+#document-page-canvas p,
+.document-paper-sheet h2,
+.document-paper-sheet span,
+.document-paper-sheet div,
+.document-paper-sheet p {
+  color: #111827 !important;
 }
 
 #document-page-canvas .text-slate-600 {
@@ -2969,11 +3007,11 @@ html.dark .ambient-background,
 [data-theme="dark"] .ambient-background {
   background-color: #0A0A0B;
   background-image: 
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0),
-    radial-gradient(circle 60vw at 0% 0%, rgba(59, 108, 255, 0.35) 0%, transparent 70%),
-    radial-gradient(circle 45vw at 100% 0%, rgba(190, 195, 220, 0.12) 0%, transparent 65%),
-    radial-gradient(circle 45vw at 0% 100%, rgba(79, 70, 229, 0.20) 0%, transparent 65%),
-    radial-gradient(circle 50vw at 100% 100%, rgba(255, 153, 51, 0.12) 0%, transparent 65%);
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0),
+    radial-gradient(circle 60vw at 0% 0%, rgba(59, 108, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(circle 45vw at 100% 0%, rgba(190, 195, 220, 0.04) 0%, transparent 65%),
+    radial-gradient(circle 45vw at 0% 100%, rgba(79, 70, 229, 0.05) 0%, transparent 65%),
+    radial-gradient(circle 50vw at 100% 100%, rgba(255, 153, 51, 0.03) 0%, transparent 65%);
   background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
 }
 
@@ -3365,4 +3403,38 @@ a:not(.no-hover-transition),
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+
+/* ==========================================================================
+   DOCUMENT PAPER & EVIDENCE VIEWER (FIX 2 & FIX 4)
+   Paper is ALWAYS white with dark text (#111827) in BOTH light and dark themes.
+   ========================================================================== */
+.document-paper-canvas,
+div.document-paper-canvas,
+div[class*="document-paper-canvas"] {
+  background-color: #FFFFFF !important;
+  color: #111827 !important;
+}
+
+.document-paper-canvas p,
+.document-paper-canvas strong,
+.document-paper-canvas em,
+.document-paper-canvas div:not(.document-paper-clause-callout):not(#document-extracted-bounding-box *),
+.document-paper-canvas span:not(#document-extracted-bounding-box *) {
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout,
+div.document-paper-clause-callout,
+div[class*="document-paper-clause-callout"] {
+  background-color: #F8FAFC !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #111827 !important;
+}
+
+.document-paper-clause-callout p,
+.document-paper-clause-callout span,
+.document-paper-clause-callout strong {
+  color: #111827 !important;
 }

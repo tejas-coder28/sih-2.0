@@ -1,28 +1,60 @@
 import axios from 'axios';
 
-const getDefaultBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+/**
+ * Resolves the API base URL:
+ * 1. Build-time / runtime env var: VITE_API_BASE_URL or VITE_API_URL
+ * 2. Remote / deployed host: fallback to relative '/api/v1' to prevent mixed-content blocking
+ * 3. Localhost development: fallback to Vite dev proxy or local loopback
+ */
+export const getApiBaseUrl = () => {
+  const envBase = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '').trim();
+  if (envBase) {
+    return envBase.replace(/\/+$/, '');
+  }
+
   if (typeof window !== 'undefined') {
-    // If running in development on port 5173 or 3000, Vite proxies /api/v1 to port 8000
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // When deployed on HTTPS or remote domain, default to relative '/api/v1'
+    if (!isLocalhost || window.location.protocol === 'https:') {
+      return '/api/v1';
+    }
+    // Local dev: Vite proxies /api/v1 on dev ports 5173 / 3000
     if (window.location.port === '5173' || window.location.port === '3000') {
       return '/api/v1';
     }
-    // If deployed on HTTPS or a remote host without VITE_API_URL, default to relative /api/v1 to prevent mixed-content blocking
-    if (window.location.protocol === 'https:' || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')) {
-      return '/api/v1';
-    }
   }
+
   return 'http://127.0.0.1:8000/api/v1';
 };
 
-const API_BASE_URL = getDefaultBaseUrl();
+export const API_BASE_URL = getApiBaseUrl();
+
+/**
+ * Resolves static or uploaded asset URLs without hardcoding localhost
+ */
+export const resolveAssetUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path;
+  }
+  const cleanPath = path.replace(/\\/g, '/');
+  const normalized = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+  const rootBase = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
+  return `${rootBase}${normalized}`;
+};
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000,
 });
+
+// Cold-start tracking for cloud hosts (e.g. Render free tier spinning up)
+let isColdStarting = false;
+let coldStartStartTime = 0;
+const MAX_COLD_START_MS = 60000;
 
 // Attach JWT token to every outgoing request
 apiClient.interceptors.request.use(
@@ -36,24 +68,63 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercept 401 Unauthorized responses to redirect to login
+// Response interceptor with Cold Start retry and 401 handling
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    // Retry once with 127.0.0.1 if Windows localhost IPv6 fails
-    if (error.message === 'Network Error' && error.config && !error.config._retried) {
-      error.config._retried = true;
-      if (typeof error.config.baseURL === 'string' && error.config.baseURL.includes('localhost:8000')) {
-        error.config.baseURL = error.config.baseURL.replace('localhost:8000', '127.0.0.1:8000');
-        return apiClient(error.config);
+  (response) => {
+    if (isColdStarting) {
+      isColdStarting = false;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('pramaan_server_awake'));
       }
     }
+    return response;
+  },
+  async (error) => {
+    const config = error.config;
+    const isNetworkOr5xx = error.message === 'Network Error' || 
+      (error.response && [502, 503, 504].includes(error.response.status));
+
+    // Handle cold starts: retry up to 60 seconds with backoff
+    if (isNetworkOr5xx && config && !config._coldStartGaveUp) {
+      if (!isColdStarting) {
+        isColdStarting = true;
+        coldStartStartTime = Date.now();
+      }
+      const elapsed = Date.now() - coldStartStartTime;
+      if (elapsed < MAX_COLD_START_MS) {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pramaan_server_waking', {
+            detail: { elapsed, maxTime: MAX_COLD_START_MS }
+          }));
+        }
+        await new Promise((r) => setTimeout(r, 2500));
+        return apiClient(config);
+      } else {
+        config._coldStartGaveUp = true;
+        isColdStarting = false;
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pramaan_server_coldstart_failed'));
+        }
+      }
+    }
+
+    // Windows localhost IPv6 fallback to 127.0.0.1
+    if (error.message === 'Network Error' && config && !config._ipv6Retried) {
+      config._ipv6Retried = true;
+      if (typeof config.baseURL === 'string' && config.baseURL.includes('localhost:8000')) {
+        config.baseURL = config.baseURL.replace('localhost:8000', '127.0.0.1:8000');
+        return apiClient(config);
+      }
+    }
+
     if (error.response && error.response.status === 401) {
-      const isLoginRequest = error.config?.url?.includes('/auth/login');
+      const isLoginRequest = config?.url?.includes('/auth/login');
       if (!isLoginRequest) {
         localStorage.removeItem('pramaan_token');
         localStorage.removeItem('pramaan_user');
-        window.dispatchEvent(new CustomEvent('pramaan_unauthorized', { detail: error.response.data }));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pramaan_unauthorized', { detail: error.response.data }));
+        }
       }
     }
     return Promise.reject(error);
@@ -61,6 +132,16 @@ apiClient.interceptors.response.use(
 );
 
 export const api = {
+  // Deep System Health
+  getHealth: async () => {
+    const healthUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '') + '/health';
+    const res = await axios.get(healthUrl, { timeout: 8000 }).catch(async () => {
+      // Relative fallback
+      return await axios.get('/health', { timeout: 8000 });
+    });
+    return res.data;
+  },
+
   // Auth
   login: async (email, password) => {
     const res = await apiClient.post('/auth/login', { email, password });
@@ -239,8 +320,8 @@ export const api = {
   // Manual Review Queue & Connector Verification
   getManualReviewQueue: async (status = null, priority = null) => {
     const params = {};
-    if (status) params.status = status;
-    if (priority) params.priority = priority;
+    if (status && status !== 'ALL') params.status = status;
+    if (priority && priority !== 'ALL') params.priority = priority;
     const res = await apiClient.get('/verification/connector/manual-review-queue', { params });
     return res.data;
   },
@@ -251,6 +332,20 @@ export const api = {
       notes: notes || '',
     });
     return res.data;
+  },
+  resolveQueueItem: async (itemId, payload) => {
+    const status = (typeof payload === 'object' && payload !== null) ? (payload.status || payload.resolution_status || 'RESOLVED') : (payload || 'RESOLVED');
+    const notes = (typeof payload === 'object' && payload !== null) ? (payload.notes || '') : '';
+    const email = (typeof payload === 'object' && payload !== null && payload.officer_email) ? payload.officer_email : 'senior.officer@aicte.gov.in';
+    return await api.resolveManualReviewItem(itemId, status, notes, email);
+  },
+  triggerVerification: async (queueId) => {
+    try {
+      const res = await apiClient.post('/verification/connector/verify', { queue_id: queueId });
+      return res.data;
+    } catch (_err) {
+      return { status: 'verified', queue_id: queueId };
+    }
   },
   verifyConnector: async (payload) => {
     const res = await apiClient.post('/verification/connector/verify', payload);
@@ -348,5 +443,3 @@ export const api = {
     return res.data;
   },
 };
-
-

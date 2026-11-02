@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/v1/(.*)",
+      "destination": "https://pramaan-backend.onrender.com/api/v1/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://pramaan-backend.onrender.com/health"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "https://pramaan-backend.onrender.com/uploads/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

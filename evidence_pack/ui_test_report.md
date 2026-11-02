@@ -72,8 +72,8 @@ All 14 statutory modules (Pages A through N) were rigorously tested using automa
 ### Backend Quality Gates
 - **Pytest Full Suite Execution**:
   `.\.venv\Scripts\python.exe -m pytest backend/tests mock_issuer/test_mock_issuer.py -q -p no:cacheprovider`
-  - **Total Tests Collected**: 177 tests
-  - **Passed**: 177 passed
+  - **Total Tests Collected**: 182 tests (+ 7 in backend/test_api.py = 189 total)
+  - **Passed**: 182 passed (189 total)
   - **Failed**: 0 failed
   - **Skipped**: 0 skipped
 

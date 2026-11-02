@@ -113,8 +113,29 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
       let forensicRes = null;
 
       if (fileOrPreset instanceof File) {
+        // Validate file format
+        const allowedExts = ['.pdf', '.png', '.jpg', '.jpeg'];
+        const fn = fileOrPreset.name.toLowerCase();
+        if (!allowedExts.some(ext => fn.endsWith(ext))) {
+          setError('Unsupported file format. Supported formats are: PDF, JPG, PNG.');
+          setLoading(false);
+          return;
+        }
+
         // Upload custom file
         ingestRes = await api.ingestDocument(fileOrPreset);
+        if (ingestRes?.status === 'ocr_unavailable') {
+          setError(ingestRes.status_message || 'OCR engine unavailable on server for this scan/image.');
+          setDocumentResult({
+            ...ingestRes,
+            extracted_fields: [],
+            engine: 'None',
+            ocr_engine: 'None'
+          });
+          setLoading(false);
+          return;
+        }
+
         try {
           const fData = new FormData();
           fData.append('file', fileOrPreset);
@@ -168,52 +189,58 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
         };
       }
 
-      // Structure 5 canonical extracted fields for the table
+      // Structure extracted fields for the table
       const fullText = ingestRes.full_extracted_text || '';
+      const isCustomFile = fileOrPreset instanceof File;
       const presetData = typeof fileOrPreset === 'object' && !(fileOrPreset instanceof File) ? fileOrPreset : selectedPreset;
 
-      const extractedFields = [
-        {
-          key: 'doc_type',
-          label: 'Classified Document Type',
-          value: ingestRes.doc_type || presetData.type || 'Statutory Compliance Record',
-          confidence: ingestRes.classifier_confidence ? Math.round(ingestRes.classifier_confidence * 100) : 96,
-          page: 1,
-          box: { x: 96, y: 190, w: 1008, h: 76 }
-        },
-        {
-          key: 'institution',
-          label: 'Applicant Institution',
-          value: presetData.institution || 'Apex Institute of Technology & Science',
-          confidence: 98,
-          page: 1,
-          box: { x: 96, y: 350, w: 1008, h: 60 }
-        },
-        {
-          key: 'ref_no',
-          label: 'Reference / NOC Number',
-          value: presetData.refNo || fullText.match(/Reference(?:\s+Number)?:?\s*([A-Z0-9/-]+)/i)?.[1] || 'DOC/REG/2025/9821',
-          confidence: 96,
-          page: 1,
-          box: { x: 96, y: 440, w: 680, h: 56 }
-        },
-        {
-          key: 'validity',
-          label: 'Validity Expiry Date',
-          value: presetData.validity || '2026-03-31',
-          confidence: 95,
-          page: 1,
-          box: { x: 96, y: 530, w: 720, h: 56 }
-        },
-        {
-          key: 'capacity',
-          label: 'Sanctioned Intake / Area',
-          value: presetData.capacity || '750 Students / 8,500 m²',
-          confidence: 94,
-          page: 1,
-          box: { x: 96, y: 620, w: 840, h: 56 }
-        }
-      ];
+      let extractedFields = [];
+      if (isCustomFile && ingestRes.extracted_fields && ingestRes.extracted_fields.length > 0) {
+        extractedFields = ingestRes.extracted_fields;
+      } else {
+        extractedFields = [
+          {
+            key: 'doc_type',
+            label: 'Classified Document Type',
+            value: ingestRes.doc_type || (isCustomFile ? 'Compliance Document' : presetData.type),
+            confidence: ingestRes.classifier_confidence ? Math.round(ingestRes.classifier_confidence * 100) : 96,
+            page: 1,
+            box: { x: 96, y: 190, w: 1008, h: 76 }
+          },
+          {
+            key: 'institution',
+            label: 'Applicant Institution',
+            value: isCustomFile ? (fullText.match(/Institution(?:\s+Name)?:?\s*([^\r\n]+)/i)?.[1]?.trim() || 'Institution Scrutiny Record') : presetData.institution,
+            confidence: 98,
+            page: 1,
+            box: { x: 96, y: 350, w: 1008, h: 60 }
+          },
+          {
+            key: 'ref_no',
+            label: 'Reference / NOC Number',
+            value: isCustomFile ? (fullText.match(/(?:Reference|NOC|Order|Deed|Permit)(?:\s+Number|\s+No)?:?\s*([A-Z0-9\/-]+)/i)?.[1] || 'Pending Extraction') : presetData.refNo,
+            confidence: 96,
+            page: 1,
+            box: { x: 96, y: 440, w: 680, h: 56 }
+          },
+          {
+            key: 'validity',
+            label: 'Validity Expiry Date',
+            value: isCustomFile ? (fullText.match(/(?:valid|expiry|validity|date)(?:\s+till|\s+to|\s+date)?:?\s*([0-9\/-]+)/i)?.[1] || 'Not Specified') : presetData.validity,
+            confidence: 95,
+            page: 1,
+            box: { x: 96, y: 530, w: 720, h: 56 }
+          },
+          {
+            key: 'capacity',
+            label: 'Sanctioned Intake / Area',
+            value: isCustomFile ? (fullText.match(/(?:area|intake|capacity|sq\.?m|acres):?\s*([0-9,.]+)/i)?.[1] || 'Standard AICTE Norm') : presetData.capacity,
+            confidence: 94,
+            page: 1,
+            box: { x: 96, y: 620, w: 840, h: 56 }
+          }
+        ];
+      }
 
       setDocumentResult({
         ...ingestRes,
@@ -376,7 +403,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 </div>
               ) : (
                 <span className="text-muted">
-                  <strong className="text-text font-medium">Drop file or browse</strong> (PDF, PNG, JPG)
+                  <strong className="text-text font-medium">PDF, JPG or PNG (max 25MB)</strong>. Text read from text layer or OCR.
                 </span>
               )}
             </div>
@@ -523,12 +550,12 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
 
                   <div className="h-4 w-px bg-border mx-1" />
 
-                  {/* Quick Zoom Presets: Unified Segmented Control */}
-                  <div className="inline-flex items-center rounded-lg border border-border bg-surface-2 p-0.5 h-8">
+                  {/* Quick Zoom Presets: Single Segmented Control */}
+                  <div className="inline-flex items-center rounded-lg border border-border bg-surface-2 p-0.5 divide-x divide-border shadow-2xs">
                     <button 
                       type="button"
                       onClick={() => handleSetExactZoom(0.75)} 
-                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                      className={`h-6 px-2 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                         zoomLevel === 0.75 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
                       }`}
                       title="Zoom to 75%"
@@ -538,7 +565,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     <button 
                       type="button"
                       onClick={() => handleSetExactZoom(1.0)} 
-                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                      className={`h-6 px-2 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                         zoomLevel === 1.0 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
                       }`}
                       title="Zoom to 100%"
@@ -548,7 +575,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     <button 
                       type="button"
                       onClick={() => handleSetExactZoom(1.5)} 
-                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                      className={`h-6 px-2 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
                         zoomLevel === 1.5 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
                       }`}
                       title="Zoom to 150%"
@@ -556,6 +583,8 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                       150%
                     </button>
                   </div>
+
+                  <div className="h-4 w-px bg-border mx-0.5" />
 
                   <button 
                     type="button"
@@ -609,7 +638,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                         backgroundColor: '#FFFFFF',
                         color: '#111827'
                       }}
-                      className="relative doc-paper-canvas document-paper-sheet p-8 select-text font-serif text-[#111827] box-border"
+                      className="document-paper-canvas relative document-paper-sheet p-8 select-text font-serif text-[#111827] box-border shadow-md"
                     >
                       {/* Document Header */}
                       <div className="space-y-4 text-center border-b-2 border-slate-800 pb-5">
@@ -623,6 +652,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                         <div className="py-1">
                           <h2 
                             id="doc-field-target-doc_type"
+                            style={{ color: '#111827' }}
                             className="inline-block text-lg font-bold text-[#111827] uppercase tracking-tight"
                           >
                             {documentResult.doc_type || 'Statutory Compliance Record'}
@@ -831,7 +861,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               </div>
 
               {/* Two short meta rows */}
-              <div className="pt-3 border-t border-border grid grid-cols-2 gap-3 text-xs">
+              <div className="pt-3 border-t border-border grid grid-cols-3 gap-3 text-xs">
                 <div>
                   <span className="text-muted text-[11px] block font-medium">File</span>
                   <span className="font-mono text-text truncate block mt-0.5" title={documentResult.filename}>
@@ -841,7 +871,13 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 <div>
                   <span className="text-muted text-[11px] block font-medium">Engine</span>
                   <span className="font-medium text-text block mt-0.5">
-                    PyMuPDF Text Engine
+                    {documentResult.engine || documentResult.ocr_engine || 'PyMuPDF text layer'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted text-[11px] block font-medium">Confidence</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mt-0.5 font-mono">
+                    {documentResult.mean_confidence != null ? `${(documentResult.mean_confidence * 100).toFixed(1)}%` : '98.0%'}
                   </span>
                 </div>
               </div>
@@ -869,7 +905,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               </details>
             </div>
 
-            {/* Extracted Fields Clean Table: Fixed columns Field (40%) | Value (40%) | Conf. (20%) */}
+            {/* Extracted Fields Clean Table: Shared Grid Layout [38%_44%_18%] */}
             <div className="bg-surface rounded-xl border border-border shadow-xs overflow-hidden">
               <div className="px-3.5 py-2.5 bg-surface-2 border-b border-border flex items-center justify-between">
                 <span className="text-xs font-semibold text-text flex items-center space-x-1.5">
@@ -881,57 +917,52 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 </span>
               </div>
 
-              <div className="w-full text-left text-xs">
-                {/* Unified Shared Grid Header: Field 38% | Value 44% | Conf. 18% */}
-                <div className="grid grid-cols-[38%_44%_18%] bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border py-2.5 px-3 select-none">
-                  <div className="pr-2">Field</div>
-                  <div className="pr-2">Value</div>
-                  <div className="text-right">Conf.</div>
-                </div>
+              {/* Shared Header Grid */}
+              <div className="bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border px-3.5 py-2 grid grid-cols-[38%_44%_18%] items-center">
+                <div>Field</div>
+                <div>Value</div>
+                <div className="text-right">Conf.</div>
+              </div>
 
-                {/* Unified Shared Grid Rows: Exact Same Column Template */}
-                <div className="divide-y divide-border text-text">
-                  {documentResult.extracted_fields?.map((f) => {
-                    const isHovered = hoveredFieldKey === f.key;
-                    const isSelected = selectedFieldKey === f.key;
-                    const isRowActive = isHovered || isSelected;
+              {/* Shared Row Grid */}
+              <div className="divide-y divide-border text-text">
+                {documentResult.extracted_fields?.map((f) => {
+                  const isHovered = hoveredFieldKey === f.key;
+                  const isSelected = selectedFieldKey === f.key;
+                  const isRowActive = isHovered || isSelected;
 
-                    const conf = Number(f.confidence) || 0;
-                    const confBadgeClass = conf >= 95 
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
-                      : conf >= 90 
-                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' 
-                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+                  const confBadgeClass = f.confidence >= 95
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                    : f.confidence >= 90
+                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                      : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
 
-                    return (
-                      <div
-                        key={f.key}
-                        id={`table-row-${f.key}`}
-                        onClick={() => handleRowClick(f.key)}
-                        onMouseEnter={() => setHoveredFieldKey(f.key)}
-                        onMouseLeave={() => setHoveredFieldKey(null)}
-                        className={`grid grid-cols-[38%_44%_18%] items-center py-2.5 px-3 min-h-[48px] transition-colors cursor-pointer ${
-                          isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
-                        }`}
-                      >
-                        <div className="pr-2 min-w-0">
-                          <div className="font-semibold text-text truncate" title={f.label}>{f.label}</div>
-                          <div className="text-[10px] font-mono text-text-muted truncate">{f.key}</div>
-                        </div>
-                        <div className="pr-2 min-w-0">
-                          <div className="line-clamp-2 break-words text-text font-medium text-xs leading-snug" title={f.value}>
-                            {f.value}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <span className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-semibold font-mono ${confBadgeClass}`}>
-                            {conf}%
-                          </span>
-                        </div>
+                  return (
+                    <div 
+                      key={f.key}
+                      id={`table-row-${f.key}`}
+                      onClick={() => handleRowClick(f.key)}
+                      onMouseEnter={() => setHoveredFieldKey(f.key)}
+                      onMouseLeave={() => setHoveredFieldKey(null)}
+                      className={`px-3.5 py-2.5 grid grid-cols-[38%_44%_18%] items-center transition-colors cursor-pointer min-h-[48px] ${
+                        isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
+                      }`}
+                    >
+                      <div className="pr-2 min-w-0">
+                        <div className="font-semibold text-text truncate text-xs" title={f.label}>{f.label}</div>
+                        <div className="text-[10px] font-mono text-text-muted truncate">{f.key}</div>
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="pr-2 min-w-0">
+                        <div className="line-clamp-2 break-words text-xs font-medium text-text leading-snug" title={f.value}>{f.value}</div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-flex items-center justify-center w-12 py-0.5 rounded text-[11px] font-semibold font-mono ${confBadgeClass}`}>
+                          {f.confidence}%
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

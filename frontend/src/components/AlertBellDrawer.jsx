@@ -139,10 +139,8 @@ export default function AlertBellDrawer({ currentRole }) {
       >
         <Bell className="w-5 h-5 text-current" />
         {activeAlertsCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] px-1">
-            <span className="relative inline-flex items-center justify-center rounded-full h-4 min-w-[16px] px-1 bg-rose-600 text-[9px] font-bold text-white shadow-xs">
-              {activeAlertsCount}
-            </span>
+          <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center rounded-full h-4 min-w-[16px] px-1 bg-rose-600 text-[9px] font-bold text-white shadow-xs">
+            {activeAlertsCount}
           </span>
         )}
       </button>

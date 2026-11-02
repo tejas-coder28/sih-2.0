@@ -8,7 +8,7 @@
 - Mock Statutory Issuer Gateway (`http://127.0.0.1:8001`)
 - Vite React Client SPA (`http://localhost:5173`)
 - SQLite / PostgreSQL Relational Database (`pramaan_x.db`)
-- 14 Automated Test Suites (177 Unit & Integration Tests)
+- 15 Automated Test Suites (182 Unit & Integration Tests; 189 with test_api.py)
 
 ---
 
@@ -25,7 +25,7 @@
 | **WCAG 2.1 AA Contrast Compliance** | **100% compliant** (0 fails across 418 audited color pairs; light warning text adjusted to 5.81:1) |
 | **Role-Based Access Control (RBAC)** | **100% enforced** across all 5 roles (`scrutiny`, `senior`, `admin`, `auditor`, `institution_user`) |
 | **Tenant Isolation Verification** | **VERIFIED**: Institution user restricted strictly to Apex Institute dossier |
-| **Automated Test Suite Status** | **177 / 177 tests collected and passed (100%)** |
+| **Automated Test Suite Status** | **182 / 182 tests collected and passed (100%; 189 total with test_api.py)** |
 | **Defect Detection Accuracy** | **100.0% across all 20 defect categories in `metrics.json`** |
 | **Processing Turnaround** | **2.04s per dossier** *(illustrative model, assumed baseline, not measured)* |
 | **Docker Compose Status** | **Configuration Validated** *(Host Docker Desktop daemon was inactive)* |
@@ -242,7 +242,7 @@ All text-on-background pairs across light and dark themes were audited and measu
 
 | Topic / Claim | Claim in Docs / UI | Technical Reality in Codebase | Severity | Remediation Applied & Verified |
 | :--- | :--- | :--- | :---: | :--- |
-| **OCR Engine** | "PaddleOCR v3.0 Multi-Modal" | Text extraction is executed via `PyMuPDF (fitz)` vector extraction + Regex schema parsing. PaddleOCR is not installed. | **P1** | Replaced all UI and doc references with "PyMuPDF text extraction" in `Dashboard.jsx`, `EvidenceLens.jsx`, `DocumentIntelligencePage.jsx`, `mockFindingData.js`, and `README.md`. |
+| **OCR Engine** | Pluggable Layer: PyMuPDF / RapidOCR / Tesseract | Real OCR enabled for scans and images via `RapidOCR` (`rapidocr-onnxruntime` verified installed) with OpenCV preprocessing, falling back gracefully to Tesseract binary when present. Digital PDFs use PyMuPDF text layer. | **RESOLVED** | Built pluggable OCR engine in `backend/app/services/ocr/`, wired through ingestion pipeline and Pre-Flight/Doc Intelligence UI with real engine and confidence display. |
 | **Photo Radar AI** | "OpenCLIP ViT-B-32 Embeddings" | Visual deduplication uses `imagehash (pHash & dHash)`. Feature vector similarity is a simulated heuristic. | **P1** | Labeled as "Cosine Similarity (Simulated Heuristic)" in `PhotoComparisonPanel.jsx` and updated `PhotoReuseRadar.jsx` banner. |
 | **External Registries** | "DigiLocker & API Setu Production Gateways" | No direct external network connection. All queries resolve against the local Mock Statutory Gateway on port 8001. | **P2** | Labeled all external verifications as "Mock Statutory Authority Gateway (simulated)" across `mockOfficerData.js`, `SystemArchitecturePage.jsx`, and `EvidenceLens.jsx`. |
 | **Digital Signatures** | "PKI X.509 Certificate Chain Validation" | Byte-range parsing and signature offset extraction are functional, but PKI certificate chain trust anchors are stubbed. | **P2** | Added explicit note in `DocumentBoundingBoxViewer.jsx` and `AuditAndReceiptsPage.jsx`: "(byte-range inspection real, PKI chain validation stubbed)". |
@@ -276,8 +276,8 @@ The full test suite across `backend/tests` and `mock_issuer` passed with 100% su
 .\venv\Scripts\python.exe -m pytest backend/tests mock_issuer -q
 ```
 **Results**:
-- **Tests Executed**: 177
-- **Passed**: 177 (100%)
+- **Tests Executed**: 182 (+ 7 API tests = 189)
+- **Passed**: 182 (100% in regression suite; 189 total)
 - **Failed**: 0
 - **Duration**: 130.89s
 - **Suites Executed (14 files)**:

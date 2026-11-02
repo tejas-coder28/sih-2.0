@@ -154,13 +154,17 @@ export default function PreFlightScorecard({ currentUser }) {
         if (res.uploaded_documents && res.uploaded_documents.length > 0) {
           const docsMap = {};
           res.uploaded_documents.forEach((d) => {
-            const key = d.doc_type || d.filename;
+            const key = `${d.id || d.filename}_${d.doc_type}`;
             docsMap[key] = {
               name: d.filename,
               size: d.size || '1.2 MB',
               uploadedAt: d.uploaded_at || 'Verified',
               hash: d.hash || '',
               id: d.id,
+              docType: d.doc_type || 'Compliance Document',
+              engine: d.ocr_engine || 'PyMuPDF text layer',
+              confidence: d.ocr_mean_confidence,
+              sourceLayer: d.source_layer || 'text_layer'
             };
           });
           setUploadedFiles(docsMap);
@@ -262,6 +266,16 @@ export default function PreFlightScorecard({ currentUser }) {
   const handleFileUpload = async (docType, e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const allowed = ['.pdf', '.png', '.jpg', '.jpeg'];
+    const fname = file.name.toLowerCase();
+    if (!allowed.some(ext => fname.endsWith(ext))) {
+      setAuditFeedback({
+        type: 'ERROR',
+        message: 'Unsupported file format. Supported formats are: PDF, JPG, PNG.'
+      });
+      return;
+    }
 
     try {
       setAuditFeedback({
@@ -568,7 +582,7 @@ export default function PreFlightScorecard({ currentUser }) {
               Upload Compliance Documents or Certificates
             </h3>
             <p className="text-[11px] text-muted mt-1 max-w-xs mx-auto">
-              PDF, JPG, or PNG (Max 25MB). Directly processed by backend multi-modal OCR pipeline with SHA-256 integrity verification.
+              PDF, JPG or PNG (max 25MB). Text is read from the PDF text layer, or by OCR for scans and images. The engine used is shown on each result.
             </p>
 
             <label className="mt-3 inline-block">
@@ -607,11 +621,12 @@ export default function PreFlightScorecard({ currentUser }) {
                         <FileText className="w-3.5 h-3.5" />
                       </div>
                       <div className="min-w-0">
-                        <div className="font-bold text-text text-xs truncate">{docType}</div>
+                        <div className="font-bold text-text text-xs truncate">{file.docType || docType}</div>
                         <div className="text-[10px] text-muted flex flex-wrap items-center gap-1.5 font-mono">
                           <span className="break-all">{file.name}</span>
                           <span>•</span>
                           <span>{file.size}</span>
+                          {file.engine && <span>• <span className="text-primary font-semibold">{file.engine}</span></span>}
                         </div>
                         {file.hash && (
                           <div className="text-[9px] text-text-subtle font-mono truncate">

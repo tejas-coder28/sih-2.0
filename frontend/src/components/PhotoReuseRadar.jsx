@@ -384,9 +384,8 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
               <ScanEye className="w-6 h-6 text-primary shrink-0" />
               <span>Photo Reuse Radar: Multi-Institutional Cluster Analysis</span>
             </h1>
-            <p className="text-xs text-muted mt-1 max-w-3xl">
-              Cross-institutional cluster graph identifying facilities claimed across separate colleges. 
-              Institutions are rendered as nodes and shared infrastructure photos form conflict edges.
+            <p className="text-xs text-text-muted mt-1 max-w-3xl">
+              Nodes: institutions • Edges: reused photos
             </p>
           </div>
 

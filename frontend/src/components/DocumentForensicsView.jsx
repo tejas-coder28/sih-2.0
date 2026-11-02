@@ -13,7 +13,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import DemoDataBadge from './DemoDataBadge';
-import { api } from '../services/api';
+import { api, resolveAssetUrl } from '../services/api';
 
 const PRESET_SAMPLES = [
   {
@@ -188,10 +188,7 @@ export default function DocumentForensicsView() {
   // Helper for heatmap image source URL
   const getHeatmapUrl = (path) => {
     if (!path) return null;
-    const cleanPath = path.replace(/\\/g, '/');
-    if (cleanPath.startsWith('http')) return cleanPath;
-    if (cleanPath.startsWith('/')) return `http://localhost:8000${cleanPath}`;
-    return `http://localhost:8000/${cleanPath}`;
+    return resolveAssetUrl(path);
   };
 
   const activeHeatmap = analysisResult?.indicators?.find(i => i.evidence?.heatmap_image_path)?.evidence?.heatmap_image_path;

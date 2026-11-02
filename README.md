@@ -7,10 +7,10 @@
 [![React 19](https://img.shields.io/badge/React-19.3.1-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![Vite 8](https://img.shields.io/badge/Vite-8.3.4-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS 3.4](https://img.shields.io/badge/TailwindCSS-3.4.19-38B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Tests: 177 Passing](https://img.shields.io/badge/Tests-177%20Passing%20(100%25)-success.svg?logo=pytest&logoColor=white)](evidence_pack/pytest_output.txt)
+[![Tests: 182 Passing](https://img.shields.io/badge/Tests-182%20Passing%20(100%25)-success.svg?logo=pytest&logoColor=white)](evidence_pack/pytest_output.txt)
 [![Status: Advisory Only](https://img.shields.io/badge/Status-Advisory%20Decision--Support-amber.svg)](backend/app/rules/aicte_aph_2025.yaml)
 
-> **Quick Links**: [3-Min Walkthrough Demo (Coming Soon)](#) • [Presentation Pitch Deck Outline](SLIDE_DECK_OUTLINE.md) • [Full Evaluation Report](evidence_pack/evaluation_report.md) • [154-Element Audit Report](AUDIT_REPORT.md)
+> **Quick Links**: [3-Min Walkthrough Demo (Coming Soon)](#) • [Presentation Pitch Deck Outline](SLIDE_DECK_OUTLINE.md) • [Full Evaluation Report](evaluation_report.md) • [154-Element Audit Report](AUDIT_REPORT.md) • [OCR Setup Guide](docs/OCR_SETUP.md)
 
 ---
 
@@ -23,6 +23,7 @@
   2. **Impossibility Engine (NetworkX)**: Multi-institutional knowledge graph uncovering dual-employment collisions, land overlap, and chronological impossibilities.
   3. **Photo Reuse Radar & Digital Forensics**: 64-bit perceptual hashing (`pHash`), Error Level Analysis (ELA), and copy-move forgery detection.
   4. **Tamper-Evident Verification Ledger**: Append-only SHA-256 Merkle chain with asymmetric **Ed25519** digital signatures and database triggers.
+  5. **Pluggable OCR Layer**: Transparent multi-engine text extraction (lossless PyMuPDF text layer for digital vector PDFs; RapidOCR with OpenCV deskew/CLAHE for scans and images).
 
 ---
 
@@ -43,7 +44,15 @@
 | [![Rules Catalog & What-If](docs/screenshots/rules-what-if.png)](docs/screenshots/rules-what-if.png)<br>**Regulation-as-Code & What-If Simulator**: Declarative YAML handbook rule editor with hot reload and cohort-wide failure simulation. | [![Geospatial Inspection Planner](docs/screenshots/inspection-planner.png)](docs/screenshots/inspection-planner.png)<br>**Geospatial Inspection Planner**: Risk-prioritized regional inspection itinerary clustering high-deficit colleges for surprise physical visits. |
 | [![Manual Review Queue](docs/screenshots/manual-review-queue.png)](docs/screenshots/manual-review-queue.png)<br>**Manual Review Queue**: Dedicated workflow for ambiguous or degraded certificates requiring officer secondary determination. | [![Theme & Accessibility](docs/screenshots/dark-mode.png)](docs/screenshots/dark-mode.png)<br>**National Institutional Design System**: Accessible UI meeting WCAG 2.1 AA contrast standards with seamless Dark Mode support. |
 
-### 3. Cryptographic Tamper-Detection Demonstration
+### 3. Live Pluggable OCR Scrutiny Evidence
+
+| Live Digital PDF (Text Layer) | Live Scanned PDF (RapidOCR) |
+| :---: | :---: |
+| [![Live Digital PDF](docs/screenshots/live_ocr_digital_pdf.png)](docs/screenshots/live_ocr_digital_pdf.png)<br>**PyMuPDF Text Layer**: Vector text extraction displaying `Engine: PyMuPDF text layer` (mean confidence 99.0%). | [![Live Scanned PDF](docs/screenshots/live_ocr_scanned_pdf.png)](docs/screenshots/live_ocr_scanned_pdf.png)<br>**RapidOCR on Degraded Scan**: Raster PDF rendered at 250 DPI with OpenCV deskew displaying `Engine: RapidOCR` (mean confidence 96.7%). |
+| **Live Standalone Image (PNG / JPG)** | **Live Institutional Pre-Flight Portal** |
+| [![Live Image Upload](docs/screenshots/live_ocr_image_png.png)](docs/screenshots/live_ocr_image_png.png)<br>**RapidOCR on Image**: Pure PNG certificate extracted via ONNX Runtime displaying `Engine: RapidOCR` (mean confidence 97.3%). | [![Live Pre-Flight](docs/screenshots/live_preflight_scorecard.png)](docs/screenshots/live_preflight_scorecard.png)<br>**Pre-Flight Institutional Portal**: Live backend connectivity (`Live Backend` green pill) showing active file ingestion. |
+
+### 4. Cryptographic Tamper-Detection Demonstration
 
 PRAMAAN-X features an active mathematical verification ledger. The interactive tamper demo proves immediate severed-link detection if any record is mutated:
 
@@ -62,12 +71,12 @@ PRAMAAN-X features an active mathematical verification ledger. The interactive t
 ┌──────────────────────┐      ┌───────────────────────────┐   ┌───────────────────────┐   ┌──────────────────────────┐
 │ Compliance Dossier   │ ───► │ • Regulation-as-Code      │ ─►│ Mock Statutory Issuer │──►│ • Ed25519 Signed Receipt │
 │ • 5 Statutory PDFs   │      │ • Impossibility Engine    │   │ • State Fire Services │   │ • Bounding Box Evidence  │
-│ • PyMuPDF Extraction │      │ • Photo Radar & Forensics │   │ • Land Revenue        │   │ • Officer Review & Action│
+│ • Pluggable OCR Layer│      │ • Photo Radar & Forensics │   │ • Land Revenue        │   │ • Officer Review & Action│
 └──────────────────────┘      └───────────────────────────┘   └───────────────────────┘   └──────────────────────────┘
 ```
 
-1. **Document Ingestion & Field Extraction** ([`backend/app/services/`](backend/app/services/field_extraction.py)):  
-   Ingests statutory compliance PDFs (Fire NOC, Land Deed, Affiliation, Building Plan, Affidavit). PyMuPDF (`fitz`) parses text streams and regex normalizers extract sanctioned intake, carpet areas, survey numbers, and validity dates with bounding boxes ($F_1: 0.9013$).
+1. **Document Ingestion & Field Extraction** ([`backend/app/services/ocr/`](backend/app/services/ocr/), [`backend/app/services/`](backend/app/services/field_extraction.py)):  
+   Ingests statutory compliance PDFs and images (Fire NOC, Land Deed, Affiliation, Building Plan, Affidavit). The pluggable OCR layer routes digital PDFs through PyMuPDF text layer (lossless vector extraction) and scans/images through RapidOCR (`rapidocr-onnxruntime` with OpenCV deskew/CLAHE). Deterministic regex extractors parse sanctioned intake, carpet areas, survey numbers, and validity dates with bounding boxes ($F_1: 0.9013$ on held-out Seed 7; $F_1: 0.969$ on scanned benchmark).
 2. **Multi-Engine Scrutiny & Cross-Institution Analysis** ([`backend/app/rules/`](backend/app/rules/aicte_aph_2025.yaml), [`backend/app/services/`](backend/app/services/impossibility_engine.py)):  
    - Evaluates 12 declarative APH handbook rules (FSR 1:20, carpet area $\ge 10.5\text{ m}^2/\text{student}$, cadre ratios).
    - Projects colleges into an in-memory NetworkX digital twin to detect faculty sharing (Ghost Faculty) and pre-dated certificates.
@@ -75,7 +84,7 @@ PRAMAAN-X features an active mathematical verification ledger. The interactive t
 3. **Statutory Authority Cross-Verification** ([`mock_issuer/`](mock_issuer/app/main.py), [`backend/app/services/connectors/`](backend/app/services/connectors/)):  
    Dispatches record lookups against state authorities (Fire Services, Affiliating University, Land Revenue/Bhoomi, NBA). Performs QR payload parsing (`pyzbar`) and PDF digital signature byte-range structural inspection.
 4. **Receipt Minting & Human Officer Determination** ([`backend/app/services/`](backend/app/services/verification_receipts.py), [`backend/app/api/`](backend/app/api/applications.py)):  
-   Mints an asymmetric Ed25519-signed verification receipt appended to a SHA-256 Merkle chain. Surfaces findings on the Evidence Lens for officer determination; mandatory justification comments are enforced on any adverse action.
+   Mints an asymmetric RFC 8032 Ed25519-signed verification receipt appended to a SHA-256 Merkle chain. Surfaces findings on the Evidence Lens for officer determination; mandatory justification comments are enforced on any adverse action.
 
 ---
 
@@ -88,7 +97,7 @@ PRAMAAN-X features an active mathematical verification ledger. The interactive t
 ```mermaid
 flowchart TB
     subgraph CLIENT["Presentation Layer"]
-        UI["React 19 + Tailwind CSS + Vite<br/>11 Scrutiny Views • Evidence Lens • vis-network"]
+        UI["React 19.3.1 + Tailwind CSS + Vite<br/>11 Scrutiny Views • Evidence Lens • vis-network"]
     end
 
     subgraph API["API Gateway & Security"]
@@ -98,11 +107,11 @@ flowchart TB
     subgraph ENGINES["6 Analytical & Forensic Engines"]
         direction TB
         E1["Checklist Engine<br/>Application Category Schemas"]
-        E2["PyMuPDF Extraction Engine<br/>Regex Normalizers (Macro F1: 0.9013)"]
+        E2["Pluggable OCR & Extraction Engine<br/>PyMuPDF Text Layer + RapidOCR (eng)"]
         E3["Regulation-as-Code Engine<br/>12 APH Rules & Cohort What-If Sim"]
         E4["NetworkX Impossibility Engine<br/>Multi-Campus Twin & Ghost Faculty"]
         E5["Forensics & Photo Radar<br/>ELA, Copy-Move, 64-bit pHash (Hamming <= 10)"]
-        E6["Verification Ledger Engine<br/>Ed25519 Receipts & SHA-256 Chain"]
+        E6["Verification Ledger Engine<br/>Ed25519 Receipts & SHA-256 Merkle Chain"]
     end
 
     subgraph ISSUER["Statutory Verification Gateway"]
@@ -149,7 +158,7 @@ sequenceDiagram
 
 ## 📊 Benchmark Results & Performance Charts
 
-All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`evidence_pack/EVIDENCE_SUMMARY.md`](evidence_pack/EVIDENCE_SUMMARY.md).
+All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`evaluation_report.md`](evaluation_report.md).
 
 | Metric Dimension | Measured Value | Benchmark Context |
 | :--- | :---: | :--- |
@@ -160,9 +169,10 @@ All quantitative figures below are extracted directly from [`evidence_pack/metri
 | **False Positives (FP) / True Negatives (TN)** | **FP: 2** / **TN: 55** | **0.0351 False-Positive Rate (FPR: 3.51%)** |
 | **Defect Detection Precision** | **0.9917** (99.17%) | $240 / (240 + 2)$ |
 | **Defect Detection F1-Score** | **0.9959** | Harmonic mean of precision (0.9917) and recall (1.0000) |
-| **Field Extraction Macro F1** | **0.9013** | Macro average across 6 statutory certificate fields |
-| **Field Extraction Micro F1** | **0.8596** | Global micro $F_1$ ($TP: 199, FP: 38, FN: 27$) |
-| **Automated Test Suite** | **177 / 177 passing (100%)** | 14 test suites across `backend/tests` and `mock_issuer` |
+| **Held-Out Field Extraction Macro F1** | **0.9013** | Macro average across 6 statutory certificate fields on Seed 7 |
+| **Held-Out Field Extraction Micro F1** | **0.8596** | Global micro $F_1$ ($TP: 199, FP: 38, FN: 27$) |
+| **Scanned/OCR Path Macro F1 (20-Doc Benchmark)** | **0.969** (Digital: **0.982**) | RapidOCR evaluated on pure raster degraded scans vs PyMuPDF vector text |
+| **Automated Test Suite Status** | **182 / 182 passing (100%)** | 15 test suites across `backend/tests` and `mock_issuer` (+ 7 in `backend/test_api.py` = **189 tests total**) |
 | **Automated Pipeline Processing Time** | **2.03 seconds** | Measured mean runtime across 6 evaluation stages |
 | **Alert Dispatch Latency** | **Mean: 3.21 ms** / **Median: 3.20 ms** | In-app WebSocket notification and event bus latency |
 
@@ -182,7 +192,7 @@ All quantitative figures below are extracted directly from [`evidence_pack/metri
 <summary><strong>Click to view Complete 20-Category Defect Coverage Breakdown</strong> (from <code>evidence_pack/defect_coverage.csv</code>)</summary>
 
 | # | Defect Identifier | Planted | Detected | Missed | Accuracy | Detection Module & Mechanism |
-| :-: | :--- | :-: | :-: | :-: | :-: | :--- |
+| :-: | :--- | :---: | :---: | :---: | :---: | :--- |
 | 1 | `expired_document` | 19 | 19 | 0 | **100.0%** | Rule Engine: `RULE_FIRE_NOC_VALIDITY` (Cl 6.3.2) cutoff date check |
 | 2 | `missing_signature_field` | 22 | 22 | 0 | **100.0%** | Forensics / Connector: `DigitalSignatureConnector` notary check |
 | 3 | `wrong_institution_name` | 15 | 15 | 0 | **100.0%** | Rule Engine: `RULE_NAME_MATCH_AFFIDAVIT_NOC` (token similarity < 0.85) |
@@ -238,10 +248,26 @@ We believe in complete technical transparency with Hackathon evaluators.
 | **Digital Signatures** | **HYBRID** | PDF `/ByteRange` structural integrity inspection is real. X.509 PKI trust anchor chain validation is a stub. |
 | **Verification Receipts** | **REAL** | Asymmetric Ed25519 digital signatures (RFC 8032) and SHA-256 Merkle chain with SQLite/Postgres DB triggers. |
 | **Statutory Authority Gateways** | **SIMULATED** | Local Mock Statutory Issuer (`127.0.0.1:8001`) with 510 pre-seeded JSON records. Live API Setu and DigiLocker are not integrated. |
-| **OCR for Degraded Scans** | **NOT INSTALLED** | Native OCR binaries (PaddleOCR / Tesseract) are not in the environment; pipeline parses text-embedded PDFs. |
+| **OCR for Scans & Images** | **REAL (PyMuPDF + RapidOCR English-only)** | Installed and verified on this machine: **PyMuPDF text layer** (digital vector PDFs) + **RapidOCR** (`rapidocr-onnxruntime==1.4.4`, English only) with OpenCV preprocessing. Tesseract binary is NOT installed on this host (optional fallback when `tesseract.exe` is found). |
 | **APH 2025-26 Rule Parameters** | **PLACEHOLDERS** | All 12 rule parameters in `aicte_aph_2025.yaml` are engineering placeholders awaiting gazetted sign-off. |
 | **Docker Compose** | **VALIDATED / NOT VERIFIED** | `docker-compose.yml` validates syntactically; runtime container build was not verified locally due to inactive daemon. |
 | **Manual Scrutiny Baseline** | **ASSUMED** | The 180.0 min manual review baseline is an assumed benchmark figure, not an empirical time study. |
+
+---
+
+## 🔍 Pluggable OCR Architecture for Scans & Images
+
+PRAMAAN-X features a unified pluggable OCR layer (`backend/app/services/ocr/`):
+1. **PyMuPDF Text Layer**: Used when a PDF page contains embedded vector text (lossless character stream, 0.990 confidence).
+2. **RapidOCR (`rapidocr-onnxruntime==1.4.4`)**: Pip-installable deep learning OCR engine (**installed & verified on this host, English only**), requiring zero external native C++ binary installers. Includes OpenCV preprocessing (deskew via `minAreaRect`, CLAHE contrast enhancement).
+3. **Tesseract 5.x**: Autodetected via `TESSERACT_PATH`, Windows default (`C:\Program Files\Tesseract-OCR\tesseract.exe`), or system `PATH`. *Note: Tesseract binary is NOT installed on this Windows host; RapidOCR provides the primary image extraction.*
+4. **Graceful Fail-Safe**: If no engine is available for an image, returns `status: "ocr_unavailable"` with an explicit error banner rather than silent empty text. Low-confidence extractions automatically route to the Manual Review Queue.
+
+**Operational Limitations & Caveats:**
+- **Handwriting**: Handwritten signatures, marginalia, and endorsement notes are not recognized by the printed OCR models and are flagged for Scrutiny Officer manual review.
+- **Extreme Scan Degradation**: Severely crumpled, torn, or low-resolution scans (< 100 DPI) produce lower confidence and are safely diverted to manual review.
+- **Regional Languages**: Hindi (`hin`), Kannada (`kan`), and Tamil (`tam`) require their respective `.traineddata` models installed in Tesseract's `tessdata` directory. RapidOCR currently operates on default English recognition weights.
+- **Synthetic Benchmark Caveat**: Standard benchmark evaluations are conducted on synthetically generated certificates calibrated to AICTE APH 2025-26 statutory clauses.
 
 ---
 
@@ -298,7 +324,7 @@ The system provides 5 mock role presets populated with synthetic data:
 ### Core Technologies
 - **Frontend**: React 19.3.1, Vite 8.3.4, Tailwind CSS 3.4.19, vis-network 10.1.3, Lucide Icons
 - **Backend API**: FastAPI 0.115.6, Uvicorn 0.34.0, Pydantic 2.10.4, SQLAlchemy 2.0.36
-- **Analytical & Graph**: NetworkX 3.4.2, PyMuPDF 1.25.1, imagehash 4.3.1, OpenCV, Shapely, pvlib
+- **Analytical & Graph**: NetworkX 3.4.2, PyMuPDF 1.25.1, RapidOCR 1.4.4, ONNX Runtime 1.31.1, imagehash 4.3.1, OpenCV, Shapely, pvlib
 - **Security & Integrity**: Asymmetric Ed25519 (`cryptography`), SHA-256 Merkle chain, SQLite DB triggers
 - **Python Environment**: CPython 3.12.8 (64-bit)
 
@@ -311,8 +337,8 @@ SIH_AKXY/
 │   │   ├── core/            # JWT authentication, RBAC policy, DB session
 │   │   ├── models/          # SQLAlchemy schemas (Dossiers, Receipts, AuditLog)
 │   │   ├── rules/           # AICTE APH 2025-26 YAML rule packs & JSON schemas
-│   │   └── services/        # 6 core engines (Extraction, Forensics, Radar, Twin)
-│   └── tests/               # 13 automated test suites (168 tests)
+│   │   └── services/        # 6 core engines (Extraction, OCR, Forensics, Radar, Twin)
+│   └── tests/               # 14 automated test suites (173 tests)
 ├── mock_issuer/             # Mock Statutory Issuer service on port 8001 (9 tests)
 ├── frontend/
 │   ├── src/
@@ -325,12 +351,12 @@ SIH_AKXY/
 ```
 
 ### Running the Test Suite
-To execute the complete 177 automated test suite:
+To execute the automated regression test suite:
 ```bash
 # Run all tests across backend and mock issuer:
-pytest backend/tests mock_issuer/test_mock_issuer.py -q
+$env:PYTHONPATH="."; pytest backend/tests mock_issuer/test_mock_issuer.py -q
 ```
-*Expected Result: `177 passed in ~130s`*
+*Expected Result: `182 passed in backend/tests and mock_issuer` (+ 7 in `backend/test_api.py` = **189 tests passed total**).*
 
 ---
 
@@ -339,7 +365,7 @@ pytest backend/tests mock_issuer/test_mock_issuer.py -q
 - **Phase 1: Regulatory Calibration**: Formal Gazette of India sign-off on the 12 Approval Process Handbook (APH) rule parameters and cutoff tolerances.
 - **Phase 2: Authorized Scrutiny Pilot**: Controlled pilot deployment on anonymized historical dossiers across select AICTE Regional Offices.
 - **Phase 3: Production Authority Binding**: Integration with live API Setu and DigiLocker production gateways; replacement of mock issuer.
-- **Phase 4: Multilingual OCR Deployment**: Packaging Tesseract / TrOCR models optimized for regional language affidavits and municipal stamps.
+- **Phase 4: Multilingual OCR Deployment**: Packaging regional language traineddata (Hindi, Kannada, Tamil) with TrOCR/Tesseract models.
 - **Phase 5: National Rollout**: Phased migration across all regional scrutiny cells with HSM-backed Ed25519 signing keys.
 
 ---

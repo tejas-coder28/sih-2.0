@@ -51,100 +51,112 @@ export default function PhotoClusterGraph({
   useEffect(() => {
     if (!containerRef.current || !graphData) return;
 
-    const isDark = typeof document !== 'undefined' && (
-      document.documentElement.getAttribute('data-theme') === 'dark' ||
-      document.documentElement.classList.contains('dark')
-    );
-    const nodeBg = isDark ? '#1A1A1D' : '#FFFFFF';
-    const nodeText = isDark ? '#F4F4F5' : '#111827';
-    const nodeMuted = isDark ? '#A1A1AA' : '#64748B';
-    const accentBorder = isDark ? '#3B82F6' : '#2563EB';
-    const conflictBorder = isDark ? '#F87171' : '#C0262D';
-    const selectedBg = isDark ? 'rgba(59, 130, 246, 0.18)' : 'rgba(37, 99, 235, 0.12)';
-    const edgeMuted = isDark ? '#52525B' : '#94A3B8';
-    const edgeConflict = isDark ? '#F87171' : '#C0262D';
-    const pillBorder = isDark ? '#27272A' : '#E2E8F0';
+    const computed = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+    const graphNode = computed?.getPropertyValue('--graph-node').trim() || '#6FA8DC';
+    const graphNodeStroke = computed?.getPropertyValue('--graph-node-stroke').trim() || '#3D6FA3';
+    const graphRisk = computed?.getPropertyValue('--graph-risk').trim() || '#E58A82';
+    const graphEdge = computed?.getPropertyValue('--graph-edge').trim() || '#8A94A0';
+    const graphLabel = computed?.getPropertyValue('--graph-label').trim() || '#000000';
+    const surface = computed?.getPropertyValue('--surface').trim() || '#FFFFFF';
+    const warningBg = computed?.getPropertyValue('--warning-bg').trim() || '#FFF1CC';
 
-    // Convert nodes to vis.js format: light surface fill (#FFFFFF / #1A1A1D), 1.5px border, 13px font, 150px min width
+    // Convert nodes to vis.js format (FIX 5: rounded rect, light/carbon surface, 1.5px border)
+    const isDark = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
+    const nodeBg = isDark ? '#1A1A1D' : '#FFFFFF';
+    const nodeBorderNormal = isDark ? '#3B82F6' : '#2563EB'; // Cobalt
+    const nodeBorderConflict = '#E11D48'; // Red
+    const nodeTextPrimary = isDark ? '#FFFFFF' : '#111827';
+    const nodeTextMuted = isDark ? '#9CA3AF' : '#64748B';
+    const edgePillBg = isDark ? '#1A1A1D' : '#FFFFFF';
+    const edgePillBorder = isDark ? '#27272A' : '#E2E8F0';
+
     const nodes = new DataSet(
       (graphData.nodes || []).map((node) => {
-        const isHighlighted = highlightedNodeId && node.id === highlightedNodeId;
-        const isConflict = node.isConflict || node.conflict || isHighlighted || (node.id === 'INST_001' || node.id === 'INST_002');
-        const borderColor = isConflict ? conflictBorder : accentBorder;
+        const isConflict = node.isConflict || node.conflict || (highlightedNodeId && node.id === highlightedNodeId) || String(node.id).includes('001') || String(node.id).includes('002');
+        const instTitle = node.label || node.title || node.id;
+        const instSub = node.subtitle || `${node.id} • Karnataka`;
+        const displayLabel = `${instTitle}\n${instSub}`;
+
         return {
           id: node.id,
-          label: node.label,
-          title: node.title || node.label,
+          label: displayLabel,
+          title: `${instTitle} (${instSub})`,
           shape: 'box',
           shapeProperties: {
-            borderRadius: 8,
+            borderRadius: 8
           },
           color: {
-            background: isHighlighted ? selectedBg : nodeBg,
-            border: borderColor,
+            background: nodeBg,
+            border: isConflict ? nodeBorderConflict : nodeBorderNormal,
             highlight: {
-              background: selectedBg,
-              border: borderColor,
+              background: nodeBg,
+              border: isConflict ? '#BE123C' : '#1D4ED8',
             },
             hover: {
-              background: selectedBg,
-              border: borderColor,
+              background: nodeBg,
+              border: isConflict ? '#BE123C' : '#1D4ED8',
             }
           },
-          font: {
-            color: nodeText,
-            size: 13,
-            face: 'Inter, system-ui, sans-serif',
-            bold: true,
-          },
-          margin: { top: 8, bottom: 8, left: 14, right: 14 },
           borderWidth: 1.5,
-          widthConstraint: { min: 150 },
+          font: {
+            color: nodeTextPrimary,
+            size: 13,
+            face: 'Plus Jakarta Sans, Inter, sans-serif',
+            bold: {
+              color: nodeTextPrimary,
+              size: 13,
+              face: 'Plus Jakarta Sans, Inter, sans-serif'
+            },
+            multi: true
+          },
+          margin: { top: 12, bottom: 12, left: 16, right: 16 },
           shadow: {
             enabled: true,
             color: 'rgba(0,0,0,0.06)',
-            size: 4,
+            size: 6,
             x: 0,
-            y: 1,
+            y: 2,
           },
         };
       })
     );
 
-    // Convert edges to vis.js format: readable 12px text on solid pill background with border
+    // Convert edges to vis.js format (12px text on solid pill background)
     const edges = new DataSet(
       (graphData.edges || []).map((edge) => {
         const isSelected = edge.pairId === selectedPairId;
-        const matchPercent = edge.similarity || (edge.label ? Number(edge.label.match(/(\d+(?:\.\d+)?)/)?.[1]) : null) || 90;
-        const isHighMatch = matchPercent >= 95;
-        const eColor = isSelected ? edgeConflict : (isHighMatch ? edgeConflict : edgeMuted);
+        const simMatch = edge.label?.match(/\d+(\.\d+)?%/);
+        const simNum = simMatch ? parseFloat(simMatch[0]) : (edge.similarity ? edge.similarity * 100 : 96.5);
+        const isHighSim = simNum >= 95;
+        const edgeColor = isHighSim ? '#E11D48' : '#64748B';
+
         return {
           id: edge.id,
           from: edge.from,
           to: edge.to,
-          label: edge.label,
+          label: edge.label || `${simNum.toFixed(1)}% match`,
           pairId: edge.pairId,
           color: {
-            color: eColor,
-            highlight: edgeConflict,
+            color: isSelected ? '#E11D48' : edgeColor,
+            highlight: '#E11D48',
+            hover: '#E11D48',
           },
-          width: isSelected ? 3.5 : (isHighMatch ? 2.5 : 1.5),
-          dashes: !isHighMatch,
+          width: isSelected ? 3 : (isHighSim ? 2 : 1.5),
+          dashes: edge.dashes || false,
           font: {
             size: 12,
-            color: nodeText,
-            background: nodeBg,
+            color: isHighSim ? '#E11D48' : (isDark ? '#D1D5DB' : '#475569'),
+            background: edgePillBg,
             strokeWidth: 1,
-            strokeColor: pillBorder,
-            bold: true,
-            face: 'Inter, system-ui, sans-serif',
-            align: 'horizontal'
+            strokeColor: edgePillBorder,
+            face: 'Inter, sans-serif',
+            align: 'middle'
           },
           arrows: {
-            to: { enabled: true, scaleFactor: 0.8 },
-            from: { enabled: true, scaleFactor: 0.8 },
+            to: { enabled: true, scaleFactor: 0.7 },
+            from: { enabled: true, scaleFactor: 0.7 },
           },
-          smooth: { type: 'curvedCW', roundness: 0.15 },
+          smooth: { type: 'continuous', roundness: 0.1 },
         };
       })
     );
@@ -250,41 +262,35 @@ export default function PhotoClusterGraph({
 
   return (
     <div className="flex flex-col h-full bg-surface rounded-xl border border-border shadow-xs overflow-hidden">
-      {/* Graph Toolbar Header (Single clean title + legend line) */}
-      <div className="px-4 py-3 bg-surface-2 text-text border-b border-border flex items-center justify-between gap-3">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-            <NetworkIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <h3 className="text-xs font-bold text-text flex items-center space-x-2">
-              <span>Photo Cluster Network</span>
-              <span className="text-[11px] text-text-muted font-normal">
-                • Nodes: institutions • Edges: reused photos
-              </span>
-            </h3>
-          </div>
+      {/* Graph Toolbar Header (Clean single bar, no duplicate title) */}
+      <div className="px-4 py-2.5 bg-surface-2 border-b border-border flex items-center justify-between gap-3">
+        <div className="flex items-center space-x-2 text-xs font-semibold text-text">
+          <NetworkIcon className="w-4 h-4 text-primary shrink-0" />
+          <span>Cluster Topology</span>
+          <span className="text-[11px] text-text-muted font-normal">
+            • Click any node or edge to inspect
+          </span>
         </div>
 
         {/* Zoom Controls */}
-        <div className="flex items-center space-x-1 bg-surface rounded-[8px] p-1 border border-border">
+        <div className="flex items-center space-x-1 bg-surface rounded-[8px] p-1 border border-[#BFC5CC]">
           <button
             onClick={handleZoomIn}
-            className="p-1 rounded-[8px] text-text hover:bg-surface-2 transition-colors"
+            className="p-1 rounded-[8px] text-[#000000] hover:bg-[#F1F3F5] transition-colors"
             title="Zoom In"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleZoomOut}
-            className="p-1 rounded-[8px] text-text hover:bg-surface-2 transition-colors"
+            className="p-1 rounded-[8px] text-[#000000] hover:bg-[#F1F3F5] transition-colors"
             title="Zoom Out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleFit}
-            className="p-1 rounded-[8px] text-text hover:bg-surface-2 transition-colors"
+            className="p-1 rounded-[8px] text-[#000000] hover:bg-[#F1F3F5] transition-colors"
             title="Fit Graph to Viewport"
           >
             <RotateCcw className="w-3.5 h-3.5" />

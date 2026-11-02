@@ -121,7 +121,7 @@ export default function Sidebar({
           id: 'document-intelligence',
           label: 'Doc Intelligence',
           icon: FileSearch,
-          roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor'],
+          roles: ['institution_user', 'scrutiny_officer', 'senior_officer', 'admin', 'auditor'],
         },
         {
           id: 'photo-radar',
@@ -171,7 +171,7 @@ export default function Sidebar({
       items: [
         {
           id: 'system-architecture',
-          label: 'System Architecture',
+          label: 'Architecture',
           icon: Workflow,
           badge: 'Interactive',
           badgeColor: 'bg-sky-50 text-sky-700 border-sky-200',

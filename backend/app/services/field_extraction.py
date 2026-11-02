@@ -246,9 +246,23 @@ class FieldExtractionEngine:
         """
         extracted: Dict[str, ExtractedField] = {}
         fname = filename
-        if isinstance(ocr_data, dict):
+        if hasattr(ocr_data, "full_text"):
+            full_text = ocr_data.full_text or ""
+            pages = [
+                {
+                    "page_number": p.page_number,
+                    "width": p.width,
+                    "height": p.height,
+                    "lines": p.lines,
+                    "full_text": p.text
+                }
+                for p in getattr(ocr_data, "pages", [])
+            ]
+            if not fname:
+                fname = getattr(ocr_data, "filename", None)
+        elif isinstance(ocr_data, dict):
             pages = ocr_data.get("pages", ocr_data.get("per_page_ocr", []))
-            full_text = ocr_data.get("full_extracted_text", "")
+            full_text = ocr_data.get("full_extracted_text", ocr_data.get("full_text", ""))
             if not fname:
                 fname = ocr_data.get("filename")
         elif isinstance(ocr_data, str):
