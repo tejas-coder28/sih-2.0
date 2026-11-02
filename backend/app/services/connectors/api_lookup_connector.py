@@ -159,10 +159,11 @@ class ApiLookupConnector(IssuerConnector):
         # 1. Attempt live query if mock issuer service base_url is accessible
         if self.base_url:
             try:
+                target_url = self.base_url.replace("localhost", "127.0.0.1")
                 api_key = os.getenv("ISSUER_API_KEY", "pramaanx-mock-key-2025")
                 with httpx.Client(timeout=self.timeout_seconds) as client:
                     resp = client.get(
-                        f"{self.base_url.rstrip('/')}/verify",
+                        f"{target_url.rstrip('/')}/verify",
                         params={"authority": authority_key, "ref": ref_no, "name": claimed_entity},
                         headers={"X-API-Key": api_key}
                     )
@@ -172,9 +173,13 @@ class ApiLookupConnector(IssuerConnector):
                     elif resp.status_code == 503:
                         raise ConnectionError("Remote mock issuer returned HTTP 503 (Source Unavailable)")
             except (httpx.TimeoutException, TimeoutError):
-                raise TimeoutError(f"HTTP timeout connecting to mock issuer gateway at {self.base_url}")
+                if simulated_error:
+                    raise TimeoutError(f"HTTP timeout connecting to mock issuer gateway at {self.base_url}")
+                logger.warning(f"Live API query timed out at {self.base_url}, falling back to local registry.")
             except (httpx.ConnectError, ConnectionError) as ce:
-                raise ConnectionError(f"Connection failure to mock issuer: {ce}")
+                if simulated_error:
+                    raise ConnectionError(f"Connection failure to mock issuer: {ce}")
+                logger.warning(f"Connection failure to mock issuer ({ce}), falling back to local registry.")
             except Exception as e:
                 logger.warning(f"Live API query failed ({e}), falling back to local registry.")
 

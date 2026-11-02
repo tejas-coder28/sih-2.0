@@ -1,5 +1,8 @@
-from typing import Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException
+import os
+import httpx
+from typing import Dict, Any, Optional, List
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from backend.app.core.database import get_db
@@ -86,7 +89,8 @@ from backend.app.services.connectors import (
     connector_registry,
     default_manual_review_queue,
     VerificationResult,
-    ManualReviewStatus
+    ManualReviewStatus,
+    ManualReviewPriority
 )
 
 
@@ -186,11 +190,63 @@ def list_registered_connectors():
 @router.get("/connector/manual-review-queue")
 def list_manual_review_queue(
     status: Optional[str] = None,
-    priority: Optional[str] = None
+    priority: Optional[str] = None,
+    envelope: Optional[bool] = False
 ):
-    """Returns inconclusive cases currently routed to the scrutiny officer queue."""
-    status_filter = ManualReviewStatus(status) if status else None
-    return default_manual_review_queue.list(status=status_filter)
+    """
+    Returns inconclusive cases currently routed to the scrutiny officer queue.
+    Never returns 5xx just because the issuer is slow or down.
+    Returns 200 with the items it has plus a clear issuer_unavailable flag.
+    """
+    try:
+        status_filter = ManualReviewStatus(status) if status else None
+    except ValueError:
+        status_filter = None
+
+    try:
+        priority_filter = ManualReviewPriority(priority) if priority else None
+    except ValueError:
+        priority_filter = None
+
+    items = default_manual_review_queue.list(status=status_filter, priority=priority_filter)
+    
+    # Safe fast non-blocking probe for statutory issuer gateway reachability
+    is_issuer_unavailable = False
+    issuer_base = os.getenv("MOCK_ISSUER_URL", "http://127.0.0.1:8001").replace("localhost", "127.0.0.1")
+    try:
+        with httpx.Client(timeout=1.0) as client:
+            resp = client.get(
+                f"{issuer_base.rstrip('/')}/health",
+                headers={"X-API-Key": os.getenv("ISSUER_API_KEY", "pramaanx-mock-key-2025")}
+            )
+            if resp.status_code != 200:
+                is_issuer_unavailable = True
+    except Exception:
+        # Check if internal mock issuer is available
+        try:
+            from mock_issuer.app.main import app as internal_mock_app
+            is_issuer_unavailable = False
+        except Exception:
+            is_issuer_unavailable = True
+
+    # Serialize items
+    item_list = []
+    for it in items:
+        d = it.model_dump() if hasattr(it, "model_dump") else (it.dict() if hasattr(it, "dict") else dict(it))
+        d["issuer_unavailable"] = is_issuer_unavailable
+        item_list.append(d)
+
+    if envelope:
+        return {
+            "items": item_list,
+            "issuer_unavailable": is_issuer_unavailable,
+            "count": len(item_list)
+        }
+
+    return JSONResponse(
+        content=item_list,
+        headers={"X-Issuer-Unavailable": "true" if is_issuer_unavailable else "false"}
+    )
 
 
 @router.post("/connector/manual-review-queue/{queue_id}/resolve")
@@ -209,4 +265,3 @@ def resolve_manual_review_item(
     if not item:
         raise HTTPException(status_code=404, detail=f"Manual review item '{queue_id}' not found.")
     return item
-

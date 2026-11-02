@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads"))
     RULES_DIR: str = os.path.join(os.path.dirname(os.path.dirname(__file__)), "rules")
     
+    # Mock External Statutory Issuer Gateway URL & Internal Mounting
+    MOCK_ISSUER_URL: str = os.getenv("MOCK_ISSUER_URL", "http://127.0.0.1:8001")
+    MOCK_ISSUER_INTERNAL_ROUTER: bool = os.getenv("MOCK_ISSUER_INTERNAL_ROUTER", "true").lower() in ("true", "1", "yes")
+    
     # Mock External Issuer latency in seconds (0 for instantaneous, >0 for realistic async demo)
     MOCK_ISSUER_SIMULATE_DELAY: bool = False
     

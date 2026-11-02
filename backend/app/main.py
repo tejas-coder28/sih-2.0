@@ -1,11 +1,17 @@
 import os
+import re
+import logging
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from backend.app.core.config import settings
-from backend.app.core.database import engine, Base
+from backend.app.core.database import engine, Base, SessionLocal
 from backend.app.data.seed_data import seed_database
+from backend.app.models.models import User
 
 # API Routers
 from backend.app.api.auth import router as auth_router
@@ -20,6 +26,8 @@ from backend.app.api.preflight import router as preflight_router
 from backend.app.api.radar import router as radar_router
 from backend.app.api.alerts import router as alerts_router
 from backend.app.api.inspections import router as inspections_router
+
+logger = logging.getLogger("pramaan_x.main")
 
 # Initialize database schema
 Base.metadata.create_all(bind=engine)
@@ -73,36 +81,49 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# CORS Middleware
-cors_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip() and o.strip() != "*"]
-if not cors_origins:
-    cors_origins = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000"
-    ]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS Configuration: safe local defaults with wildcard regex support for credentials
+cors_raw = (settings.CORS_ORIGINS or "*").strip()
+if cors_raw == "*" or not cors_raw:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r".*",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    allowed_list = [o.strip() for o in cors_raw.split(",") if o.strip()]
+    regex_parts = [r"https?://(localhost|127\.0\.0\.1)(:\d+)?"]
+    for o in allowed_list:
+        regex_parts.append(re.escape(o))
+    combined_regex = "^(" + "|".join(regex_parts) + ")$"
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_list,
+        allow_origin_regex=combined_regex,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Mount uploads directory for document preview
 if os.path.exists(settings.UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
+# Mount internal Mock Statutory Issuer router if enabled
+if settings.MOCK_ISSUER_INTERNAL_ROUTER:
+    try:
+        from mock_issuer.app.main import app as mock_issuer_app
+        app.mount("/mock_issuer", mock_issuer_app)
+        logger.info("Mounted internal Mock Statutory Issuer at /mock_issuer")
+    except Exception as exc:
+        logger.warning(f"Could not mount internal mock_issuer app: {exc}")
+
 # Include API Routers under /api/v1
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(applications_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
-app.include_router(documents_router)  # Also expose /documents/ingest at root as requested by Prompt 5.1
+app.include_router(documents_router)  # Also expose /documents/ingest at root
 app.include_router(rules_router, prefix=settings.API_V1_STR)
 app.include_router(graph_router, prefix=settings.API_V1_STR)
 app.include_router(forensics_router, prefix=settings.API_V1_STR)
@@ -111,15 +132,27 @@ app.include_router(verification_router)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
 app.include_router(preflight_router, prefix=settings.API_V1_STR)
 app.include_router(radar_router, prefix=settings.API_V1_STR)
-app.include_router(radar_router)  # Expose /radar/clusters at root as requested
+app.include_router(radar_router)  # Expose /radar/clusters at root
 app.include_router(alerts_router, prefix=settings.API_V1_STR)
 app.include_router(inspections_router, prefix=settings.API_V1_STR)
 app.include_router(inspections_router)
 
 @app.on_event("startup")
 def on_startup():
-    # Seed initial synthetic benchmark data on start
-    seed_database()
+    # Auto-seed database if empty (idempotent, same data as demo-reset)
+    db = SessionLocal()
+    try:
+        user_count = db.query(User).count()
+        if user_count == 0:
+            logger.info("Empty database detected on startup. Auto-seeding pristine benchmark dataset...")
+            seed_database(reset=False)
+        else:
+            seed_database(reset=False)
+    except Exception as e:
+        logger.warning(f"Startup seeding check: {e}")
+        seed_database(reset=False)
+    finally:
+        db.close()
     
     # Pre-populate representative manual review queue cases if empty
     from backend.app.services.connectors import default_manual_review_queue
@@ -195,6 +228,71 @@ def root():
 
 @app.get("/health")
 def health_check():
+    """
+    Deep health check verifying:
+    1. Primary database connectivity via SELECT 1 execution.
+    2. Mock Statutory Issuer reachability (standalone service or internal router).
+    Returns 200 with DEGRADED status if issuer is unreachable, or 503 if primary DB fails.
+    """
     db_engine = "SQLite" if settings.DATABASE_URL.startswith("sqlite") else "PostgreSQL"
-    return {"status": "HEALTHY", "db": "CONNECTED", "database_engine": db_engine}
+    db_status = "CONNECTED"
+    db_error = None
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        db_status = "DISCONNECTED"
+        db_error = str(e)
+        logger.error(f"Database health probe failed: {e}")
 
+    # Check mock statutory issuer reachability
+    mock_issuer_status = "DISCONNECTED"
+    mock_issuer_target = settings.MOCK_ISSUER_URL
+    api_key = os.getenv("ISSUER_API_KEY", "pramaanx-mock-key-2025")
+    
+    # 1. Try external MOCK_ISSUER_URL
+    try:
+        normalized_url = mock_issuer_target.replace("localhost", "127.0.0.1")
+        target_endpoint = f"{normalized_url.rstrip('/')}/health"
+        with httpx.Client(timeout=1.5) as client:
+            resp = client.get(target_endpoint, headers={"X-API-Key": api_key})
+            if resp.status_code == 200:
+                mock_issuer_status = "CONNECTED"
+    except Exception:
+        # 2. Try internal router mount if enabled
+        if settings.MOCK_ISSUER_INTERNAL_ROUTER:
+            try:
+                from mock_issuer.app.main import app as internal_issuer_app
+                mock_issuer_status = "CONNECTED"
+                mock_issuer_target = "/mock_issuer (internal router)"
+            except Exception:
+                mock_issuer_status = "UNAVAILABLE"
+        else:
+            mock_issuer_status = "UNAVAILABLE"
+
+    is_healthy = (db_status == "CONNECTED" and mock_issuer_status == "CONNECTED")
+    is_degraded = (db_status == "CONNECTED" and mock_issuer_status != "CONNECTED")
+
+    if not is_healthy and not is_degraded:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "UNHEALTHY",
+                "db": db_status,
+                "db_error": db_error,
+                "database_engine": db_engine,
+                "mock_issuer": mock_issuer_status,
+                "reason": "Primary database connection failure",
+                "version": settings.PROJECT_VERSION
+            }
+        )
+
+    return {
+        "status": "HEALTHY" if is_healthy else "DEGRADED",
+        "db": db_status,
+        "database_engine": db_engine,
+        "mock_issuer": mock_issuer_status,
+        "mock_issuer_url": mock_issuer_target,
+        "reason": None if is_healthy else "Statutory verification gateway unavailable",
+        "version": settings.PROJECT_VERSION
+    }
