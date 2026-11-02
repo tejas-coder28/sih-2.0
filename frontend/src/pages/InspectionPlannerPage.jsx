@@ -208,6 +208,13 @@ const MOCK_PLANNER_DATA = {
   ]
 };
 
+// Display-only enum formatter
+function formatEnum(val) {
+  if (!val) return '';
+  const s = String(val).replace(/_/g, ' ').toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export default function InspectionPlannerPage() {
   const [plannerData, setPlannerData] = useState(MOCK_PLANNER_DATA);
   const [isDemoData, setIsDemoData] = useState(true);
@@ -262,7 +269,7 @@ export default function InspectionPlannerPage() {
   const statesList = ['ALL', 'Karnataka', 'Delhi', 'Maharashtra', 'Telangana'];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+    <div className="flex flex-col gap-4 2xl:gap-6 max-w-7xl mx-auto pb-16">
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -275,7 +282,7 @@ export default function InspectionPlannerPage() {
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
               Surprise Inspection Planner
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-200 max-w-2xl leading-relaxed font-normal">
               Geographical clustering of flagged institutions by State and District.
               Automated sequencing orders inspection itineraries to minimize officer travel time while prioritizing high-urgency regulatory discrepancies.
             </p>
@@ -297,69 +304,77 @@ export default function InspectionPlannerPage() {
         <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-sky-500/10 to-transparent pointer-events-none" />
       </div>
 
-      {/* 2. Key Metrics Ribbon */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>Flagged Institutions</span>
-            <Building2 className="w-4 h-4 text-primary" />
+      {/* 2. Key Metrics Ribbon: Flat Tinted Square, No Glow, 28px/700 Tabular Numbers */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 2xl:gap-6">
+        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            <Building2 className="w-5 h-5" />
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
-            {plannerData.total_flagged_institutions || 0}
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-text-muted font-medium truncate">Flagged Institutions</div>
+            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+              {plannerData.total_flagged_institutions || 0}
+            </div>
+            <div className="text-[11px] text-text-muted truncate">Across {plannerData.total_states || 0} States</div>
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Across {plannerData.total_states || 0} States</div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>District Clusters</span>
-            <MapPin className="w-4 h-4 text-emerald-600" />
+        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0">
+            <MapPin className="w-5 h-5" />
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
-            {plannerData.total_clusters || 0}
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-text-muted font-medium truncate">District Clusters</div>
+            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+              {plannerData.total_clusters || 0}
+            </div>
+            <div className="text-[11px] text-text-muted truncate">Optimal Itinerary Routes</div>
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Optimal Itinerary Routes</div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>Critical Urgency</span>
-            <ShieldAlert className="w-4 h-4 text-rose-600" />
+        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-600 border border-rose-500/20 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-5 h-5" />
           </div>
-          <div className="text-2xl font-black text-rose-600 mt-2">
-            3
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-text-muted font-medium truncate">Critical Urgency</div>
+            <div className="text-[28px] font-bold text-rose-600 tabular-nums leading-tight mt-0.5">
+              3
+            </div>
+            <div className="text-[11px] text-text-muted truncate">Mandatory Physical Audits</div>
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Mandatory Physical Audits</div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs">
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider flex items-center justify-between">
-            <span>AI Sequencing Engine</span>
-            <Route className="w-4 h-4 text-indigo-600" />
+        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 flex items-center justify-center shrink-0">
+            <Route className="w-5 h-5" />
           </div>
-          <div className="text-2xl font-bold text-text mt-2">
-            Active
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-text-muted font-medium truncate">AI Sequencing Engine</div>
+            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+              Active
+            </div>
+            <div className="text-[11px] text-text-muted truncate">Prioritized by Risk & Proximity</div>
           </div>
-          <div className="text-[11px] text-muted mt-0.5">Prioritized by Risk & Proximity</div>
         </div>
       </div>
 
-      {/* 3. Filter Controls Deck */}
-      <div className="bg-surface border border-border rounded-xl p-4 shadow-2xs flex flex-wrap items-center justify-between gap-4">
+      {/* 3. Filter Controls Deck: 40px Height Controls, Solid Primary Selected Pill */}
+      <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center space-x-2 text-xs font-semibold text-text">
-            <Filter className="w-3.5 h-3.5 text-primary" />
+            <Filter className="w-4 h-4 text-primary" />
             <span>State Cluster:</span>
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {statesList.map(st => (
               <button
                 key={st}
                 onClick={() => setSelectedState(st)}
-                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`h-10 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer border flex items-center justify-center ${
                   selectedState === st
-                    ? 'bg-primary text-white shadow-2xs font-semibold'
-                    : 'bg-surface-2 text-muted hover:text-text'
+                    ? 'bg-primary text-white border-primary shadow-xs'
+                    : 'bg-surface-2 text-text-muted hover:text-text border-border hover:bg-surface'
                 }`}
               >
                 {st}
@@ -369,11 +384,11 @@ export default function InspectionPlannerPage() {
         </div>
 
         <div className="flex items-center space-x-3 text-xs">
-          <span className="font-semibold text-muted">Min Risk Priority:</span>
+          <span className="font-semibold text-text-muted">Min Risk Priority:</span>
           <select
             value={minPriority}
             onChange={(e) => setMinPriority(Number(e.target.value))}
-            className="bg-surface border border-border rounded-lg px-3 py-1.5 text-xs font-medium text-text"
+            className="h-10 bg-surface border border-border rounded-xl px-3 text-xs font-medium text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shadow-xs"
           >
             <option value="0">All Priorities</option>
             <option value="40">Moderate+ (≥ 40)</option>
@@ -440,47 +455,48 @@ export default function InspectionPlannerPage() {
                           const isOrdered = scheduledOrders[inst.institution_id];
 
                           return (
-                            <div key={inst.institution_id} className="py-4 first:pt-1 last:pb-1 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                              {/* Left: Sequence badge & details */}
-                              <div className="flex items-start space-x-3.5">
-                                <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-black text-xs shadow-2xs border ${
-                                  inst.sequence_in_district === 1 
-                                    ? 'bg-rose-600 text-white border-rose-700 ring-2 ring-rose-500/20' 
-                                    : 'bg-slate-900 text-white border-slate-800'
-                                }`}>
-                                  #{inst.sequence_in_district}
+                            <div key={inst.institution_id} className="py-4 first:pt-1 last:pb-1 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                              {/* Left: Building icon square, sequence & details */}
+                              <div className="flex items-start space-x-3.5 min-w-0 flex-1">
+                                <div className="w-10 h-10 rounded-xl bg-surface-2 border border-border text-primary flex items-center justify-center shrink-0 shadow-xs relative">
+                                  <Building2 className="w-5 h-5 text-primary" />
+                                  <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center ${
+                                    inst.sequence_in_district === 1 ? 'bg-rose-600 text-white' : 'bg-surface border border-border text-text'
+                                  }`}>
+                                    {inst.sequence_in_district}
+                                  </span>
                                 </div>
 
-                                <div className="space-y-1">
+                                <div className="space-y-1 min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <h3 className="font-semibold text-sm text-text">{inst.name}</h3>
                                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-2 text-text-muted border border-border">
                                       AICTE: {inst.aicte_id}
                                     </span>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                                      isCritical ? 'bg-rose-50 text-rose-800 border-rose-300' :
-                                      isHigh ? 'bg-amber-50 text-amber-800 border-amber-300' :
-                                      'bg-surface-2 text-text border-border'
+                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
+                                      isCritical ? 'bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200 border-rose-300 dark:border-rose-800' :
+                                      isHigh ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200 border-amber-300 dark:border-amber-800' :
+                                      'bg-surface-2 text-text-muted border-border'
                                     }`}>
-                                      {inst.risk_tier}
+                                      {formatEnum(inst.risk_tier)}
                                     </span>
                                   </div>
 
-                                  <div className="text-xs text-muted flex flex-wrap items-center gap-2">
+                                  <div className="text-xs text-text-muted flex flex-wrap items-center gap-2">
                                     <span>{inst.category}</span>
                                     <span>•</span>
                                     <span>Intake: {inst.approved_intake}</span>
                                     <span>•</span>
                                     <span className="font-mono text-primary">{inst.application_no}</span>
                                     <span>•</span>
-                                    <span className="text-text-subtle">{inst.address}</span>
+                                    <span className="text-text-subtle truncate max-w-sm" title={inst.address}>{inst.address}</span>
                                   </div>
 
                                   {/* Flagged issues */}
                                   <div className="pt-1 flex flex-wrap gap-1.5">
                                     {(inst.flagged_issues || []).map((iss, iIdx) => (
-                                      <span key={iIdx} className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-1">
-                                        <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
+                                      <span key={iIdx} className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20 flex items-center space-x-1">
+                                        <AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400 shrink-0" />
                                         <span>{iss}</span>
                                       </span>
                                     ))}
@@ -488,11 +504,11 @@ export default function InspectionPlannerPage() {
                                 </div>
                               </div>
 
-                              {/* Right: Scores & Actions */}
-                              <div className="flex flex-wrap items-center gap-4 lg:self-center shrink-0">
-                                <div className="text-right">
-                                  <div className="text-xs font-semibold text-text">Urgency Score</div>
-                                  <div className={`text-base font-black ${
+                              {/* Right: Scores & Actions (Single row with divider, stacks below 1280px) */}
+                              <div className="flex flex-wrap items-center gap-4 xl:self-center shrink-0 pt-2 xl:pt-0 border-t xl:border-t-0 border-border">
+                                <div className="text-left xl:text-right">
+                                  <div className="text-[11px] font-medium text-text-muted">Urgency Score</div>
+                                  <div className={`text-base font-bold tabular-nums ${
                                     inst.priority_score >= 80 ? 'text-rose-600' :
                                     inst.priority_score >= 50 ? 'text-amber-600' : 'text-text-muted'
                                   }`}>
@@ -500,31 +516,35 @@ export default function InspectionPlannerPage() {
                                   </div>
                                 </div>
 
-                                <div className="text-right border-l border-border pl-3">
-                                  <div className="text-[10px] font-bold text-text-subtle uppercase">Recommended Mode</div>
-                                  <div className="text-xs font-bold text-text font-mono">
-                                    {inst.recommended_inspection_type.replace(/_/g, ' ')}
+                                <div className="hidden xl:block h-8 w-px bg-border" />
+
+                                <div className="text-left xl:text-right">
+                                  <div className="text-[10px] font-semibold text-text-muted uppercase">Recommended Mode</div>
+                                  <div className="text-xs font-semibold text-text">
+                                    {formatEnum(inst.recommended_inspection_type)}
                                   </div>
                                 </div>
+
+                                <div className="hidden xl:block h-8 w-px bg-border" />
 
                                 <button
                                   id={`btn-schedule-inspection-${inst.institution_id}`}
                                   onClick={() => handleScheduleOrder(inst.institution_id)}
                                   disabled={isOrdered}
-                                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer ${
+                                  className={`h-10 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer border ${
                                     isOrdered 
-                                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default'
-                                      : 'bg-slate-900 hover:bg-slate-800 text-white'
+                                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 cursor-default'
+                                      : 'btn-outline text-text hover:bg-surface-2'
                                   }`}
                                 >
                                   {isOrdered ? (
                                     <>
-                                      <Check className="w-3.5 h-3.5 text-emerald-700" />
+                                      <Check className="w-3.5 h-3.5 text-emerald-600" />
                                       <span>Order Dispatched</span>
                                     </>
                                   ) : (
                                     <>
-                                      <Navigation className="w-3.5 h-3.5" />
+                                      <Navigation className="w-3.5 h-3.5 text-primary" />
                                       <span>Dispatch Squad Order</span>
                                     </>
                                   )}
