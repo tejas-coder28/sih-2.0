@@ -72,6 +72,8 @@ export default function Navbar({
   onLogout, 
   activeApplication, 
   isLiveMode = false,
+  apiStatus = 'LIVE',
+  apiDegradedReason = null,
   isMobileMenuOpen = false,
   onToggleMobileMenu,
   onToggleSidebarCollapse,
@@ -344,16 +346,32 @@ export default function Navbar({
             <div id="header-status-pill" className="hidden md:flex items-center space-x-2.5 px-3 py-1.5 rounded-full border border-border bg-surface-2 text-xs font-medium text-text-muted shadow-xs">
               <div 
                 className="flex items-center space-x-1.5 cursor-help"
-                title={isLiveMode ? "Backend operational: connected to FastAPI services on port 8000" : "Backend not connected: showing demo data"}
-                aria-label={isLiveMode ? "Backend operational: connected to FastAPI services on port 8000" : "Backend not connected: showing demo data"}
+                title={
+                  apiStatus === 'LIVE'
+                    ? "Backend operational: all systems connected (DB & Statutory Gateway)"
+                    : apiStatus === 'DEGRADED'
+                    ? `Degraded: ${apiDegradedReason || 'Statutory verification gateway unavailable'}`
+                    : "Backend not connected: showing demo data"
+                }
+                aria-label={
+                  apiStatus === 'LIVE'
+                    ? "Backend operational: all systems connected (DB & Statutory Gateway)"
+                    : apiStatus === 'DEGRADED'
+                    ? `Degraded: ${apiDegradedReason || 'Statutory verification gateway unavailable'}`
+                    : "Backend not connected: showing demo data"
+                }
               >
                 <span 
                   className={`w-2 h-2 rounded-full ${
-                    isLiveMode ? 'bg-emerald-500' : 'bg-amber-500'
+                    apiStatus === 'LIVE'
+                      ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                      : apiStatus === 'DEGRADED'
+                      ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                      : 'bg-slate-400'
                   }`} 
                 />
                 <span className="text-[11px] font-semibold text-text">
-                  {isLiveMode ? 'API Live' : 'Demo API'}
+                  {apiStatus === 'LIVE' ? 'API Live' : apiStatus === 'DEGRADED' ? 'Degraded' : 'Demo API'}
                 </span>
               </div>
 

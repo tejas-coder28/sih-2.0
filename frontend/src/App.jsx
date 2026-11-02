@@ -46,6 +46,9 @@ export default function App() {
   const [evidenceLensError, setEvidenceLensError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isLiveMode, setIsLiveMode] = useState(false);
+  const [apiStatus, setApiStatus] = useState('LIVE');
+  const [apiDegradedReason, setApiDegradedReason] = useState(null);
+  const [isServerWaking, setIsServerWaking] = useState(false);
   const [sidebarCounts, setSidebarCounts] = useState({ impossibilities: 0, advisoryFlags: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -335,19 +338,37 @@ export default function App() {
     };
     window.addEventListener('pramaan_unauthorized', handleUnauthorized);
 
+    const handleServerWaking = () => setIsServerWaking(true);
+    const handleServerAwake = () => setIsServerWaking(false);
+    const handleServerColdStartFailed = () => setIsServerWaking(false);
+
+    window.addEventListener('pramaan_server_waking', handleServerWaking);
+    window.addEventListener('pramaan_server_awake', handleServerAwake);
+    window.addEventListener('pramaan_server_coldstart_failed', handleServerColdStartFailed);
+
     let isMounted = true;
     const checkBackendHealth = async () => {
       try {
-        let res = null;
-        try {
-          res = await fetch('/health');
-        } catch (_e) {
-          const h = (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1') ? '127.0.0.1' : 'localhost';
-          res = await fetch(`http://${h}:8000/health`).catch(() => fetch('http://127.0.0.1:8000/health')).catch(() => null);
+        const data = await api.getHealth();
+        if (!isMounted) return;
+        if (data && (data.status === 'HEALTHY' || data.status === 'OK')) {
+          setApiStatus('LIVE');
+          setIsLiveMode(true);
+          setApiDegradedReason(null);
+          setIsServerWaking(false);
+        } else if (data && data.status === 'DEGRADED') {
+          setApiStatus('DEGRADED');
+          setIsLiveMode(true);
+          setApiDegradedReason(data.reason || 'Statutory verification gateway unavailable');
+          setIsServerWaking(false);
+        } else {
+          setApiStatus('DEMO');
+          setIsLiveMode(false);
         }
-        if (isMounted) setIsLiveMode(Boolean(res && res.ok));
       } catch (e) {
-        if (isMounted) setIsLiveMode(false);
+        if (!isMounted) return;
+        setApiStatus('DEMO');
+        setIsLiveMode(false);
       }
     };
     checkBackendHealth();
@@ -355,6 +376,9 @@ export default function App() {
 
     return () => {
       window.removeEventListener('pramaan_unauthorized', handleUnauthorized);
+      window.removeEventListener('pramaan_server_waking', handleServerWaking);
+      window.removeEventListener('pramaan_server_awake', handleServerAwake);
+      window.removeEventListener('pramaan_server_coldstart_failed', handleServerColdStartFailed);
       isMounted = false;
       clearInterval(healthInterval);
     };
@@ -419,6 +443,14 @@ export default function App() {
         Skip to main content
       </a>
 
+      {/* Cold Start Server Waking Banner */}
+      {isServerWaking && (
+        <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-900 dark:text-amber-200 px-4 py-2 text-xs font-medium flex items-center justify-center space-x-2 z-50">
+          <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
+          <span>Waking up the server... Free tier cloud instance starting, retrying up to 60s.</span>
+        </div>
+      )}
+
       {/* Top AICTE Navigation */}
       <Navbar 
         currentUser={currentUser}
@@ -430,6 +462,8 @@ export default function App() {
         onLogout={handleLogout}
         activeApplication={activeApplication}
         isLiveMode={isLiveMode}
+        apiStatus={apiStatus}
+        apiDegradedReason={apiDegradedReason}
         onToggleLiveMode={() => setIsLiveMode(!isLiveMode)}
         isMobileMenuOpen={isMobileMenuOpen}
         onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
