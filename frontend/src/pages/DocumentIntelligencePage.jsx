@@ -15,7 +15,9 @@ import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  X
+  X,
+  FileText,
+  CheckCircle2
 } from 'lucide-react';
 import DemoDataBadge from '../components/DemoDataBadge';
 import { api } from '../services/api';
@@ -80,11 +82,13 @@ const PRESET_INTELLIGENCE_DOCS = [
 ];
 
 export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplication: _onSelectApplication }) {
+  // Source State: Only one source is active at a time (Requirement 2)
+  const [activeSourceType, setActiveSourceType] = useState('sample'); // 'sample' | 'upload'
   const [selectedPreset, setSelectedPreset] = useState(PRESET_INTELLIGENCE_DOCS[0]);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [documentResult, setDocumentResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [_error, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [isDemoData, setIsDemoData] = useState(false);
 
   // Viewer state
@@ -103,9 +107,13 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
   const fileInputRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const pageContainerRef = useRef(null);
+  const activeRequestIdRef = useRef(0);
+  const initialLoadedRef = useRef(false);
 
   // Ingest and extract document
   const processDocument = async (fileOrPreset) => {
+    const currentRequestId = ++activeRequestIdRef.current;
+    console.log(`[DocIntel] processDocument #${currentRequestId} called with:`, fileOrPreset instanceof File ? `File(${fileOrPreset.name})` : fileOrPreset?.name);
     setLoading(true);
     setError(null);
     try {
@@ -117,13 +125,17 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
         const allowedExts = ['.pdf', '.png', '.jpg', '.jpeg'];
         const fn = fileOrPreset.name.toLowerCase();
         if (!allowedExts.some(ext => fn.endsWith(ext))) {
+          if (currentRequestId !== activeRequestIdRef.current) return;
           setError('Unsupported file format. Supported formats are: PDF, JPG, PNG.');
+          setDocumentResult(null);
           setLoading(false);
           return;
         }
 
-        // Upload custom file
+        // Upload custom file to backend ingestion pipeline
         ingestRes = await api.ingestDocument(fileOrPreset);
+        if (currentRequestId !== activeRequestIdRef.current) return;
+
         if (ingestRes?.status === 'ocr_unavailable') {
           setError(ingestRes.status_message || 'OCR engine unavailable on server for this scan/image.');
           setDocumentResult({
@@ -154,6 +166,8 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
         } catch (_fe) {
           // ignore
         }
+
+        if (currentRequestId !== activeRequestIdRef.current) return;
 
         const docType = fileOrPreset.type;
         const refNo = fileOrPreset.refNo;
@@ -189,6 +203,8 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
         };
       }
 
+      if (currentRequestId !== activeRequestIdRef.current) return;
+
       // Structure extracted fields for the table
       const fullText = ingestRes.full_extracted_text || '';
       const isCustomFile = fileOrPreset instanceof File;
@@ -197,12 +213,12 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
       let extractedFields = [];
       if (isCustomFile && ingestRes.extracted_fields && ingestRes.extracted_fields.length > 0) {
         extractedFields = ingestRes.extracted_fields;
-      } else {
+      } else if (!isCustomFile && presetData) {
         extractedFields = [
           {
             key: 'doc_type',
             label: 'Classified Document Type',
-            value: ingestRes.doc_type || (isCustomFile ? 'Compliance Document' : presetData.type),
+            value: ingestRes.doc_type || presetData.type,
             confidence: ingestRes.classifier_confidence ? Math.round(ingestRes.classifier_confidence * 100) : 96,
             page: 1,
             box: { x: 96, y: 190, w: 1008, h: 76 }
@@ -210,7 +226,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           {
             key: 'institution',
             label: 'Applicant Institution',
-            value: isCustomFile ? (fullText.match(/Institution(?:\s+Name)?:?\s*([^\r\n]+)/i)?.[1]?.trim() || 'Institution Scrutiny Record') : presetData.institution,
+            value: presetData.institution,
             confidence: 98,
             page: 1,
             box: { x: 96, y: 350, w: 1008, h: 60 }
@@ -218,7 +234,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           {
             key: 'ref_no',
             label: 'Reference / NOC Number',
-            value: isCustomFile ? (fullText.match(/(?:Reference|NOC|Order|Deed|Permit)(?:\s+Number|\s+No)?:?\s*([A-Z0-9\/-]+)/i)?.[1] || 'Pending Extraction') : presetData.refNo,
+            value: presetData.refNo,
             confidence: 96,
             page: 1,
             box: { x: 96, y: 440, w: 680, h: 56 }
@@ -226,7 +242,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           {
             key: 'validity',
             label: 'Validity Expiry Date',
-            value: isCustomFile ? (fullText.match(/(?:valid|expiry|validity|date)(?:\s+till|\s+to|\s+date)?:?\s*([0-9\/-]+)/i)?.[1] || 'Not Specified') : presetData.validity,
+            value: presetData.validity,
             confidence: 95,
             page: 1,
             box: { x: 96, y: 530, w: 720, h: 56 }
@@ -234,7 +250,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           {
             key: 'capacity',
             label: 'Sanctioned Intake / Area',
-            value: isCustomFile ? (fullText.match(/(?:area|intake|capacity|sq\.?m|acres):?\s*([0-9,.]+)/i)?.[1] || 'Standard AICTE Norm') : presetData.capacity,
+            value: presetData.capacity,
             confidence: 94,
             page: 1,
             box: { x: 96, y: 620, w: 840, h: 56 }
@@ -245,27 +261,65 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
       setDocumentResult({
         ...ingestRes,
         extracted_fields: extractedFields,
-        bodyText: presetData.bodyText,
-        authority: presetData.authority,
+        bodyText: presetData?.bodyText,
+        authority: presetData?.authority,
         forensic_findings: forensicRes?.indicators || []
       });
-      setIsDemoData(false);
+      setIsDemoData(!isCustomFile);
     } catch (err) {
-      console.warn('Document intelligence error, using rich demonstration fallback:', err);
-      setError('Backend pipeline temporarily unavailable. Displaying localized verification result.');
-      setIsDemoData(true);
+      if (currentRequestId !== activeRequestIdRef.current) return;
+      console.warn('Document intelligence error:', err);
+      const statusCode = err.response?.status;
+      const detailMsg = err.response?.data?.detail || err.message;
+      const formattedError = statusCode ? `HTTP ${statusCode}: ${detailMsg}` : `Request failed: ${detailMsg}`;
+      setError(formattedError);
+      setDocumentResult(null); // Never fall back silently to sample data!
+      if (fileOrPreset && !(fileOrPreset instanceof File)) {
+        setIsDemoData(true);
+      } else {
+        setIsDemoData(false);
+      }
     } finally {
-      setLoading(false);
+      if (currentRequestId === activeRequestIdRef.current) {
+        setLoading(false);
+      }
     }
   };
 
-  useEffect(() => {
-    if (!uploadedFile) {
-      processDocument(selectedPreset);
-    }
-  }, [selectedPreset]);
+  // Staging an uploaded file: replaces any previous result completely (Requirement 2)
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    activeRequestIdRef.current++;
+    setLoading(false);
+    setSelectedPreset(null);
+    setUploadedFile(file);
+    setActiveSourceType('upload');
+    setDocumentResult(null); // Clear previous results completely (no stale fields)
+    setError(null);
+    setIsDemoData(false);
+  };
 
-  // Actual OCR page width and height from OCR response (Requirement 1: do not hard-code)
+  // Selecting a sample: clears uploaded file and loads sample (Requirement 2)
+  const handleSelectPreset = (doc) => {
+    activeRequestIdRef.current++;
+    setLoading(false);
+    setUploadedFile(null);
+    setSelectedPreset(doc);
+    setActiveSourceType('sample');
+    setDocumentResult(null); // Clear previous result
+    setError(null);
+    processDocument(doc);
+  };
+
+  // Initial mount load for sample: only once on mount
+  useEffect(() => {
+    if (!initialLoadedRef.current) {
+      initialLoadedRef.current = true;
+      processDocument(PRESET_INTELLIGENCE_DOCS[0]);
+    }
+  }, []);
+
+  // Actual OCR page width and height from OCR response
   const activePage = documentResult?.per_page_ocr?.[activePageIndex] || documentResult?.per_page_ocr?.[0];
   const originalWidth = activePage?.width || 1200;
   const originalHeight = activePage?.height || 1700;
@@ -274,8 +328,12 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
   const renderedWidth = 680;
   const renderedHeight = Math.round(renderedWidth * (originalHeight / originalWidth));
 
-  // Measure rendered DOM elements inside page container with sub-pixel precision
+  // Measure rendered DOM elements inside page container with sub-pixel precision (only for HTML mock)
   const measureDomBoxes = useCallback(() => {
+    if (documentResult?.preview_image) {
+      // Authoritative image preview uses backend coordinates directly
+      return;
+    }
     if (!pageContainerRef.current) return;
     const container = pageContainerRef.current;
     const cWidth = container.offsetWidth;
@@ -287,7 +345,6 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
     fields.forEach((field) => {
       const el = document.getElementById(`doc-field-target-${field.key}`);
       if (el) {
-        // Calculate offset relative to page container (unaffected by CSS transform)
         let top = 0;
         let left = 0;
         let current = el;
@@ -297,7 +354,6 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           current = current.offsetParent;
         }
 
-        // Snug 2.5px padding around text boundaries
         const padX = 2.5;
         const padY = 2;
         const boxLeft = Math.max(0, left - padX);
@@ -305,7 +361,6 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
         const boxWidth = el.offsetWidth + padX * 2;
         const boxHeight = el.offsetHeight + padY * 2;
 
-        // Convert rendered layout pixels back to original coordinate space
         newBoxes[field.key] = {
           x: Math.round((boxLeft / cWidth) * originalWidth),
           y: Math.round((boxTop / cHeight) * originalHeight),
@@ -320,9 +375,8 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
     }
   }, [originalWidth, originalHeight, documentResult]);
 
-  // Run DOM measurement whenever document, preset, or active tab changes
   useLayoutEffect(() => {
-    if (activeViewMode === 'visual' && documentResult) {
+    if (activeViewMode === 'visual' && documentResult && !documentResult.preview_image) {
       measureDomBoxes();
       const t = setTimeout(measureDomBoxes, 50);
       return () => clearTimeout(t);
@@ -338,9 +392,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
   const handleDrop = (e) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      setUploadedFile(file);
-      processDocument(file);
+      handleFileSelect(e.dataTransfer.files[0]);
     }
   };
 
@@ -354,7 +406,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
   const handleSetExactZoom = (lvl) => setZoomLevel(lvl);
   const handleResetZoom = () => setZoomLevel(1.0);
 
-  // Requirement 2: Clicking a table row scrolls to and pulses its box once
+  // Clicking a table row scrolls to and pulses its box once
   const handleRowClick = (fieldKey) => {
     setSelectedFieldKey(fieldKey);
     setPulsingFieldKey(fieldKey);
@@ -367,38 +419,61 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
   };
 
   const hasFindings = (documentResult?.forensic_findings && documentResult.forensic_findings.length > 0) || 
-                      (documentResult?.doc_type?.toLowerCase().includes('fire') && selectedPreset.id === 'doc_fire_noc') ||
-                      (documentResult?.doc_type?.toLowerCase().includes('building') && selectedPreset.id === 'doc_building_plan');
+                      (documentResult?.doc_type?.toLowerCase().includes('fire') && selectedPreset?.id === 'doc_fire_noc') ||
+                      (documentResult?.doc_type?.toLowerCase().includes('building') && selectedPreset?.id === 'doc_building_plan');
 
   return (
     <div className="space-y-6 max-w-[1720px] mx-auto text-text">
       {/* 1. Top Section: Compact Upload Bar & Preset Sample Pills */}
       <div className="bg-surface border border-border rounded-xl p-4 shadow-xs space-y-3">
+        {/* Active Source indicator & Demo Badge */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-border/40 text-xs">
+          <div className="flex items-center space-x-2">
+            <span className="text-muted font-medium">Active Source:</span>
+            <span 
+              id="active-source-pill"
+              className={`font-semibold px-2.5 py-0.5 rounded-full border text-[11px] ${
+                activeSourceType === 'upload' && uploadedFile
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30'
+                  : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+              }`}
+            >
+              {activeSourceType === 'upload' && uploadedFile 
+                ? `Your upload: ${uploadedFile.name}` 
+                : `Sample: ${selectedPreset?.name || 'Fire Safety NOC'}`}
+            </span>
+          </div>
+          {isDemoData && <DemoDataBadge reason="OCR Fallback Simulation" />}
+        </div>
+
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Upload Bar / Dropzone */}
           <div 
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            onClick={() => fileInputRef.current?.click()}
-            className="flex-1 flex items-center justify-between px-3.5 py-2 rounded-lg border border-dashed border-border bg-surface-2 hover:border-primary/50 transition-colors cursor-pointer text-xs"
+            onClick={() => !loading && fileInputRef.current?.click()}
+            className={`flex-1 flex items-center justify-between px-3.5 py-2 rounded-lg border border-dashed border-border bg-surface-2 transition-colors cursor-pointer text-xs ${
+              loading ? 'opacity-70 cursor-not-allowed' : 'hover:border-primary/50'
+            }`}
           >
             <input
               type="file"
+              id="doc-intel-file-input"
               ref={fileInputRef}
               onChange={(e) => {
                 if (e.target.files?.[0]) {
-                  setUploadedFile(e.target.files[0]);
-                  processDocument(e.target.files[0]);
+                  handleFileSelect(e.target.files[0]);
                 }
               }}
               accept=".pdf,.png,.jpg,.jpeg"
               className="hidden"
+              disabled={loading}
             />
             <div className="flex items-center space-x-2.5 min-w-0">
               <Upload className="w-4 h-4 text-primary shrink-0" />
               {uploadedFile ? (
                 <div className="flex items-center space-x-2 truncate">
-                  <span className="font-semibold text-text truncate max-w-[240px]">{uploadedFile.name}</span>
+                  <span className="font-semibold text-text truncate max-w-[240px]" id="staged-file-name">{uploadedFile.name}</span>
                   <span className="text-[11px] font-mono text-muted">({(uploadedFile.size / 1024).toFixed(0)} KB)</span>
                 </div>
               ) : (
@@ -412,10 +487,15 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               {uploadedFile && (
                 <button
                   type="button"
+                  id="btn-clear-uploaded-file"
+                  disabled={loading}
                   onClick={(e) => {
                     e.stopPropagation();
                     setUploadedFile(null);
-                    processDocument(selectedPreset);
+                    setActiveSourceType('sample');
+                    setSelectedPreset(PRESET_INTELLIGENCE_DOCS[0]);
+                    setDocumentResult(null);
+                    processDocument(PRESET_INTELLIGENCE_DOCS[0]);
                   }}
                   className="p-1 text-muted hover:text-text rounded"
                   title="Clear uploaded file"
@@ -425,6 +505,8 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               )}
               <button
                 type="button"
+                id="btn-analyze-document"
+                disabled={loading}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (uploadedFile) {
@@ -433,10 +515,12 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     fileInputRef.current?.click();
                   }
                 }}
-                className="btn-solid h-8 px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shadow-xs"
+                className={`btn-solid h-8 px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shadow-xs ${
+                  loading ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{uploadedFile ? 'Analyze' : 'Browse'}</span>
+                {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                <span>{loading ? 'Analyzing...' : (uploadedFile ? 'Analyze' : 'Browse')}</span>
               </button>
             </div>
           </div>
@@ -445,16 +529,14 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           <div className="flex items-center space-x-1.5 flex-wrap gap-y-1.5">
             <span className="text-[11px] font-medium text-muted mr-1">Samples:</span>
             {PRESET_INTELLIGENCE_DOCS.map((doc) => {
-              const isSelected = !uploadedFile && selectedPreset.id === doc.id;
+              const isSelected = activeSourceType === 'sample' && selectedPreset?.id === doc.id;
               return (
                 <button
                   key={doc.id}
                   type="button"
                   id={`btn-sample-${doc.id}`}
-                  onClick={() => {
-                    setUploadedFile(null);
-                    setSelectedPreset(doc);
-                  }}
+                  disabled={loading}
+                  onClick={() => handleSelectPreset(doc)}
                   className={`h-8 px-3 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
                     isSelected
                       ? 'btn-solid shadow-xs'
@@ -474,21 +556,62 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
           <span className="truncate">
             <strong className="text-text font-medium">Indicator for review:</strong> Automated OCR extractions are advisory. Extractions are verified against statutory issuer registries prior to formal committee review.
           </span>
-          {isDemoData && <DemoDataBadge reason="OCR Fallback Simulation" />}
         </div>
       </div>
 
-      {/* 2. Main Workspace: 2-Column Layout (60% Preview Left / 40% Results Right at >= 1280px) */}
+      {/* Error Banner: Prominently displayed with HTTP status if extraction fails */}
+      {error && (
+        <div 
+          id="doc-intel-error-banner" 
+          className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-xl flex items-center justify-between text-xs font-medium shadow-xs"
+        >
+          <div className="flex items-center space-x-2.5">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="p-1 hover:bg-rose-500/20 rounded cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* 2. Main Workspace: Loading State / Staged State / Results */}
       {loading ? (
-        <div className="bg-surface border border-border rounded-xl p-16 text-center text-muted space-y-3">
+        <div className="bg-surface border border-border rounded-xl p-16 text-center text-muted space-y-3" id="doc-intel-loading-card">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary" />
           <p className="text-sm font-semibold text-text">Executing Document Intelligence & Schema Extraction...</p>
-          <p className="text-xs text-muted">Extracting dynamic vector bounding boxes and mapping structured schema fields.</p>
+          <p className="text-xs text-muted">Running pluggable OCR engine, word-level vector layout analysis, and schema binding.</p>
+        </div>
+      ) : !documentResult && uploadedFile ? (
+        /* Staged File Prompt (Requirement 2: Staged file with Analyze button) */
+        <div className="bg-surface border border-border rounded-xl p-12 text-center text-muted space-y-4 shadow-xs" id="doc-intel-staged-card">
+          <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold text-text">Document Staged: {uploadedFile.name}</h3>
+            <p className="text-xs text-muted max-w-md mx-auto">
+              Ready to process <span className="font-mono text-text">{(uploadedFile.size / 1024).toFixed(0)} KB</span> via multi-modal OCR pipeline. Click Analyze below to execute extraction.
+            </p>
+          </div>
+          <button
+            type="button"
+            id="btn-staged-run-analyze"
+            onClick={() => processDocument(uploadedFile)}
+            className="btn-solid h-9 px-5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs inline-flex items-center space-x-2 shadow-xs cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Analyze Staged Document</span>
+          </button>
         </div>
       ) : documentResult && (
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 items-start" id="doc-intel-results-grid">
           
-          {/* LEFT Card (60% / xl:col-span-3): Document Preview */}
+          {/* LEFT Card (60% / xl:col-span-3): Document Preview (Rendered Page or Sample) */}
           <div className="xl:col-span-3 space-y-4">
             <div className="bg-surface rounded-xl border border-border p-4 shadow-xs space-y-3">
               {/* Toolbar */}
@@ -532,7 +655,6 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
 
                 {/* Right: Show/Hide Boxes & Zoom Controls */}
                 <div className="flex items-center space-x-1.5">
-                  {/* Requirement 4: Show boxes / Hide boxes button */}
                   <button
                     type="button"
                     id="btn-toggle-boxes"
@@ -550,7 +672,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
 
                   <div className="h-4 w-px bg-border mx-1" />
 
-                  {/* Quick Zoom Presets: Single Segmented Control */}
+                  {/* Quick Zoom Presets */}
                   <div className="inline-flex items-center rounded-lg border border-border bg-surface-2 p-0.5 divide-x divide-border shadow-2xs">
                     <button 
                       type="button"
@@ -613,13 +735,12 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 </div>
               </div>
 
-              {/* Mode A: Preview Canvas (Requirement 3: White Paper #FFFFFF with Dark Text #111827 in BOTH themes) */}
+              {/* Mode A: Preview Canvas (Rendered Upload Page OR Sample HTML Mock) */}
               {activeViewMode === 'visual' && (
                 <div 
                   ref={scrollContainerRef}
                   className="relative bg-surface-2 rounded-xl overflow-auto max-h-[660px] p-8 flex flex-col items-center justify-start border border-border"
                 >
-                  {/* Single CSS Transform on container scales page + boxes together without text reflow */}
                   <div
                     style={{
                       transform: `scale(${zoomLevel})`,
@@ -628,7 +749,6 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     }}
                     className="shrink-0"
                   >
-                    {/* ONE relatively positioned container having the rendered pixel size */}
                     <div 
                       ref={pageContainerRef}
                       id="document-page-canvas"
@@ -638,127 +758,118 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                         backgroundColor: '#FFFFFF',
                         color: '#111827'
                       }}
-                      className="document-paper-canvas relative document-paper-sheet p-8 select-text font-serif text-[#111827] box-border shadow-md"
+                      className="document-paper-canvas relative document-paper-sheet select-text font-serif text-[#111827] box-border shadow-md overflow-hidden"
                     >
-                      {/* Document Header */}
-                      <div className="space-y-4 text-center border-b-2 border-slate-800 pb-5">
-                        <div className="text-[11px] tracking-widest font-sans font-bold text-slate-700 uppercase flex items-center justify-center space-x-2">
-                          <span className="w-2 h-2 rounded-full bg-[#3B6CFF]" />
-                          <span>Government of India • AICTE Statutory Regulatory Scrutiny</span>
-                          <span className="w-2 h-2 rounded-full bg-[#3B6CFF]" />
+                      {/* True Rendered Page Image (when available from backend or custom upload) */}
+                      {documentResult.preview_image ? (
+                        <div className="relative w-full h-full select-none" id="uploaded-doc-preview-wrapper">
+                          <img
+                            id="document-rendered-page-img"
+                            src={documentResult.preview_image}
+                            alt={documentResult.filename || 'Uploaded Document'}
+                            className="w-full h-auto object-contain block"
+                            style={{ width: `${renderedWidth}px` }}
+                          />
                         </div>
+                      ) : (
+                        /* Sample HTML Mock (only used when no preview image exists for sample presets) */
+                        <div className="p-8 space-y-4">
+                          <div className="space-y-4 text-center border-b-2 border-slate-800 pb-5">
+                            <div className="text-[11px] tracking-widest font-sans font-bold text-slate-700 uppercase flex items-center justify-center space-x-2">
+                              <span className="w-2 h-2 rounded-full bg-[#3B6CFF]" />
+                              <span>Government of India • AICTE Statutory Regulatory Scrutiny</span>
+                              <span className="w-2 h-2 rounded-full bg-[#3B6CFF]" />
+                            </div>
 
-                        {/* Field 1: Classified Document Type */}
-                        <div className="py-1">
-                          <h2 
-                            id="doc-field-target-doc_type"
-                            style={{ color: '#111827' }}
-                            className="inline-block text-lg font-bold text-[#111827] uppercase tracking-tight"
-                          >
-                            {documentResult.doc_type || 'Statutory Compliance Record'}
-                          </h2>
+                            <div className="py-1">
+                              <h2 
+                                id="doc-field-target-doc_type"
+                                style={{ color: '#111827' }}
+                                className="inline-block text-lg font-bold text-[#111827] uppercase tracking-tight"
+                              >
+                                {documentResult.doc_type || 'Statutory Compliance Record'}
+                              </h2>
+                            </div>
+
+                            <div className="text-xs font-sans text-slate-600">
+                              Official AICTE National Regulatory Archive Verification Dossier
+                            </div>
+                          </div>
+
+                          <div className="py-6 space-y-4 text-xs leading-relaxed text-[#111827]">
+                            <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
+                              <span className="text-slate-600">Applicant Institution:</span>
+                              <span 
+                                id="doc-field-target-institution"
+                                className="font-bold text-[#111827]"
+                              >
+                                {documentResult.extracted_fields?.find(f => f.key === 'institution' || f.key === 'institution_name')?.value || selectedPreset?.institution || 'Apex Institute of Technology & Science'}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
+                              <span className="text-slate-600">Statutory Reference / NOC:</span>
+                              <span 
+                                id="doc-field-target-ref_no"
+                                className="font-mono font-bold text-[#111827]"
+                              >
+                                {documentResult.extracted_fields?.find(f => f.key === 'ref_no' || f.key === 'noc_number' || f.key === 'reference_number')?.value || selectedPreset?.refNo || 'DOC/REG/2025/9821'}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
+                              <span className="text-slate-600">Validity & Compliance Period:</span>
+                              <span 
+                                id="doc-field-target-validity"
+                                className="font-semibold text-[#111827]"
+                              >
+                                {documentResult.extracted_fields?.find(f => f.key === 'validity' || f.key === 'validity_date' || f.key === 'expiry_date')?.value || selectedPreset?.validity || '2025-04-01 to 2026-03-31'}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
+                              <span className="text-slate-600">Sanctioned Intake / Area:</span>
+                              <span 
+                                id="doc-field-target-capacity"
+                                className="font-bold text-[#111827]"
+                              >
+                                {documentResult.extracted_fields?.find(f => f.key === 'capacity' || f.key === 'extent_acres')?.value || selectedPreset?.capacity || '750 Students / 8,500 m²'}
+                              </span>
+                            </div>
+
+                            <div className="py-2 text-justify leading-relaxed text-slate-800 font-serif">
+                              {documentResult.bodyText || selectedPreset?.bodyText || (
+                                `This is to certify that the regulatory compliance inspection for the applicant institution has been evaluated 
+                                in conformance with AICTE Approval Process Handbook (APH) regulations.`
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="pt-6 mt-4 flex justify-between items-end text-[10px] font-sans border-t border-slate-200 text-slate-500">
+                            <div className="space-y-1">
+                              <div className="font-semibold text-slate-700">Issued by Competent Scrutiny Cell</div>
+                              <div className="font-mono text-slate-800 font-bold">SHA-256: 98f1c8a2...32e182b4</div>
+                            </div>
+                            <div 
+                              id="seal-stamp"
+                              className="w-20 h-20 rounded-full border-2 border-dashed border-[#3B6CFF]/60 bg-[#3B6CFF]/[0.03] flex flex-col items-center justify-center text-center p-2 shrink-0 select-none"
+                            >
+                              <ShieldCheck className="w-5 h-5 text-[#3B6CFF] mb-0.5" />
+                              <span className="text-[8px] font-bold text-[#3B6CFF] tracking-wider uppercase leading-tight">
+                                AICTE SEAL
+                              </span>
+                            </div>
+                          </div>
                         </div>
+                      )}
 
-                        <div className="text-xs font-sans text-slate-600">
-                          Official AICTE National Regulatory Archive Verification Dossier
-                        </div>
-                      </div>
-
-                      {/* Document Structured Body */}
-                      <div className="py-6 space-y-4 text-xs leading-relaxed text-[#111827]">
-                        
-                        {/* Field 2: Applicant Institution */}
-                        <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
-                          <span className="text-slate-600">Applicant Institution:</span>
-                          <span 
-                            id="doc-field-target-institution"
-                            className="font-bold text-[#111827]"
-                          >
-                            {documentResult.extracted_fields?.find(f => f.key === 'institution')?.value || 'Apex Institute of Technology & Science'}
-                          </span>
-                        </div>
-
-                        {/* Field 3: Reference / NOC Number */}
-                        <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
-                          <span className="text-slate-600">Statutory Reference / NOC:</span>
-                          <span 
-                            id="doc-field-target-ref_no"
-                            className="font-mono font-bold text-[#111827]"
-                          >
-                            {documentResult.extracted_fields?.find(f => f.key === 'ref_no')?.value || 'DOC/REG/2025/9821'}
-                          </span>
-                        </div>
-
-                        {/* Field 4: Validity Expiry Date */}
-                        <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
-                          <span className="text-slate-600">Validity & Compliance Period:</span>
-                          <span 
-                            id="doc-field-target-validity"
-                            className="font-semibold text-[#111827]"
-                          >
-                            {documentResult.extracted_fields?.find(f => f.key === 'validity')?.value || '2025-04-01 to 2026-03-31'}
-                          </span>
-                        </div>
-
-                        {/* Field 5: Sanctioned Intake / Area */}
-                        <div className="flex justify-between items-center text-[11px] font-sans border-b border-slate-100 pb-2.5">
-                          <span className="text-slate-600">Sanctioned Intake / Area:</span>
-                          <span 
-                            id="doc-field-target-capacity"
-                            className="font-bold text-[#111827]"
-                          >
-                            {documentResult.extracted_fields?.find(f => f.key === 'capacity')?.value || '750 Students / 8,500 m²'}
-                          </span>
-                        </div>
-
-                        {/* Statutory Body Text Narrative */}
-                        <div className="py-2 text-justify leading-relaxed text-slate-800 font-serif">
-                          {documentResult.bodyText || (
-                            `This is to certify that the regulatory compliance inspection for the applicant institution has been evaluated 
-                            in conformance with AICTE Approval Process Handbook (APH) regulations. Approved sanctioned intake is recorded as 
-                            750 Engineering Students, with total built-up instructional carpet area certified as 8,500.00 square meters.`
-                          )}
-                        </div>
-
-                        <div className="text-justify text-[11px] text-slate-600 italic font-sans border-l-2 border-slate-300 pl-3 py-1">
-                          All statutory conditions regarding regular faculty cadre ratios (1:15 / 1:20), fire safety clearance certificates, 
-                          and encumbrance-free title deed holdings must be maintained in accordance with AICTE regulations.
-                        </div>
-                      </div>
-
-                      {/* Footer Seal (Requirement 3: Stays completely inside paper) */}
-                      <div className="pt-6 mt-4 flex justify-between items-end text-[10px] font-sans border-t border-slate-200 text-slate-500">
-                        <div className="space-y-1">
-                          <div className="font-semibold text-slate-700">Issued by Competent Scrutiny Cell</div>
-                          <div className="font-mono text-slate-800 font-bold">SHA-256: 98f1c8a2...32e182b4</div>
-                          <div className="text-[9px] text-slate-400">Cryptographically Recorded to Audit Ledger</div>
-                        </div>
-
-                        {/* Verified Seal Stamp - Padded and fully inside borders */}
-                        <div 
-                          id="seal-stamp"
-                          className="w-24 h-24 rounded-full border-2 border-dashed border-[#3B6CFF]/60 bg-[#3B6CFF]/[0.03] flex flex-col items-center justify-center text-center p-2 shrink-0 select-none"
-                        >
-                          <ShieldCheck className="w-5 h-5 text-[#3B6CFF] mb-0.5" />
-                          <span className="text-[8px] font-bold text-[#3B6CFF] tracking-wider uppercase leading-tight">
-                            AICTE VERIFIED SEAL
-                          </span>
-                          <span className="text-[7px] font-mono text-slate-500 mt-0.5">2026-REG</span>
-                        </div>
-                      </div>
-
-                      {/* Extracted Bounding Boxes Overlay: ONLY drawn for the 5 extracted fields in the table */}
+                      {/* Extracted Bounding Boxes Overlay */}
                       {showBoxes && (
                         <div className="absolute inset-0 pointer-events-none">
                           {documentResult.extracted_fields?.map((field) => {
                             const box = measuredBoxes[field.key] || field.box;
                             if (!box) return null;
 
-                            // Coordinate conversion using user-specified ratio formulas:
-                            // left = box.x / originalWidth * 100%
-                            // top = box.y / originalHeight * 100%
-                            // width = box.w / originalWidth * 100%
-                            // height = box.h / originalHeight * 100%
                             const leftPct = (box.x / originalWidth) * 100;
                             const topPct = (box.y / originalHeight) * 100;
                             const widthPct = (box.w / originalWidth) * 100;
@@ -832,7 +943,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     />
                   </div>
 
-                  <pre className="p-4 bg-surface border border-border rounded-lg text-xs font-mono text-text whitespace-pre-wrap max-h-[500px] overflow-y-auto leading-relaxed">
+                  <pre className="p-4 bg-surface border border-border rounded-lg text-xs font-mono text-text whitespace-pre-wrap max-h-[500px] overflow-y-auto leading-relaxed" id="ocr-raw-text-view">
                     {ocrSearchQuery
                       ? documentResult.full_extracted_text
                           .split('\n')
@@ -845,38 +956,37 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
             </div>
           </div>
 
-          {/* RIGHT Card (40% / xl:col-span-2): Extraction Results */}
-          <div className="xl:col-span-2 space-y-4">
-            
+          {/* RIGHT Card (40% / xl:col-span-2): Extraction Results Table */}
+          <div className="xl:col-span-2 space-y-4" id="doc-intel-right-card">
             {/* Top Block: Document Type & Confidence */}
             <div className="bg-surface rounded-xl border border-border p-4 shadow-xs space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Classified Document Type</span>
-                  <h3 className="text-base font-semibold text-text mt-0.5">{documentResult.doc_type}</h3>
+                  <h3 className="text-base font-semibold text-text mt-0.5" id="doc-intel-doc-type">{documentResult.doc_type}</h3>
                 </div>
                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
                   {Math.round((documentResult.classifier_confidence || 0.96) * 100)}% Conf.
                 </span>
               </div>
 
-              {/* Two short meta rows */}
+              {/* Three meta rows: File, Engine, Mean Confidence */}
               <div className="pt-3 border-t border-border grid grid-cols-3 gap-3 text-xs">
                 <div>
                   <span className="text-muted text-[11px] block font-medium">File</span>
-                  <span className="font-mono text-text truncate block mt-0.5" title={documentResult.filename}>
+                  <span className="font-mono text-text truncate block mt-0.5" id="doc-intel-filename" title={documentResult.filename}>
                     {documentResult.filename}
                   </span>
                 </div>
                 <div>
                   <span className="text-muted text-[11px] block font-medium">Engine</span>
-                  <span className="font-medium text-text block mt-0.5">
+                  <span className="font-medium text-text block mt-0.5" id="doc-intel-engine">
                     {documentResult.engine || documentResult.ocr_engine || 'PyMuPDF text layer'}
                   </span>
                 </div>
                 <div>
                   <span className="text-muted text-[11px] block font-medium">Confidence</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mt-0.5 font-mono">
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 block mt-0.5 font-mono" id="doc-intel-confidence">
                     {documentResult.mean_confidence != null ? `${(documentResult.mean_confidence * 100).toFixed(1)}%` : '98.0%'}
                   </span>
                 </div>
@@ -905,27 +1015,27 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               </details>
             </div>
 
-            {/* Extracted Fields Clean Table: Shared Grid Layout [38%_44%_18%] */}
-            <div className="bg-surface rounded-xl border border-border shadow-xs overflow-hidden">
+            {/* Extracted Fields Table: All fields from API response */}
+            <div className="bg-surface rounded-xl border border-border shadow-xs overflow-hidden" id="doc-intel-fields-table">
               <div className="px-3.5 py-2.5 bg-surface-2 border-b border-border flex items-center justify-between">
                 <span className="text-xs font-semibold text-text flex items-center space-x-1.5">
                   <Crosshair className="w-3.5 h-3.5 text-primary" />
                   <span>Extracted Fields</span>
                 </span>
-                <span className="text-[11px] font-mono text-muted">
+                <span className="text-[11px] font-mono text-muted" id="doc-intel-field-count">
                   {documentResult.extracted_fields?.length || 0} fields
                 </span>
               </div>
 
-              {/* Shared Header Grid */}
+              {/* Header Grid */}
               <div className="bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border px-3.5 py-2 grid grid-cols-[38%_44%_18%] items-center">
                 <div>Field</div>
                 <div>Value</div>
                 <div className="text-right">Conf.</div>
               </div>
 
-              {/* Shared Row Grid */}
-              <div className="divide-y divide-border text-text">
+              {/* Row Grid */}
+              <div className="divide-y divide-border text-text" id="doc-intel-field-rows">
                 {documentResult.extracted_fields?.map((f) => {
                   const isHovered = hoveredFieldKey === f.key;
                   const isSelected = selectedFieldKey === f.key;
@@ -966,7 +1076,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
               </div>
             </div>
 
-            {/* Findings / Review Indicator Callout (Clean Glass, No Highlighter) */}
+            {/* Findings / Review Indicator Callout */}
             {hasFindings && (
               <div className="bg-surface-2 border border-border rounded-xl p-3.5 space-y-2.5 shadow-xs">
                 <div className="flex items-start space-x-2.5">
