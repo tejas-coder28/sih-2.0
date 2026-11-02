@@ -54,10 +54,16 @@ export default function RuleConfigPage() {
 
   const handleSelectRuleForSimulation = (rule) => {
     const matched = SIMULATION_RULES.find(
-      (r) => r.rule_code === rule.rule_code || (r.clause_id && rule.clause_id && r.clause_id.includes(rule.clause_id))
+      (r) => r.rule_code === rule?.rule_code || 
+             (r.clause_id && rule?.clause_id && r.clause_id.includes(rule.clause_id)) ||
+             (rule?.id && (r.id === rule.id || r.rule_code === rule.id))
     ) || SIMULATION_RULES[0];
     setSelectedRuleId(matched.id);
+    setCurrentRule(matched);
+    const initialVal = matched.default_simulated_value ?? matched.baseline_value;
+    setSliderValue(initialVal);
     setActiveTopTab('simulator');
+    executeDryRun(matched, initialVal);
   };
 
   // Dry-Run API execution calling POST /rules/dry-run
@@ -716,7 +722,7 @@ export default function RuleConfigPage() {
                               ? 'bg-rose-100 text-rose-800 border-rose-300'
                               : 'bg-surface-2 text-text-muted border-border'
                           }`}>
-                            {isCleared ? '✓ STATUS CLEARED' : isFlagged ? '⚠ NEWLY FLAGGED' : 'UNTOUCHED'}
+                            {isCleared ? 'STATUS CLEARED' : isFlagged ? 'NEWLY FLAGGED' : 'UNTOUCHED'}
                           </span>
                         </td>
                       </tr>
@@ -773,7 +779,7 @@ export default function RuleConfigPage() {
               <div className="flex justify-between font-mono font-bold">
                 <span>Rule Code: {currentRule.rule_code}</span>
                 <span className="text-purple-700">
-                  {activeRuleVersion} ➔ v1.0.{Number(activeRuleVersion.split('.')[2]) + 1}
+                  {activeRuleVersion} &rarr; v1.0.{Number(activeRuleVersion.split('.')[2]) + 1}
                 </span>
               </div>
               <div className="text-[11px] text-text-muted">

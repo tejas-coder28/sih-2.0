@@ -12,6 +12,13 @@ Examples:
 
 import os
 import sys
+try:
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 import json
 import argparse
 import subprocess
@@ -163,11 +170,11 @@ def run_smoke_tests(backend_url, frontend_url, skip_browser=False, screenshots_d
         ("Impossibility Engine Graph", "GET", f"{backend_url}/api/v1/graph", None, False),
         ("Audit Verify Ledger Chain", "GET", f"{backend_url}/api/v1/audit/verify-chain", None, False),
         ("Regulation-as-Code Rules", "GET", f"{backend_url}/api/v1/rules", None, False),
-        ("Pre-Flight Readiness Scan", "GET", f"{backend_url}/api/v1/preflight/1", None, False),
+        ("Pre-Flight Readiness Scan", "POST", f"{backend_url}/api/v1/applications/1/preflight", b"", False),
     ]
 
-    for screen_name, method, url, _, _ in screen_endpoints:
-        status, body, resp_headers, err = make_request(url, method=method, headers=officer_headers)
+    for screen_name, method, url, payload, _ in screen_endpoints:
+        status, body, resp_headers, err = make_request(url, method=method, headers=officer_headers, data=payload)
         
         # Validation rules per endpoint
         if status == 200:

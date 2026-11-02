@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ScanEye, 
   Layers, 
@@ -14,12 +14,14 @@ import {
   Building2, 
   Clock, 
   ChevronRight,
-  Maximize2
+  Maximize2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 /**
  * Side Panel with Side-by-Side Photo Comparison:
  * - Side-by-side photo views (original vs near-duplicate)
+ * - Compact "Shared photos" thumbnail strip (3-6 thumbnails)
  * - Difference overlay / ELA heatmap toggle
  * - Interactive wipe slider comparison
  * - Similarity scores breakdown (Hamming distance, OpenCLIP cosine, Visual %)
@@ -36,17 +38,19 @@ export default function PhotoComparisonPanel({
   const [toastMsg, setToastMsg] = useState('');
   const [origImgError, setOrigImgError] = useState(false);
   const [dupImgError, setDupImgError] = useState(false);
+  const [activeSubPhotoId, setActiveSubPhotoId] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOrigImgError(false);
     setDupImgError(false);
+    setActiveSubPhotoId(null);
   }, [pairData?.id]);
 
   if (!pairData) {
     return (
       <div className="bg-surface border border-border rounded-xl p-8 text-center text-text-subtle">
         <ScanEye className="w-10 h-10 mx-auto text-text-subtle mb-2 animate-pulse" />
-        <p className="text-sm font-semibold text-text-muted">Select a Photo Reuse Link</p>
+        <p className="text-sm font-semibold text-text-muted">Select an Institution or Photo Pair</p>
         <p className="text-xs text-text-subtle mt-1">
           Click any edge or connected college node in the cluster graph to inspect forensic comparison.
         </p>
@@ -54,9 +58,13 @@ export default function PhotoComparisonPanel({
     );
   }
 
-  const { original_photo, duplicate_photo } = pairData;
+  const { original_photo, duplicate_photo, shared_photos = [] } = pairData;
 
-  const resolvePhotoUrl = (photo) => {
+  // Active sub-photo in the cluster strip (if selected)
+  const currentSubPhoto = shared_photos.find((p) => p.id === activeSubPhotoId) || shared_photos[0];
+
+  const resolvePhotoUrl = (photo, fallbackSubUrl) => {
+    if (fallbackSubUrl) return fallbackSubUrl;
     if (!photo) return '/images/computer_lab_original.jpg';
     const url = photo.image_url || photo.photo_url || '';
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
@@ -71,8 +79,8 @@ export default function PhotoComparisonPanel({
     return '/images/computer_lab_original.jpg';
   };
 
-  const origUrl = resolvePhotoUrl(original_photo);
-  const dupUrl = resolvePhotoUrl(duplicate_photo);
+  const origUrl = resolvePhotoUrl(original_photo, currentSubPhoto?.origUrl);
+  const dupUrl = resolvePhotoUrl(duplicate_photo, currentSubPhoto?.dupUrl);
 
   const ImagePlaceholder = ({ fileName, subtitle }) => (
     <div className="w-full h-full min-h-[160px] flex flex-col items-center justify-center p-4 bg-surface-2 text-text-subtle text-center select-none">
@@ -80,7 +88,7 @@ export default function PhotoComparisonPanel({
       <span className="text-[11px] font-mono font-bold text-text-muted max-w-[200px] truncate" title={fileName}>
         {fileName || 'image_asset.jpg'}
       </span>
-      <span className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded mt-1 font-medium">
+      <span className="text-[10px] text-amber-800 dark:text-amber-200 bg-amber-100/70 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded mt-1 font-medium">
         {subtitle || 'Evidence Asset Registered'}
       </span>
     </div>
@@ -127,9 +135,9 @@ export default function PhotoComparisonPanel({
         </div>
       </div>
 
-      {/* Mandatory Statutory Advisory Banner (Accessible in both themes) */}
-      <div className="bg-[#FFF1F2] dark:bg-rose-950/40 px-4 py-2.5 border-b border-[#FECDD3] dark:border-rose-900/60 text-[#9F1239] dark:text-rose-200 text-xs flex items-center space-x-2">
-        <ShieldAlert className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+      {/* Mandatory Statutory Advisory Banner */}
+      <div className="bg-amber-50 dark:bg-amber-950/40 px-4 py-2.5 border-b border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200 text-xs flex items-center space-x-2">
+        <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
         <span className="font-bold text-[11px] leading-tight">
           {pairData.ai_wording}
         </span>
@@ -137,9 +145,58 @@ export default function PhotoComparisonPanel({
 
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         
-        {/* View Mode Switcher Toolbar: Single-Row Segmented Control (Dual | Split | Difference) */}
+        {/* Compact "Shared Photos" Thumbnail Strip (3-6 thumbnails) */}
+        {shared_photos.length > 0 && (
+          <div className="bg-surface-2 p-2.5 rounded-xl border border-border space-y-2">
+            <div className="flex items-center justify-between text-[11px] font-bold text-text px-0.5">
+              <span className="flex items-center space-x-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-primary" />
+                <span>Shared Photos in Cluster ({shared_photos.length}):</span>
+              </span>
+              <span className="text-[10px] text-text-subtle font-mono">Select thumbnail to view</span>
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5">
+              {shared_photos.map((photo, pIdx) => {
+                const isSelected = activeSubPhotoId === photo.id || (!activeSubPhotoId && pIdx === 0);
+                return (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    onClick={() => setActiveSubPhotoId(photo.id)}
+                    className={`flex-none flex items-center space-x-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-surface border-primary ring-2 ring-primary/20 shadow-xs'
+                        : 'bg-surface/70 border-border hover:bg-surface hover:border-border-hover'
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-md overflow-hidden bg-surface-2 shrink-0 border border-border">
+                      <img
+                        src={photo.dupUrl || photo.origUrl}
+                        alt={photo.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    </div>
+                    <div className="min-w-0 pr-1">
+                      <div className="text-[11px] font-bold text-text truncate max-w-[110px] leading-tight">
+                        {photo.name}
+                      </div>
+                      <div className="flex items-center space-x-1 text-[10px] mt-0.5">
+                        <span className="text-text-muted truncate max-w-[65px]">{photo.category}</span>
+                        <span className="text-amber-600 dark:text-amber-400 font-mono font-bold">{photo.similarity}%</span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* View Mode Switcher Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-2 bg-surface-2 p-1.5 rounded-xl border border-border text-xs">
-          <span className="text-[11px] font-bold text-text px-1 shrink-0">Comparison View:</span>
+          <span className="text-[11px] font-bold text-text px-1 shrink-0">Comparison Mode:</span>
           <div className="inline-flex rounded-lg border border-border bg-surface p-0.5 divide-x divide-border shadow-2xs">
             <button
               id="view-mode-side-by-side"
@@ -191,13 +248,13 @@ export default function PhotoComparisonPanel({
               <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-2xs flex flex-col">
                 <div className="bg-surface-2 px-3 py-1.5 text-[10px] font-bold text-muted uppercase flex items-center justify-between border-b border-border">
                   <span className="flex items-center space-x-1">
-                    <span className="w-2 h-2 rounded-full bg-surface-20" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
                     <span>Original Submission</span>
                   </span>
                   <span className="font-mono text-text-subtle">{original_photo.academic_year || '2024-25'}</span>
                 </div>
 
-                <div className="relative aspect-[4/3] bg-[#F4F6F8] overflow-hidden group">
+                <div className="relative aspect-[4/3] bg-[#F4F6F8] dark:bg-zinc-900 overflow-hidden group">
                   {origImgError ? (
                     <ImagePlaceholder fileName={original_photo.file_name || original_photo.filename} subtitle="Original Evidence Scan" />
                   ) : (
@@ -212,7 +269,7 @@ export default function PhotoComparisonPanel({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
-                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
+                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
                     {original_photo.file_name || original_photo.filename || 'original_image.jpg'}
                   </div>
                 </div>
@@ -225,7 +282,7 @@ export default function PhotoComparisonPanel({
                     {original_photo.city || 'Campus Facility'}
                   </div>
                   <div className="text-[11px] text-text-muted bg-surface-2 p-1.5 rounded border border-border font-medium">
-                    {original_photo.facility_name || pairData.category}
+                    {currentSubPhoto?.name || original_photo.facility_name || pairData.category}
                   </div>
                   <div className="pt-1.5 border-t border-border flex items-center justify-between text-[10px] font-mono text-text-subtle">
                     <span>App: {original_photo.application_no || 'APP-HISTORICAL'}</span>
@@ -235,16 +292,16 @@ export default function PhotoComparisonPanel({
               </div>
 
               {/* Near-Duplicate Photo Card */}
-              <div className="bg-surface-2 border-2 border-rose-300 rounded-xl overflow-hidden shadow-2xs flex flex-col">
-                <div className="bg-rose-100/80 px-3 py-1.5 text-[10px] font-bold text-rose-800 uppercase flex items-center justify-between border-b border-rose-200">
+              <div className="bg-surface border-2 border-amber-300 dark:border-amber-900/60 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+                <div className="bg-amber-100/80 dark:bg-amber-950/60 px-3 py-1.5 text-[10px] font-bold text-amber-800 dark:text-amber-200 uppercase flex items-center justify-between border-b border-amber-200 dark:border-amber-900/60">
                   <span className="flex items-center space-x-1">
-                    <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-                    <span>Current Near-Duplicate</span>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span>Flagged Near-Duplicate</span>
                   </span>
-                  <span className="font-mono text-rose-700">{duplicate_photo.academic_year || '2025-26'}</span>
+                  <span className="font-mono text-amber-700 dark:text-amber-300">{duplicate_photo.academic_year || '2025-26'}</span>
                 </div>
 
-                <div className="relative aspect-[4/3] bg-[#F4F6F8] overflow-hidden group">
+                <div className="relative aspect-[4/3] bg-[#F4F6F8] dark:bg-zinc-900 overflow-hidden group">
                   {dupImgError ? (
                     <ImagePlaceholder fileName={duplicate_photo.file_name || duplicate_photo.filename} subtitle="Flagged Near-Duplicate" />
                   ) : (
@@ -259,10 +316,10 @@ export default function PhotoComparisonPanel({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
-                  <div className="absolute top-2 right-2 bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
+                  <div className="absolute top-2 right-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm">
                     {pairData.similarity_score}% RE-USE
                   </div>
-                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
+                  <div className="absolute bottom-2 left-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-0.5 rounded shadow-xs max-w-[80%] truncate">
                     {duplicate_photo.file_name || duplicate_photo.filename || 'reused_image.jpg'}
                   </div>
                 </div>
@@ -274,8 +331,8 @@ export default function PhotoComparisonPanel({
                   <div className="text-[11px] text-text-subtle">
                     {duplicate_photo.city || 'Applicant Campus'}
                   </div>
-                  <div className="text-[11px] text-rose-900 bg-rose-50/60 p-1.5 rounded border border-rose-100 font-medium">
-                    {duplicate_photo.facility_name || pairData.category}
+                  <div className="text-[11px] text-amber-900 dark:text-amber-200 bg-amber-50/60 dark:bg-amber-950/40 p-1.5 rounded border border-amber-200 dark:border-amber-900/60 font-medium">
+                    {currentSubPhoto?.name || duplicate_photo.facility_name || pairData.category}
                   </div>
                   <div className="pt-1.5 border-t border-border flex items-center justify-between text-[10px] font-mono text-text-subtle">
                     <span>App: {duplicate_photo.application_no || 'APP-CURRENT'}</span>
@@ -288,53 +345,48 @@ export default function PhotoComparisonPanel({
           </div>
         )}
 
-        {/* 2. DIFFERENCE OVERLAY / ELA HEATMAP VIEW */}
+        {/* 2. DIFFERENCE OVERLAY VIEW */}
         {viewMode === 'difference_overlay' && (
           <div className="space-y-3">
-            <div className="bg-[#F4F6F8] border border-[#D5D9DE] rounded-xl p-3 text-text text-xs">
+            <div className="bg-surface-2 border border-border rounded-xl p-3 text-text text-xs">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-text flex items-center space-x-1.5">
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Pixel Difference & Forensic ELA Divergence Heatmap</span>
+                  <Layers className="w-3.5 h-3.5 text-primary" />
+                  <span>Pixel Difference & Forensic Divergence Heatmap</span>
                 </span>
-                <span className="text-[10px] font-mono bg-surface border border-[#D5D9DE] px-2 py-0.5 rounded text-muted">
+                <span className="text-[10px] font-mono bg-surface border border-border px-2 py-0.5 rounded text-muted">
                   Opacity: {overlayOpacity}%
                 </span>
               </div>
 
               {/* Overlay Canvas Viewport */}
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-[#D5D9DE] bg-surface">
-                {/* Base Image (Original) */}
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border bg-surface">
                 <img 
                   src={origUrl} 
                   alt="Original" 
                   width="400"
                   height="300"
                   loading="lazy"
-                  decoding="async"
                   onError={() => setOrigImgError(true)}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
 
-                {/* Overlaid Near Duplicate Image with dynamic difference filter */}
                 <img 
                   src={dupUrl} 
                   alt="Duplicate" 
                   width="400"
                   height="300"
                   loading="lazy"
-                  decoding="async"
                   onError={() => setDupImgError(true)}
                   className="absolute inset-0 w-full h-full object-cover mix-blend-difference"
                   style={{ opacity: overlayOpacity / 100 }}
                 />
 
-                {/* Simulated ELA Artifact Highlights (Highlighted Bounding Boxes) */}
                 <div 
-                  className="absolute border-2 border-rose-500 bg-rose-500/20 rounded shadow-[0_0_12px_rgba(244,63,94,0.8)] animate-pulse"
+                  className="absolute border-2 border-amber-500 bg-amber-500/20 rounded shadow-[0_0_12px_rgba(245,158,11,0.5)]"
                   style={{ top: '15%', left: '10%', width: '35%', height: '25%' }}
                 >
-                  <span className="absolute -top-5 left-0 bg-rose-600 text-white text-[8px] font-mono px-1.5 py-0.2 rounded">
+                  <span className="absolute -top-5 left-0 bg-amber-600 text-white text-[8px] font-mono px-1.5 py-0.5 rounded">
                     CROPPED REGION (ΔE = 14.2)
                   </span>
                 </div>
@@ -343,12 +395,12 @@ export default function PhotoComparisonPanel({
                   className="absolute border-2 border-amber-400 bg-amber-400/20 rounded shadow-[0_0_12px_rgba(251,191,36,0.8)]"
                   style={{ top: '35%', right: '12%', width: '22%', height: '45%' }}
                 >
-                  <span className="absolute -top-5 left-0 bg-amber-400 text-slate-950 font-bold text-[8px] font-mono px-1.5 py-0.2 rounded shadow-xs">
+                  <span className="absolute -top-5 left-0 bg-amber-400 text-slate-950 font-bold text-[8px] font-mono px-1.5 py-0.5 rounded shadow-xs">
                     SERVER RACK MATCH (pHash Dist = 0)
                   </span>
                 </div>
 
-                <div className="absolute bottom-2 right-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-mono px-2 py-1 rounded shadow-xs">
+                <div className="absolute bottom-2 right-2 bg-surface text-text border border-border text-[9px] font-mono px-2 py-1 rounded shadow-xs">
                   Difference Blend Mode • Inverted Pixel Channel
                 </div>
               </div>
@@ -368,8 +420,8 @@ export default function PhotoComparisonPanel({
               </div>
             </div>
 
-            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900">
-              <strong>Forensic Analysis:</strong> Red/amber glowing bands highlight pixel difference coordinates. Zero-divergence regions in background confirm identical physical room and furniture geometry.
+            <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-900 dark:text-amber-200 rounded-lg">
+              <strong>Forensic Analysis:</strong> Red/amber bands highlight pixel difference coordinates. Zero-divergence regions in background confirm identical physical room and equipment geometry.
             </div>
           </div>
         )}
@@ -377,32 +429,28 @@ export default function PhotoComparisonPanel({
         {/* 3. WIPE SLIDER COMPARISON VIEW */}
         {viewMode === 'wipe_slider' && (
           <div className="space-y-3">
-            <div className="bg-[#F4F6F8] border border-[#D5D9DE] rounded-xl p-3 text-text text-xs">
+            <div className="bg-surface-2 border border-border rounded-xl p-3 text-text text-xs">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-text flex items-center space-x-1.5">
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Interactive Split Wipe Slider (Original ⟷ Reused)</span>
+                  <Sliders className="w-3.5 h-3.5 text-primary" />
+                  <span>Interactive Split Wipe Slider (Original &harr; Reused)</span>
                 </span>
                 <span className="text-[10px] font-mono text-muted">
                   Drag slider to wipe
                 </span>
               </div>
 
-              {/* Wipe Viewport */}
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-[#D5D9DE] select-none cursor-ew-resize">
-                {/* Background: Duplicate Image (Right Side) */}
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border select-none cursor-ew-resize">
                 <img 
                   src={dupUrl} 
                   alt="Duplicate Photo" 
                   width="400"
                   height="300"
                   loading="lazy"
-                  decoding="async"
                   onError={() => setDupImgError(true)}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
 
-                {/* Foreground: Original Image (Left Side) clipped by wipePosition */}
                 <div 
                   className="absolute inset-0 overflow-hidden"
                   style={{ width: `${wipePosition}%` }}
@@ -413,32 +461,29 @@ export default function PhotoComparisonPanel({
                     width="400"
                     height="300"
                     loading="lazy"
-                    decoding="async"
                     onError={() => setOrigImgError(true)}
                     className="absolute inset-0 w-full h-full object-cover max-w-none"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
-                  <div className="absolute top-2 left-2 bg-surface text-text border border-[#D5D9DE] text-[9px] font-bold px-2 py-0.5 rounded shadow-xs">
-                    Original (Royal College)
+                  <div className="absolute top-2 left-2 bg-surface text-text border border-border text-[9px] font-bold px-2 py-0.5 rounded shadow-xs">
+                    Original ({original_photo.institution_name?.split(' ')[0] || 'College'})
                   </div>
                 </div>
 
-                {/* Vertical Divider Line */}
                 <div 
                   className="absolute top-0 bottom-0 w-0.5 bg-surface shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20 pointer-events-none"
                   style={{ left: `${wipePosition}%` }}
                 >
                   <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-surface text-text flex items-center justify-center shadow-md text-[10px] font-black font-sans">
-                    ⇄
+                    &harr;
                   </div>
                 </div>
 
-                <div className="absolute top-2 right-2 bg-rose-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10">
-                  Reused (Apex Tech)
+                <div className="absolute top-2 right-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10">
+                  Reused ({duplicate_photo.institution_name?.split(' ')[0] || 'Applicant'})
                 </div>
               </div>
 
-              {/* Slider Control */}
               <div className="mt-3 flex items-center space-x-3 text-[11px]">
                 <span className="text-muted">Position:</span>
                 <input 
@@ -459,36 +504,33 @@ export default function PhotoComparisonPanel({
         <div className="bg-surface-2 border border-border rounded-xl p-3.5 space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-text">Perceptual & Semantic Similarity Metrics</span>
-            <span className="text-[10px] font-bold text-rose-800 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">
+            <span className="text-[10px] font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-900/60">
               {pairData.match_type}
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center">
-            {/* Visual Similarity */}
             <div className="bg-surface p-2.5 rounded-lg border border-border">
               <div className="text-[10px] text-text-subtle uppercase font-medium">Visual Similarity</div>
-              <div className="text-base font-black text-rose-600">{pairData.similarity_score}%</div>
+              <div className="text-base font-black text-amber-600 dark:text-amber-400">{pairData.similarity_score}%</div>
               <div className="text-[9px] text-text-subtle font-mono">Inverted Hamming</div>
             </div>
 
-            {/* Hamming Distance */}
             <div className="bg-surface p-2.5 rounded-lg border border-border">
               <div className="text-[10px] text-text-subtle uppercase font-medium">Hamming Distance</div>
               <div className="text-base font-black text-text">{pairData.hamming_distance} / 64</div>
               <div className="text-[9px] text-emerald-600 font-mono">pHash Bit Delta</div>
             </div>
 
-            {/* OpenCLIP Cosine */}
             <div className="bg-surface p-2.5 rounded-lg border border-border">
-              <div className="text-[10px] text-text-subtle uppercase font-medium">Cosine Similarity (Simulated Heuristic)</div>
-              <div className="text-base font-black text-indigo-700">{pairData.clip_cosine}</div>
+              <div className="text-[10px] text-text-subtle uppercase font-medium">Cosine Metric</div>
+              <div className="text-base font-black text-indigo-700 dark:text-indigo-400">{pairData.clip_cosine}</div>
               <div className="text-[9px] text-text-subtle font-mono">Simulated Vector Metric</div>
             </div>
           </div>
 
           <div className="text-[11px] text-text-muted leading-snug bg-surface p-2.5 rounded-lg border border-border">
-            <strong>Forensics Difference Summary:</strong> {pairData.difference_summary}
+            <strong>Forensics Difference Summary:</strong> {currentSubPhoto?.diffNote || pairData.difference_summary}
           </div>
         </div>
 
@@ -497,11 +539,10 @@ export default function PhotoComparisonPanel({
           <div className="text-xs font-bold text-text">Open Affected Applications:</div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {/* Open Original App */}
             <button
               onClick={() => handleOpenApp(original_photo.application_no, original_photo.institution_name)}
               id="open-app-original-btn"
-              className="p-2.5 rounded-xl border border-border bg-surface hover:bg-surface-2 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs"
+              className="p-2.5 rounded-xl border border-border bg-surface hover:bg-surface-2 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
             >
               <div className="min-w-0 pr-1">
                 <div className="text-[10px] text-text-subtle font-mono">Origin Application</div>
@@ -511,28 +552,26 @@ export default function PhotoComparisonPanel({
               <ExternalLink className="w-3.5 h-3.5 text-text-subtle group-hover:text-primary shrink-0" />
             </button>
 
-            {/* Open Duplicate App */}
             <button
               onClick={() => handleOpenApp(duplicate_photo.application_no, duplicate_photo.institution_name)}
               id="open-app-duplicate-btn"
-              className="p-2.5 rounded-xl border border-rose-300 bg-rose-50/50 hover:bg-rose-50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs"
+              className="p-2.5 rounded-xl border border-amber-300 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-50 dark:hover:bg-amber-950/50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
             >
               <div className="min-w-0 pr-1">
-                <div className="text-[10px] text-rose-600 font-mono font-bold">Current Flagged Dossier</div>
+                <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-bold">Current Flagged Dossier</div>
                 <div className="font-bold text-text leading-snug">{duplicate_photo.institution_name}</div>
-                <div className="text-[10px] text-rose-700 font-mono">{duplicate_photo.application_no}</div>
+                <div className="text-[10px] text-amber-700 dark:text-amber-400 font-mono">{duplicate_photo.application_no}</div>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-rose-500 group-hover:text-rose-700 shrink-0" />
+              <ExternalLink className="w-3.5 h-3.5 text-amber-500 group-hover:text-amber-700 shrink-0" />
             </button>
           </div>
 
-          {/* Jump to Evidence Lens */}
           <button
             onClick={() => onOpenEvidenceLens && onOpenEvidenceLens(pairData)}
             id="jump-to-evidence-lens-btn"
-            className="w-full py-2.5 px-4 rounded-xl bg-[#CFE3FA] hover:bg-[#B9D6F5] text-text border border-[#8DB6E6] text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-xl bg-[#CFE3FA] dark:bg-sky-950/50 hover:bg-[#B9D6F5] dark:hover:bg-sky-900/60 text-text dark:text-sky-200 border border-[#8DB6E6] dark:border-sky-800 text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <FileText className="w-4 h-4 text-text" />
+            <FileText className="w-4 h-4 text-text dark:text-sky-200" />
             <span>Open Finding in Evidence Lens Regulatory Strip</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -540,7 +579,7 @@ export default function PhotoComparisonPanel({
 
         {/* Dynamic Toast Feedback Banner */}
         {toastMsg && (
-          <div className="bg-emerald-50 border border-emerald-300 text-emerald-950 px-3 py-2 rounded-xl text-xs flex items-center space-x-2 animate-fadeIn">
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 px-3 py-2 rounded-xl text-xs flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{toastMsg}</span>
           </div>

@@ -442,7 +442,7 @@ export default function Dashboard({
                   onChange={(e) => setSortBy(e.target.value)}
                   className="appearance-none bg-surface border border-border rounded-lg pl-3 pr-8 py-1.5 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs h-10 cursor-pointer"
                 >
-                  <option value="risk_desc" className="bg-surface text-text">Risk Score (Highest First) 🔥</option>
+                  <option value="risk_desc" className="bg-surface text-text">Risk score (highest first)</option>
                   <option value="risk_asc" className="bg-surface text-text">Risk Score (Lowest First)</option>
                   <option value="readiness" className="bg-surface text-text">Pre-Flight Readiness (%)</option>
                   <option value="name" className="bg-surface text-text">Institution Name (A-Z)</option>
@@ -562,7 +562,7 @@ export default function Dashboard({
         {/* Desktop Triage Table (>=1024px: No horizontal scroll at >= 1280px, No Overlap) */}
         <div id="triage-table" className="hidden lg:block w-full overflow-x-auto scrollbar-slim">
           {/* Sticky Header Row (Part 4.4): glass style when stuck, sentence case */}
-          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(220px,2fr)_130px_110px_minmax(180px,2fr)_180px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_180px_160px] px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
+          <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(260px,2fr)_150px_110px_minmax(220px,2fr)_210px_170px] grid-cols-[minmax(260px,2.5fr)_110px_minmax(220px,2.5fr)_210px_170px] gap-4 px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
             <div>Application & Institution</div>
             <div className="hidden xl:block">State & Category</div>
             <div>Risk Rank</div>
@@ -594,7 +594,7 @@ export default function Dashboard({
                 return (
                   <div 
                     key={app.id}
-                    className="relative grid xl:grid-cols-[minmax(220px,2fr)_130px_110px_minmax(180px,2fr)_180px_160px] grid-cols-[minmax(220px,2.5fr)_110px_minmax(180px,2.5fr)_180px_160px] px-5 py-3 items-center gap-2 min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
+                    className="relative grid xl:grid-cols-[minmax(260px,2fr)_150px_110px_minmax(220px,2fr)_210px_170px] grid-cols-[minmax(260px,2.5fr)_110px_minmax(220px,2.5fr)_210px_170px] gap-4 px-5 py-3 items-center min-h-[72px] hover:bg-surface-2 transition-colors group select-none"
                   >
                     {/* Animated 3px Primary Left Bar (Part 3: scaleY 0 to 1, 150ms) */}
                     <span 
@@ -658,68 +658,75 @@ export default function Dashboard({
                       </div>
                     </div>
 
-                    {/* 4. Primary Anomaly (2-line clamp, "+N more" plain text link) */}
-                    <div className="min-w-0 pr-3 relative">
-                      <div className="text-xs text-text leading-relaxed">
-                        <span className="line-clamp-2" title={app.primary_issue || app.flags?.[0]}>
-                          {app.primary_issue || app.flags?.[0] || 'No adverse indicators'}
-                        </span>
-                        {app.flags && app.flags.length > 1 && (
-                          <div 
-                            className="relative inline-block mt-0.5"
-                            onMouseLeave={() => setActiveAnomalyPopoverId(null)}
+                    {/* 4. Primary Anomaly (min-w-0, fixed track, left-aligned plain accent link) */}
+                    <div className="min-w-0 pr-2 relative flex flex-col justify-center items-start text-left">
+                      <div className="text-xs text-text leading-snug line-clamp-2 text-left" title={app.primary_issue || app.flags?.[0]}>
+                        {app.primary_issue || app.flags?.[0] || 'No adverse indicators'}
+                      </div>
+                      {app.flags && app.flags.length > 1 && (
+                        <div 
+                          className="relative mt-1 text-left"
+                          onMouseLeave={() => setActiveAnomalyPopoverId(null)}
+                        >
+                          <button
+                            type="button"
+                            id={`anomaly-more-btn-${app.id}`}
+                            onClick={() => setActiveAnomalyPopoverId(isAnomalyOpen ? null : app.id)}
+                            onMouseEnter={() => setActiveAnomalyPopoverId(app.id)}
+                            onFocus={() => setActiveAnomalyPopoverId(app.id)}
+                            className="text-[11px] text-primary hover:text-primary-hover font-semibold hover:underline cursor-pointer flex items-center p-0 text-left outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                            aria-expanded={isAnomalyOpen}
+                            aria-label={`View ${app.flags.length - 1} more flagged indicators`}
                           >
-                            <button
-                              type="button"
-                              onClick={() => setActiveAnomalyPopoverId(isAnomalyOpen ? null : app.id)}
-                              onMouseEnter={() => setActiveAnomalyPopoverId(app.id)}
-                              onFocus={() => setActiveAnomalyPopoverId(app.id)}
-                              className="text-xs text-accent font-semibold hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
-                              aria-expanded={isAnomalyOpen}
-                              aria-label={`View ${app.flags.length - 1} more flagged indicators`}
+                            +{app.flags.length - 1} more
+                          </button>
+                          {isAnomalyOpen && (
+                            <div 
+                              id={`anomaly-popover-${app.id}`}
+                              className="absolute left-0 bottom-full mb-1.5 z-30 w-72 p-3 bg-surface border border-border rounded-xl shadow-xl space-y-2 select-text text-left"
                             >
-                              +{app.flags.length - 1} more
-                            </button>
-                            {isAnomalyOpen && (
-                              <div className="absolute left-0 bottom-full mb-1 z-30 w-64 p-3 bg-surface border border-border rounded-lg shadow-xl space-y-1.5 animate-fadeIn">
-                                <div className="text-[10px] font-bold text-text uppercase tracking-wider mb-1 flex items-center justify-between">
-                                  <span>Flagged Indicators</span>
-                                  <button 
-                                    type="button"
-                                    onClick={() => setActiveAnomalyPopoverId(null)}
-                                    className="text-text-muted hover:text-text cursor-pointer"
-                                  >
-                                    <X className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
+                              <div className="text-[10px] font-bold text-text uppercase tracking-wider flex items-center justify-between pb-1.5 border-b border-border">
+                                <span>All Flagged Indicators ({app.flags.length})</span>
+                                <button 
+                                  type="button"
+                                  onClick={() => setActiveAnomalyPopoverId(null)}
+                                  className="text-text-muted hover:text-text cursor-pointer p-0.5 rounded"
+                                  aria-label="Close indicators popover"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <div className="max-h-48 overflow-y-auto space-y-1.5 scrollbar-slim">
                                 {app.flags.map((fl, i) => (
-                                  <div key={i} className="text-xs text-text-muted p-1.5 rounded bg-surface-2 border border-border">
-                                    • {fl}
+                                  <div key={i} className="text-xs text-text p-2 rounded-lg bg-surface-2 border border-border flex items-start space-x-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
+                                    <span className="leading-relaxed">{fl}</span>
                                   </div>
                                 ))}
                               </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    {/* 5. Statutory Status (200px Fixed Column, Guaranteed Zero Overlap) */}
-                    <div className="min-w-0 pr-2 flex items-center">
+                    {/* 5. Statutory Status (210px Fixed Track, Guaranteed Zero Overlap) */}
+                    <div className="min-w-0 pr-2 flex items-center overflow-hidden">
                       <StatusChip status={app.status} />
                     </div>
 
-                    {/* 6. Officer Actions: Evidence Lens Outline Button + Comment Ghost Icon Button */}
+                    {/* 6. Officer Actions: Evidence Lens Outline Button + 36px Comment Ghost Button (170px Track) */}
                     <div className="min-w-0 flex items-center justify-end space-x-2">
                       {!isInstitutionUser ? (
                         <>
                           <button
                             type="button"
+                            id={`btn-evidence-lens-${app.id}`}
                             onClick={() => {
                               onSelectApplication(app);
                               onNavigateTab('evidence-lens');
                             }}
-                            className="group/btn h-9 px-3.5 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold transition-colors inline-flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                            className="group/btn h-9 px-3.5 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold transition-colors inline-flex items-center justify-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             title="Inspect application dossier in Evidence Lens"
                           >
                             <span>Evidence Lens</span>
@@ -729,15 +736,16 @@ export default function Dashboard({
                           {!isAuditor && (
                             <button
                               type="button"
+                              id={`btn-comment-${app.id}`}
                               onClick={() => {
                                 setActionModalApp(app);
                                 setOfficerComment('');
                               }}
-                              className="w-9 h-9 rounded-lg text-text-muted hover:text-text hover:bg-surface-2 flex items-center justify-center cursor-pointer transition-colors shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                              className="w-9 h-9 min-w-[36px] min-h-[36px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 flex items-center justify-center cursor-pointer transition-colors flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               title="Add comment"
                               aria-label="Add comment"
                             >
-                              <MessageSquare className="w-4 h-4 shrink-0" />
+                              <MessageSquare className="w-[18px] h-[18px] flex-none shrink-0" size={18} />
                             </button>
                           )}
                         </>
@@ -1025,7 +1033,7 @@ export default function Dashboard({
                 </div>
 
                 <div className="bg-surface-2 p-3 rounded-lg border border-border text-xs text-text-muted">
-                  <span className="text-warning font-semibold mr-1">⚠️ Statutory Governance:</span> Direct automated rejection is strictly disabled. Any adverse determination must proceed via an authorized officer action with a signed comment.
+                  <span className="text-warning font-semibold mr-1">Statutory Governance:</span> Direct automated rejection is strictly disabled. Any adverse determination must proceed via an authorized officer action with a signed comment.
                 </div>
 
                 <div className="flex items-center justify-end space-x-2 pt-2">

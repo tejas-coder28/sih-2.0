@@ -2,31 +2,25 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpenCheck, 
   Search, 
-  Filter, 
   Scale, 
-  FileText, 
   Sliders, 
-  CheckCircle2, 
   AlertTriangle, 
   ChevronRight, 
   ChevronDown, 
-  ExternalLink, 
   Copy, 
   Check, 
   RefreshCw, 
-  Info,
-  ShieldAlert,
-  ArrowRight
+  Info
 } from 'lucide-react';
-import StatusChip from './StatusChip';
-import CopyButton from './ui/CopyButton';
 import DemoDataBadge from './DemoDataBadge';
+import CopyButton from './ui/CopyButton';
+import { FALLBACK_APH_RULES } from '../data/mockRulesCatalog';
 import { api } from '../services/api';
 
 /**
  * AICTE Approval Process Handbook (APH) Rules Catalog:
  * - Formatted clause-citation format: [AICTE APH 2025-26 Clause X.X.X]
- * - Category filters (Faculty & Cadre, Infrastructure, Land & Title, Legal & Entity, Governance)
+ * - Category filters (Faculty & Cadre, Infrastructure, Land & Title, Safety & Compliance, Governance & Quality)
  * - Search by clause citation, title, or rule code
  * - Expanded detail drawer with exact parameter thresholds and failure message template
  * - "Simulate in What-If" action button
@@ -39,9 +33,8 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [expandedRuleId, setExpandedRuleId] = useState(null);
-  const [copiedCitation, setCopiedCitation] = useState(null);
 
-  // Load rules from backend API
+  // Load rules from backend API with authoritative fallback
   const fetchRules = async () => {
     setLoading(true);
     setError(null);
@@ -54,7 +47,8 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
         throw new Error('Empty rules catalog');
       }
     } catch (err) {
-      console.warn('Backend rules API offline, falling back to mock rules:', err);
+      console.warn('Backend rules API offline, falling back to authoritative APH baseline:', err);
+      setRules(FALLBACK_APH_RULES);
       setError('Live regulations catalog temporarily offline. Displaying authoritative APH 2025-26 baseline.');
       setIsDemoData(true);
     } finally {
@@ -66,45 +60,44 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
     fetchRules();
   }, []);
 
-  // Standardize clause citation format
+  // Standardize clause citation format with defensive null guards
   const formatClauseCitation = (rule) => {
-    const rawClause = rule.clause_id || 'APH-2025-Cl-Norm';
-    // Format APH-2025-Cl-4.1.2 -> AICTE APH 2025-26 Clause 4.1.2
-    const cleanClause = rawClause
+    if (!rule) return 'AICTE APH 2025-26 Standard Clause';
+    const rawClause = rule.clause_id || rule.clause_ref || rule.rule_code || 'APH-2025-Cl-Norm';
+    const cleanClause = String(rawClause)
       .replace(/^APH-2025-Cl-/, '')
       .replace(/^APH\s*2025-26\s*Clause\s*/i, '')
-      .replace(/^APH-CH\d+-Clause-/, '');
+      .replace(/^APH-CH\d+-Clause-/, '')
+      .replace(/^RULE_/, '');
     return `AICTE APH 2025-26 Clause ${cleanClause}`;
   };
 
-  const handleCopyCitation = (citation, id) => {
-    navigator.clipboard.writeText(citation);
-    setCopiedCitation(id);
-    setTimeout(() => setCopiedCitation(null), 2000);
-  };
+  // Safe rules list guaranteed to be an array
+  const safeRules = Array.isArray(rules) && rules.length > 0 ? rules : (loading ? [] : FALLBACK_APH_RULES);
 
   // Categories list
   const categories = useMemo(() => {
     const set = new Set();
-    rules.forEach((r) => r.category && set.add(r.category));
+    safeRules.forEach((r) => r?.category && set.add(r.category));
     return ['ALL', ...Array.from(set)];
-  }, [rules]);
+  }, [safeRules]);
 
-  // Filtered rules
+  // Filtered rules with safe access
   const filteredRules = useMemo(() => {
-    return rules.filter((r) => {
+    return safeRules.filter((r) => {
+      if (!r) return false;
       const citation = formatClauseCitation(r).toLowerCase();
-      const title = (r.title || '').toLowerCase();
-      const code = (r.rule_code || '').toLowerCase();
-      const desc = (r.description || '').toLowerCase();
-      const q = searchQuery.toLowerCase();
+      const title = String(r.title || '').toLowerCase();
+      const code = String(r.rule_code || r.id || '').toLowerCase();
+      const desc = String(r.description || '').toLowerCase();
+      const q = searchQuery.toLowerCase().trim();
 
-      const matchesSearch = !searchQuery || citation.includes(q) || title.includes(q) || code.includes(q) || desc.includes(q);
+      const matchesSearch = !q || citation.includes(q) || title.includes(q) || code.includes(q) || desc.includes(q);
       const matchesCategory = selectedCategory === 'ALL' || r.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
-  }, [rules, searchQuery, selectedCategory]);
+  }, [safeRules, searchQuery, selectedCategory]);
 
   return (
     <div className="space-y-6">
@@ -112,7 +105,7 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
       <div className="bg-surface rounded-xl border border-border p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl text-purple-700">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0">
               <BookOpenCheck className="w-5 h-5" />
             </div>
             <div>
@@ -120,28 +113,44 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
                 <h2 className="text-xl font-bold text-text tracking-tight">AICTE Handbook Rules Catalog</h2>
                 {isDemoData && <DemoDataBadge reason="Handbook Baseline Fallback" />}
               </div>
-              <p className="text-xs text-text-subtle mt-0.5">
+              <p className="text-xs text-text-muted mt-0.5">
                 Official AICTE Approval Process Handbook (APH) 2025-26 statutory codification with formal clause citations and automated evaluation constraints.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2 text-xs font-mono text-purple-800 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200 self-start md:self-auto">
+        <div className="flex items-center space-x-2 text-xs font-mono text-purple-700 dark:text-purple-300 bg-purple-500/10 px-3 py-1.5 rounded-xl border border-purple-500/20 self-start md:self-auto">
           <span>Edition: <strong>AICTE APH 2025-26</strong></span>
           <span>•</span>
-          <span>Version: <strong>v1.0.0</strong></span>
+          <span>Version: <strong>v2.0.0</strong></span>
         </div>
       </div>
 
       {/* Statutory Section 6 Caveat */}
-      <div className="bg-purple-50/70 border border-purple-200/80 rounded-xl p-4 flex items-start space-x-3 text-xs text-purple-950">
-        <Info className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+      <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex items-start space-x-3 text-xs text-text">
+        <Info className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
         <div className="leading-relaxed">
           <strong>Mandatory Statutory Protocol:</strong> Rule evaluations in PRAMAAN-X serve as 
           <em> "Indicators for review"</em>. Non-compliance findings cite the exact handbook clause to ensure full legal defensibility during scrutiny committee inquiry. Automated rejections are strictly prohibited.
         </div>
       </div>
+
+      {error && isDemoData && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5 text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+            <span>{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={fetchRules}
+            className="text-[11px] font-semibold underline hover:no-underline text-amber-900 dark:text-amber-200 cursor-pointer"
+          >
+            Retry Connection
+          </button>
+        </div>
+      )}
 
       {/* 2. Search & Category Filters Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -152,21 +161,22 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
             placeholder="Search clause citation (e.g. Clause 4.1), title, or rule code..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 bg-surface border border-border rounded-xl pl-10 pr-4 text-xs text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-xs"
+            className="w-full h-10 bg-surface border border-border rounded-xl pl-10 pr-4 text-xs text-text placeholder-text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary shadow-xs"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5" role="tablist">
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               role="tab"
               aria-selected={selectedCategory === cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`tab px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedCategory === cat
-                  ? 'is-active btn-solid shadow-2xs'
-                  : 'btn-outline'
+                  ? 'bg-primary text-white shadow-2xs font-bold'
+                  : 'bg-surface-2 text-text hover:bg-surface border border-border'
               }`}
             >
               {cat === 'ALL' ? 'All Regulations' : cat}
@@ -178,27 +188,29 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
       {/* 3. Rules Catalog List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="bg-surface border border-border rounded-xl p-16 text-center text-text-subtle space-y-3">
+          <div className="bg-surface border border-border rounded-xl p-16 text-center text-text-muted space-y-3">
             <RefreshCw className="w-8 h-8 animate-spin mx-auto text-purple-600" />
             <p className="text-sm font-semibold text-text-muted">Loading statutory rule definitions...</p>
           </div>
         ) : filteredRules.length === 0 ? (
-          <div className="bg-surface border border-border rounded-xl p-12 text-center text-text-subtle space-y-2">
-            <BookOpenCheck className="w-10 h-10 mx-auto text-slate-300" />
-            <p className="text-sm font-bold text-text-muted">No regulations match your query</p>
-            <p className="text-xs text-text-subtle">Try adjusting the search keyword or category filter.</p>
+          <div className="bg-surface border border-border rounded-xl p-12 text-center text-text-muted space-y-2">
+            <BookOpenCheck className="w-10 h-10 mx-auto text-text-muted opacity-40" />
+            <p className="text-sm font-bold text-text">No regulations match your query</p>
+            <p className="text-xs text-text-muted">Try adjusting the search keyword or category filter.</p>
           </div>
         ) : (
           filteredRules.map((rule, idx) => {
             const citation = formatClauseCitation(rule);
-            const isExpanded = expandedRuleId === rule.id;
+            const isExpanded = expandedRuleId === (rule.id || idx);
             const version = rule.current_version || {};
-            const params = version.parameters || {};
+            const params = version.parameters || rule.parameters || {};
+            const severityUpper = String(rule.severity || 'CRITICAL').toUpperCase();
 
             return (
               <div
                 key={rule.id || idx}
-                className="bg-surface border border-border rounded-xl p-5 shadow-xs hover:border-purple-300 transition-all space-y-3"
+                id={`rule-card-${rule.id || idx}`}
+                className="bg-surface border border-border rounded-xl p-5 shadow-xs hover:border-purple-300 dark:hover:border-purple-800 transition-all space-y-3"
               >
                 {/* Rule Card Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
@@ -208,39 +220,39 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
                       text={citation}
                       title="Click to copy statutory citation"
                       showLabel={false}
-                      className="px-3 py-1 rounded-xl text-xs font-mono font-bold bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 cursor-pointer transition-colors"
+                      className="px-3 py-1 rounded-xl text-xs font-mono font-bold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 cursor-pointer transition-colors"
                     >
                       {(copied) => (
                         <>
-                          <Scale className="w-3.5 h-3.5 text-purple-600" />
+                          <Scale className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                           <span>[{citation}]</span>
                           {copied ? (
-                            <Check className="w-3 h-3 text-emerald-600 ml-1" />
+                            <Check className="w-3 h-3 text-emerald-600 shrink-0 ml-1" />
                           ) : (
-                            <Copy className="w-3 h-3 text-purple-400 ml-1" />
+                            <Copy className="w-3 h-3 text-purple-500 shrink-0 ml-1" />
                           )}
                         </>
                       )}
                     </CopyButton>
 
-                    <span className="text-[10px] font-mono text-text-subtle bg-surface-2 px-2 py-0.5 rounded">
-                      {rule.rule_code}
+                    <span className="text-[10px] font-mono text-text-muted bg-surface-2 px-2 py-0.5 rounded border border-border">
+                      {rule.rule_code || rule.id}
                     </span>
 
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                      rule.severity === 'CRITICAL'
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-amber-50 text-amber-700 border-amber-200'
+                      severityUpper === 'CRITICAL'
+                        ? 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20'
+                        : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20'
                     }`}>
-                      {rule.severity || 'CRITICAL'}
+                      {severityUpper}
                     </span>
                   </div>
 
-                  <div className="flex items-center space-x-2 text-xs text-text-subtle">
-                    <span className="font-semibold text-text-muted">{rule.category}</span>
+                  <div className="flex items-center space-x-2 text-xs text-text-muted">
+                    <span className="font-semibold text-text">{rule.category || 'General'}</span>
                     <span>•</span>
-                    <span className="font-mono text-[11px] bg-surface-2 px-1.5 py-0.5 rounded text-text-muted">
-                      v{version.version_number || '1.0.0'}
+                    <span className="font-mono text-[11px] bg-surface-2 px-1.5 py-0.5 rounded text-text-muted border border-border">
+                      v{version.version_number || rule.version || '1.0.0'}
                     </span>
                   </div>
                 </div>
@@ -258,43 +270,47 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
 
                   {/* Quick Parameters Summary (4 cols) */}
                   <div className="lg:col-span-4 bg-surface-2 border border-border/80 rounded-xl p-3 text-xs space-y-1.5">
-                    <span className="text-[10px] font-bold text-text-subtle uppercase tracking-wider block">Statutory Parameters</span>
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Statutory Parameters</span>
                     <div className="space-y-1 font-mono text-[11px] text-text-muted">
-                      {Object.entries(params).slice(0, 3).map(([k, v]) => (
-                        <div key={k} className="flex justify-between">
-                          <span className="text-text-subtle">{k}:</span>
-                          <span className="font-bold text-text truncate max-w-[140px]">{JSON.stringify(v)}</span>
-                        </div>
-                      ))}
+                      {Object.keys(params).length > 0 ? (
+                        Object.entries(params).slice(0, 3).map(([k, v]) => (
+                          <div key={k} className="flex justify-between">
+                            <span className="text-text-muted truncate max-w-[120px]">{k}:</span>
+                            <span className="font-bold text-text truncate max-w-[140px]">{JSON.stringify(v)}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-[11px] text-text-muted">Standard regulatory threshold</div>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Expanded Details Drawer */}
                 {isExpanded && (
-                  <div className="pt-3 border-t border-border space-y-3 animate-fade-in text-xs">
+                  <div className="pt-3 border-t border-border space-y-3 text-xs">
                     {/* Failure Template Box */}
-                    {version.failure_message_template && (
-                      <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3.5 space-y-1">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-rose-800 flex items-center space-x-1.5">
-                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                    {(version.failure_message_template || rule.message_template) && (
+                      <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3.5 space-y-1 text-text">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300 flex items-center space-x-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                           <span>Statutory Non-Compliance Output Template</span>
                         </div>
-                        <p className="text-xs text-rose-950 font-mono leading-relaxed">
-                          {version.failure_message_template}
+                        <p className="text-xs font-mono leading-relaxed text-rose-900 dark:text-rose-200">
+                          {version.failure_message_template || rule.message_template}
                         </p>
                       </div>
                     )}
 
                     {/* Condition & Technical Expression */}
                     <div className="bg-slate-900 text-slate-100 rounded-xl p-3.5 font-mono text-[11px] space-y-2">
-                      <div className="flex justify-between text-text-subtle border-b border-slate-800 pb-1.5 text-[10px]">
+                      <div className="flex justify-between text-slate-400 border-b border-slate-800 pb-1.5 text-[10px]">
                         <span>Handbook Edition: {version.handbook_edition || 'AICTE APH 2025-26'}</span>
                         <span>Evaluation Mode: Deterministic Rules Engine</span>
                       </div>
                       <div>
-                        <span className="text-text-subtle text-[10px] block">Full Parameter Dictionary:</span>
-                        <pre className="text-emerald-400 overflow-x-auto text-[10px] mt-1">
+                        <span className="text-slate-400 text-[10px] block">Full Parameter Dictionary:</span>
+                        <pre className="text-emerald-400 overflow-x-auto text-[10px] mt-1 whitespace-pre-wrap">
                           {JSON.stringify(params, null, 2)}
                         </pre>
                       </div>
@@ -305,8 +321,9 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
                 {/* Card Footer Actions */}
                 <div className="flex items-center justify-between pt-2">
                   <button
-                    onClick={() => setExpandedRuleId(isExpanded ? null : rule.id)}
-                    className="text-xs font-semibold text-purple-700 hover:text-purple-900 flex items-center space-x-1 cursor-pointer"
+                    type="button"
+                    onClick={() => setExpandedRuleId(isExpanded ? null : (rule.id || idx))}
+                    className="text-xs font-semibold text-purple-700 dark:text-purple-300 hover:underline flex items-center space-x-1 cursor-pointer"
                   >
                     <span>{isExpanded ? 'Hide Statutory Details' : 'Inspect Citation & Parameters'}</span>
                     {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
@@ -314,10 +331,12 @@ export default function RulesCatalogView({ onSelectForSimulation }) {
 
                   {onSelectForSimulation && (
                     <button
+                      type="button"
+                      id={`simulate-btn-${rule.id || idx}`}
                       onClick={() => onSelectForSimulation(rule)}
-                      className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+                      className="px-3 py-1.5 bg-primary text-white hover:bg-primary-hover rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 cursor-pointer shadow-xs"
                     >
-                      <Sliders className="w-3.5 h-3.5 text-purple-600" />
+                      <Sliders className="w-3.5 h-3.5" />
                       <span>Simulate in What-If</span>
                     </button>
                   )}
