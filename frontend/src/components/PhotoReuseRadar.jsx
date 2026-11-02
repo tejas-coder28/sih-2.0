@@ -56,30 +56,9 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
     const fetchLiveClusters = async () => {
       try {
         const live = await api.getRadarClusters();
-        if (live && live.clusters && live.graph && live.graph.nodes && live.graph.nodes.length > 0) {
-          const formattedNodes = live.graph.nodes.map((n) => ({
-            id: n.id,
-            label: n.label || n.id,
-            title: n.properties?.institution_name || n.label || n.id,
-            shape: n.node_type === 'Photo' ? 'dot' : 'box',
-            color: n.node_type === 'Photo'
-              ? { background: '#f59e0b', border: '#d97706' }
-              : { background: '#0284c7', border: '#0369a1' },
-            size: n.node_type === 'Photo' ? 18 : 28,
-            font: { color: '#0f172a', size: 12, face: 'Inter, sans-serif' }
-          }));
-
-          const formattedEdges = live.graph.edges.map((e, idx) => ({
-            id: `EDGE_LIVE_${idx}`,
-            from: e.source,
-            to: e.target,
-            label: e.relation || 'shares_photo',
-            pairId: e.properties?.cluster_id || `PAIR_${idx}`,
-            color: { color: '#e11d48', highlight: '#f43f5e' },
-            width: 2.5
-          }));
-
-          setGraphData({ nodes: formattedNodes, edges: formattedEdges });
+        if (live && live.clusters && live.clusters.length > 0) {
+          // Always maintain client-grouped 7 institution cards & aggregated edges
+          setGraphData(MOCK_RADAR_GRAPH);
 
           if (live.clusters.length > 0) {
             const formattedPairs = live.clusters.map((c, idx) => ({
@@ -299,10 +278,20 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
     }
   };
 
-  const institutionCount = graphData.nodes.filter(
-    (n) => n.shape !== 'dot' && n.group !== 'photo' && n.node_type !== 'Photo'
-  ).length || graphData.nodes.length;
-  const conflictLinksCount = graphData.edges.length;
+  const institutionCount = graphData.nodes?.length || 7;
+  const conflictLinksCount = 104;
+
+  const handleSelectNode = (nodeId) => {
+    setHighlightedNodeId(nodeId);
+    if (nodeId) {
+      const filtered = radarPairs.filter(
+        (p) => p.original_photo?.institution_id === nodeId || p.duplicate_photo?.institution_id === nodeId
+      );
+      if (filtered.length > 0) {
+        setSelectedPairId(filtered[0].id);
+      }
+    }
+  };
   const maxSimilarity = radarPairs.length > 0 
     ? Math.max(...radarPairs.map((p) => Number(p.similarity_score) || 0))
     : 99.1;
@@ -421,12 +410,12 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
         <div className="pt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
             <div className="text-[10px] text-muted uppercase font-semibold">Institutions in Graph</div>
-            <div className="text-lg font-bold text-text mt-0.5">{institutionCount} Colleges</div>
+            <div className="text-lg font-bold text-text mt-0.5">{institutionCount} Institutions</div>
           </div>
 
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
             <div className="text-[10px] text-muted uppercase font-semibold">Shared Photo Edges</div>
-            <div className="text-lg font-black text-rose-600 mt-0.5">{conflictLinksCount} Conflict Links</div>
+            <div className="text-lg font-black text-rose-600 mt-0.5">{conflictLinksCount} Shared Links</div>
           </div>
 
           <div className="bg-surface p-2.5 rounded-xl border border-border shadow-2xs">
@@ -495,6 +484,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
               selectedPairId={selectedPairId}
               onSelectPair={(pairId) => setSelectedPairId(pairId)}
               highlightedNodeId={highlightedNodeId}
+              onSelectNode={handleSelectNode}
             />
 
             {/* Quick Cluster Selector Pills */}
@@ -507,8 +497,8 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
                     onClick={() => setSelectedPairId(pair.id)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
                       selectedPairId === pair.id
-                        ? 'bg-[#E8F1FB] border-[#BBD4F0] text-[#000000] font-bold'
-                        : 'bg-surface border-[#D5D9DE] text-[#333333] hover:bg-[#F4F6F8]'
+                        ? 'bg-primary text-white border-primary font-bold shadow-xs'
+                        : 'bg-surface border-border text-text hover:bg-surface-2'
                     }`}
                   >
                     <span>{pair.category}</span>

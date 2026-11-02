@@ -1,6 +1,8 @@
 /**
- * Mock Photo Radar Clusters & Pair Comparisons Data:
- * Provides structured nodes, edges, and rich forensic metadata for cross-institutional photo reuse.
+ * Authoritative Mock Photo Radar Clusters & Pair Comparisons Data:
+ * - 7 institution nodes (168x72px cards with 40px circular thumbnails)
+ * - 6 aggregated pairwise edges (104 shared photo links total across nationwide pool)
+ * - Multi-photo strip support for granular per-cluster comparison
  */
 
 export const MOCK_RADAR_PAIRS = [
@@ -49,6 +51,46 @@ export const MOCK_RADAR_PAIRS = [
       ela_score: 0.68,
       ela_status: 'SUSPICIOUS_COMPRESSION',
     },
+
+    // Sub-photos in this cluster for thumbnail strip
+    shared_photos: [
+      {
+        id: 'photo-lab-1',
+        name: 'Workstation Row 1',
+        category: 'Lab Overview',
+        similarity: 98.4,
+        origUrl: '/images/computer_lab_original.jpg',
+        dupUrl: '/images/computer_lab_reused.jpg',
+        diffNote: 'Identical monitor layout with cropped foreground edge.'
+      },
+      {
+        id: 'photo-lab-2',
+        name: 'Server Rack Bay',
+        category: 'Network Rack',
+        similarity: 97.6,
+        origUrl: '/images/INST_001_materials_lab_original.jpg',
+        dupUrl: '/images/INST_002_materials_lab_exact_duplicate.jpg',
+        diffNote: 'Exact duplicate server rack framing.'
+      },
+      {
+        id: 'photo-lab-3',
+        name: 'Instructor Console',
+        category: 'Podium',
+        similarity: 96.2,
+        origUrl: '/images/INST_001_smart_classroom_original.jpg',
+        dupUrl: '/images/INST_002_smart_classroom_exact_duplicate.jpg',
+        diffNote: 'Overlapping projection surface angle.'
+      },
+      {
+        id: 'photo-lab-4',
+        name: 'Power Backup Unit',
+        category: 'UPS Facility',
+        similarity: 95.1,
+        origUrl: '/images/computer_lab_original.jpg',
+        dupUrl: '/images/computer_lab_reused.jpg',
+        diffNote: 'Perceptual hash collision on auxiliary equipment.'
+      }
+    ]
   },
 
   {
@@ -94,6 +136,36 @@ export const MOCK_RADAR_PAIRS = [
       ela_score: 0.31,
       ela_status: 'CLEAN',
     },
+
+    shared_photos: [
+      {
+        id: 'photo-chem-1',
+        name: 'Fume Hood Bay',
+        category: 'Exhaust System',
+        similarity: 96.2,
+        origUrl: '/images/chemistry_lab_photo.jpg',
+        dupUrl: '/images/chemistry_lab_photo.jpg',
+        diffNote: 'Identical exhaust piping and pressure valve readings.'
+      },
+      {
+        id: 'photo-chem-2',
+        name: 'Titration Workbench',
+        category: 'Analytical Bench',
+        similarity: 95.8,
+        origUrl: '/images/chemistry_lab_photo.jpg',
+        dupUrl: '/images/chemistry_lab_photo.jpg',
+        diffNote: 'Apparatus arrangement matches with 100% feature overlap.'
+      },
+      {
+        id: 'photo-chem-3',
+        name: 'Chemical Reagent Vault',
+        category: 'Safety Storage',
+        similarity: 94.7,
+        origUrl: '/images/chemistry_lab_photo.jpg',
+        dupUrl: '/images/chemistry_lab_photo.jpg',
+        diffNote: 'Hazard warning signage layout identical.'
+      }
+    ]
   },
 
   {
@@ -116,8 +188,8 @@ export const MOCK_RADAR_PAIRS = [
       academic_year: '2025-26',
       facility_name: 'Mechatronics & Robotics Cell',
       submission_date: '2025-10-18',
-      file_name: 'robotics_lab_apex.jpg',
-      image_url: '/images/computer_lab_original.jpg', // Visual fallback
+      file_name: 'INST_001_smart_classroom_original.jpg',
+      image_url: '/images/INST_001_smart_classroom_original.jpg',
       phash: 'f1e2d3c4b5a69788',
       resolution: '1920 x 1080',
       ela_score: 0.25,
@@ -132,126 +204,381 @@ export const MOCK_RADAR_PAIRS = [
       academic_year: '2025-26',
       facility_name: 'Automated Manufacturing Lab',
       submission_date: '2025-08-25',
-      file_name: 'robotics_lab_zenith.jpg',
-      image_url: '/images/computer_lab_reused.jpg', // Visual fallback
+      file_name: 'INST_003_smart_classroom_near_duplicate.jpg',
+      image_url: '/images/INST_003_smart_classroom_near_duplicate.jpg',
       phash: 'f1e2d3c4b5a6978d',
       resolution: '1920 x 1080',
       ela_score: 0.34,
       ela_status: 'CLEAN',
     },
+
+    shared_photos: [
+      {
+        id: 'photo-rob-1',
+        name: 'Robotic Arm Cell',
+        category: 'Manipulator',
+        similarity: 89.8,
+        origUrl: '/images/INST_001_smart_classroom_original.jpg',
+        dupUrl: '/images/INST_003_smart_classroom_near_duplicate.jpg',
+        diffNote: 'Industrial robotic manipulator model match with altered angle.'
+      },
+      {
+        id: 'photo-rob-2',
+        name: 'PLC Test Bench',
+        category: 'Controllers',
+        similarity: 88.5,
+        origUrl: '/images/INST_001_materials_lab_original.jpg',
+        dupUrl: '/images/INST_003_materials_lab_near_duplicate.jpg',
+        diffNote: 'Identical control cabinet wiring harness visible.'
+      }
+    ]
   },
+
+  {
+    id: 'PAIR-ELEC-004',
+    category: 'Electronics & Microprocessor',
+    title: 'Microprocessor & VLSI Design Laboratory',
+    severity: 'CRITICAL',
+    ai_wording: 'Indicator for review: Exact perceptual hash match detected across institutions',
+    similarity_score: 99.1,
+    hamming_distance: 0,
+    clip_cosine: 0.988,
+    match_type: 'Exact Hash Duplicate',
+    difference_summary: 'Bit-identical photographic asset re-uploaded across applications with stripped EXIF metadata.',
+
+    original_photo: {
+      institution_id: 'INST_002',
+      institution_name: 'Royal College of Engineering',
+      city: 'Mysuru, Karnataka',
+      application_no: 'APP-2024-ENG-1102',
+      academic_year: '2024-25',
+      facility_name: 'Embedded Systems Laboratory',
+      submission_date: '2024-06-12',
+      file_name: 'INST_002_central_library_exact_duplicate.jpg',
+      image_url: '/images/INST_002_central_library_exact_duplicate.jpg',
+      phash: 'b3f1e9d2c4a87612',
+      resolution: '1920 x 1080',
+      ela_score: 0.19,
+      ela_status: 'CLEAN',
+    },
+
+    duplicate_photo: {
+      institution_id: 'INST_007',
+      institution_name: 'Metro Institute of Technology',
+      city: 'Chennai, Tamil Nadu',
+      application_no: 'APP-2025-TN-9988',
+      academic_year: '2025-26',
+      facility_name: 'Advanced Microcontroller Research Facility',
+      submission_date: '2025-10-22',
+      file_name: 'INST_007_distinct_cafeteria_hall.jpg',
+      image_url: '/images/INST_007_distinct_cafeteria_hall.jpg',
+      phash: 'b3f1e9d2c4a87612',
+      resolution: '1920 x 1080',
+      ela_score: 0.72,
+      ela_status: 'SUSPICIOUS_COMPRESSION',
+    },
+
+    shared_photos: [
+      {
+        id: 'photo-elec-1',
+        name: 'Oscilloscope Stations',
+        category: 'Test Instrumentation',
+        similarity: 99.1,
+        origUrl: '/images/INST_002_central_library_exact_duplicate.jpg',
+        dupUrl: '/images/INST_007_distinct_cafeteria_hall.jpg',
+        diffNote: 'Exact perceptual hash match.'
+      },
+      {
+        id: 'photo-elec-2',
+        name: 'FPGA Development Boards',
+        category: 'Hardware Workstations',
+        similarity: 98.2,
+        origUrl: '/images/INST_002_entrance_ramp_exact_duplicate.jpg',
+        dupUrl: '/images/INST_007_distinct_cafeteria_hall.jpg',
+        diffNote: 'Exact duplicate layout.'
+      }
+    ]
+  },
+
+  {
+    id: 'PAIR-MFG-005',
+    category: 'Mechanical Engineering',
+    title: 'Advanced Automated Manufacturing Cell',
+    severity: 'WARNING',
+    ai_wording: 'Indicator for review: Feature similarity across institutional workshop photos',
+    similarity_score: 87.2,
+    hamming_distance: 6,
+    clip_cosine: 0.865,
+    match_type: 'Semantically Similar',
+    difference_summary: 'CNC lathe machine bed with matched safety enclosure; distinct ambient workshop background.',
+
+    original_photo: {
+      institution_id: 'INST_003',
+      institution_name: 'Zenith Institute of Technology',
+      city: 'Pune, Maharashtra',
+      application_no: 'APP-2025-MAH-3012',
+      academic_year: '2025-26',
+      facility_name: 'Precision Machining Center',
+      submission_date: '2025-08-25',
+      file_name: 'INST_003_materials_lab_near_duplicate.jpg',
+      image_url: '/images/INST_003_materials_lab_near_duplicate.jpg',
+      phash: 'c4e5d6a7b8091234',
+      resolution: '1920 x 1080',
+      ela_score: 0.29,
+      ela_status: 'CLEAN',
+    },
+
+    duplicate_photo: {
+      institution_id: 'INST_005',
+      institution_name: 'Vanguard Institute of Technology',
+      city: 'Hyderabad, Telangana',
+      application_no: 'APP-2025-ENG-4491',
+      academic_year: '2025-26',
+      facility_name: 'Automated Tooling Facility',
+      submission_date: '2025-09-02',
+      file_name: 'INST_005_distinct_botany_garden.jpg',
+      image_url: '/images/INST_005_distinct_botany_garden.jpg',
+      phash: 'c4e5d6a7b8091240',
+      resolution: '1920 x 1080',
+      ela_score: 0.35,
+      ela_status: 'CLEAN',
+    },
+
+    shared_photos: [
+      {
+        id: 'photo-mfg-1',
+        name: '5-Axis CNC Milling Bed',
+        category: 'Machine Tool',
+        similarity: 87.2,
+        origUrl: '/images/INST_003_materials_lab_near_duplicate.jpg',
+        dupUrl: '/images/INST_005_distinct_botany_garden.jpg',
+        diffNote: 'Manufacturer tooling decal identical.'
+      }
+    ]
+  },
+
+  {
+    id: 'PAIR-OPTICS-006',
+    category: 'Physics & Optics',
+    title: 'Physics & Optics Experimental Facility',
+    severity: 'WARNING',
+    ai_wording: 'Indicator for review: Shared optical isolation table imagery detected',
+    similarity_score: 91.5,
+    hamming_distance: 4,
+    clip_cosine: 0.902,
+    match_type: 'Near-Duplicate',
+    difference_summary: 'Laser interferometer bench on optical isolation table; slight contrast augmentation detected.',
+
+    original_photo: {
+      institution_id: 'INST_001',
+      institution_name: 'Apex Institute of Technology & Science',
+      city: 'Bengaluru, Karnataka',
+      application_no: 'APP-2025-09812',
+      academic_year: '2025-26',
+      facility_name: 'Advanced Laser & Photonics Lab',
+      submission_date: '2025-10-18',
+      file_name: 'INST_001_central_library_original.jpg',
+      image_url: '/images/INST_001_central_library_original.jpg',
+      phash: '8a9b0c1d2e3f4a5b',
+      resolution: '1920 x 1080',
+      ela_score: 0.27,
+      ela_status: 'CLEAN',
+    },
+
+    duplicate_photo: {
+      institution_id: 'INST_007',
+      institution_name: 'Metro Institute of Technology',
+      city: 'Chennai, Tamil Nadu',
+      application_no: 'APP-2025-TN-9988',
+      academic_year: '2025-26',
+      facility_name: 'Engineering Physics Research Center',
+      submission_date: '2025-10-22',
+      file_name: 'INST_007_distinct_cafeteria_hall.jpg',
+      image_url: '/images/INST_007_distinct_cafeteria_hall.jpg',
+      phash: '8a9b0c1d2e3f4a5f',
+      resolution: '1920 x 1080',
+      ela_score: 0.44,
+      ela_status: 'CLEAN',
+    },
+
+    shared_photos: [
+      {
+        id: 'photo-opt-1',
+        name: 'Interferometer Bench',
+        category: 'Optical Table',
+        similarity: 91.5,
+        origUrl: '/images/INST_001_central_library_original.jpg',
+        dupUrl: '/images/INST_007_distinct_cafeteria_hall.jpg',
+        diffNote: 'Isolation leg vibration dampeners match.'
+      }
+    ]
+  }
 ];
 
 /**
- * Cluster Graph Model for vis-network:
- * Institutions are NODES, and shared photos are EDGES.
+ * 7 Authoritative Institution Nodes for vis-network:
+ * Each represents an institution with image thumbnail, city, and shared photo count.
  */
 export const MOCK_RADAR_GRAPH = {
   nodes: [
     {
       id: 'INST_001',
-      label: 'Apex Institute of Tech\n(Bengaluru, KA)',
-      title: 'Apex Institute of Technology & Science\nApplication: APP-2025-09812\nFlags: 2 Shared Photos',
-      group: 'target_institution',
-      shape: 'box',
-      color: { background: '#0284c7', border: '#0369a1' },
-      size: 28,
+      name: 'Apex Institute of Technology & Science',
+      shortNameLine1: 'Apex Institute of',
+      shortNameLine2: 'Tech & Science',
+      label: 'Apex Institute of Tech & Science',
+      city: 'Bengaluru, KA',
+      sharedCount: 24,
+      isConflict: true,
+      thumbnail: '/images/computer_lab_reused.jpg',
+      application_no: 'APP-2025-09812',
     },
     {
       id: 'INST_002',
-      label: 'Royal College of Engg\n(Mysuru, KA)',
-      title: 'Royal College of Engineering\nApplication: APP-2024-ENG-1102\nFlags: 1 Shared Photo',
-      group: 'matched_institution',
-      shape: 'box',
-      color: { background: '#e11d48', border: '#be123c' },
-      size: 26,
+      name: 'Royal College of Engineering',
+      shortNameLine1: 'Royal College of',
+      shortNameLine2: 'Engineering',
+      label: 'Royal College of Engineering',
+      city: 'Mysuru, KA',
+      sharedCount: 24,
+      isConflict: true,
+      thumbnail: '/images/computer_lab_original.jpg',
+      application_no: 'APP-2024-ENG-1102',
     },
     {
       id: 'INST_003',
-      label: 'Zenith Institute\n(Pune, MH)',
-      title: 'Zenith Institute of Technology\nApplication: APP-2025-MAH-3012\nFlags: 1 Shared Photo',
-      group: 'matched_institution',
-      shape: 'box',
-      color: { background: '#d97706', border: '#b45309' },
-      size: 24,
+      name: 'Zenith Institute of Technology',
+      shortNameLine1: 'Zenith Institute',
+      shortNameLine2: 'of Technology',
+      label: 'Zenith Institute of Tech',
+      city: 'Pune, MH',
+      sharedCount: 12,
+      isWarning: true,
+      thumbnail: '/images/INST_003_computer_lab_near_duplicate.jpg',
+      application_no: 'APP-2025-MAH-3012',
     },
     {
       id: 'INST_004',
-      label: 'Greenfield Polytechnic\n(Belagavi, KA)',
-      title: 'Greenfield Polytechnic & Research\nApplication: APP-2025-POLY-8190\nFlags: 1 Shared Photo',
-      group: 'cluster_b',
-      shape: 'box',
-      color: { background: '#7c3aed', border: '#6d28d9' },
-      size: 25,
+      name: 'Greenfield Polytechnic & Research',
+      shortNameLine1: 'Greenfield',
+      shortNameLine2: 'Polytechnic',
+      label: 'Greenfield Polytechnic',
+      city: 'Belagavi, KA',
+      sharedCount: 16,
+      isConflict: true,
+      thumbnail: '/images/chemistry_lab_photo.jpg',
+      application_no: 'APP-2025-POLY-8190',
     },
     {
       id: 'INST_005',
-      label: 'Vanguard Institute\n(Hyderabad, TS)',
-      title: 'Vanguard Institute of Technology\nApplication: APP-2025-ENG-4491\nFlags: 1 Shared Photo',
-      group: 'cluster_b',
-      shape: 'box',
-      color: { background: '#7c3aed', border: '#6d28d9' },
-      size: 25,
+      name: 'Vanguard Institute of Technology',
+      shortNameLine1: 'Vanguard Inst.',
+      shortNameLine2: 'of Technology',
+      label: 'Vanguard Institute of Tech',
+      city: 'Hyderabad, TS',
+      sharedCount: 16,
+      isConflict: true,
+      thumbnail: '/images/INST_005_distinct_botany_garden.jpg',
+      application_no: 'APP-2025-ENG-4491',
     },
     {
       id: 'INST_006',
-      label: 'National Design Institute\n(Bengaluru, KA)',
-      title: 'National Institute of Design & Tech\nApplication: APP-2025-KA-0012\nFlags: Clean',
-      group: 'unlinked_clean',
-      shape: 'box',
-      color: { background: '#10b981', border: '#059669' },
-      size: 20,
+      name: 'National Institute of Design & Tech',
+      shortNameLine1: 'National Inst.',
+      shortNameLine2: 'of Design & Tech',
+      label: 'National Design Institute',
+      city: 'Bengaluru, KA',
+      sharedCount: 0,
+      isClean: true,
+      thumbnail: '/images/INST_006_distinct_solar_rooftop.jpg',
+      application_no: 'APP-2025-KA-0012',
+    },
+    {
+      id: 'INST_007',
+      name: 'Metro Institute of Technology',
+      shortNameLine1: 'Metro Institute',
+      shortNameLine2: 'of Technology',
+      label: 'Metro Institute of Tech',
+      city: 'Chennai, TN',
+      sharedCount: 12,
+      isConflict: true,
+      thumbnail: '/images/INST_007_distinct_cafeteria_hall.jpg',
+      application_no: 'APP-2025-TN-9988',
     },
   ],
 
+  /**
+   * Exactly 6 aggregated edges connecting institution pairs:
+   * Total shared photo links: 24 + 16 + 12 + 18 + 14 + 20 = 104 links
+   */
   edges: [
     {
-      id: 'EDGE_LAB_001',
+      id: 'EDGE_001_002',
       from: 'INST_001',
       to: 'INST_002',
-      label: 'Computer Lab A\n(98.4% Match)',
       pairId: 'PAIR-LAB-001',
-      color: { color: '#e11d48', highlight: '#f43f5e' },
-      width: 3.5,
-      dashes: false,
+      sharedCount: 24,
+      maxSimilarity: 98.4,
+      label: '24 photos • 98.4%',
     },
     {
-      id: 'EDGE_CHEM_002',
+      id: 'EDGE_004_005',
       from: 'INST_004',
       to: 'INST_005',
-      label: 'Chemistry Lab\n(96.2% Match)',
       pairId: 'PAIR-CHEM-002',
-      color: { color: '#7c3aed', highlight: '#a855f7' },
-      width: 3.0,
-      dashes: false,
+      sharedCount: 16,
+      maxSimilarity: 96.2,
+      label: '16 photos • 96.2%',
     },
     {
-      id: 'EDGE_ROBOTICS_003',
+      id: 'EDGE_001_003',
       from: 'INST_001',
       to: 'INST_003',
-      label: 'Robotics Facility\n(89.8% Match)',
       pairId: 'PAIR-ROBOTICS-003',
-      color: { color: '#d97706', highlight: '#f59e0b' },
-      width: 2.2,
-      dashes: true,
+      sharedCount: 12,
+      maxSimilarity: 89.8,
+      label: '12 photos • 89.8%',
+    },
+    {
+      id: 'EDGE_002_007',
+      from: 'INST_002',
+      to: 'INST_007',
+      pairId: 'PAIR-ELEC-004',
+      sharedCount: 18,
+      maxSimilarity: 99.1,
+      label: '18 photos • 99.1%',
+    },
+    {
+      id: 'EDGE_003_005',
+      from: 'INST_003',
+      to: 'INST_005',
+      pairId: 'PAIR-MFG-005',
+      sharedCount: 14,
+      maxSimilarity: 87.2,
+      label: '14 photos • 87.2%',
+    },
+    {
+      id: 'EDGE_001_007',
+      from: 'INST_001',
+      to: 'INST_007',
+      pairId: 'PAIR-OPTICS-006',
+      sharedCount: 20,
+      maxSimilarity: 91.5,
+      label: '20 photos • 91.5%',
     },
   ],
 };
 
-/**
- * Data for live Demo "Simulate Upload":
- * When officer triggers simulated upload, a new photo upload from an applicant is processed.
- */
 export const SIMULATED_UPLOAD_PAYLOAD = {
   institution_id: 'INST_007',
-  institution_name: 'Metro Institute of Technology (New Applicant)',
+  institution_name: 'Metro Institute of Technology',
   city: 'Chennai, Tamil Nadu',
   application_no: 'APP-2025-TN-9988',
-  photo_name: 'Newly_Uploaded_Computer_Lab.jpg',
+  photo_name: 'computer_lab_reused.jpg',
   category: 'Computer Laboratory',
   image_url: '/images/computer_lab_reused.jpg',
   phash: 'a8f0c3d2e1b4a5f6',
-  match_target_inst: 'INST_002', // Matches Royal College
+  match_target_inst: 'INST_002',
   similarity_score: 99.1,
   hamming_distance: 0,
   match_type: 'Exact Hash Duplicate',
