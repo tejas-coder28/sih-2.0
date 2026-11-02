@@ -60,36 +60,40 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
           // Always maintain client-grouped 7 institution cards & aggregated edges
           setGraphData(MOCK_RADAR_GRAPH);
 
-          if (live.clusters.length > 0) {
-            const formattedPairs = live.clusters.map((c, idx) => ({
-              id: c.cluster_id || `PAIR_CLUSTER_${idx}`,
-              category: c.photo_category || 'Infrastructure Photo',
-              title: `Detected Reuse Cluster: ${c.photo_category || 'Campus Photo'}`,
-              severity: c.risk_level || 'CRITICAL',
-              ai_wording: `Indicator for review: Cross-institutional photo reuse detected across ${c.institutions_count} institutions`,
-              similarity_score: 96.5,
-              hamming_distance: 2,
-              clip_cosine: 0.94,
-              match_type: c.match_types_present?.join(', ') || 'Near-Duplicate',
-              difference_summary: c.explanation || 'Shared visual asset detected across institutional applications.',
-              original_photo: {
-                institution_name: c.institutions?.[0]?.institution_name || 'Original Applicant',
-                institution_id: c.institutions?.[0]?.institution_id || 'INST_001',
-                image_url: c.photos?.[0]?.filename ? `/images/${c.photos[0].filename}` : '/images/computer_lab_original.jpg',
-                file_name: c.photos?.[0]?.filename || 'original_evidence.jpg',
-                phash: c.photos?.[0]?.phash || 'a8f0c3d2e1b4a5f6',
-              },
-              duplicate_photo: {
-                institution_name: c.institutions?.[1]?.institution_name || 'Reusing Applicant',
-                institution_id: c.institutions?.[1]?.institution_id || 'INST_002',
-                image_url: c.photos?.[1]?.filename ? `/images/${c.photos[1].filename}` : '/images/computer_lab_reused.jpg',
-                file_name: c.photos?.[1]?.filename || 'reused_evidence.jpg',
-                phash: c.photos?.[1]?.phash || 'a8f0c3d2e1b4a5f8',
-              }
-            }));
-            setRadarPairs(formattedPairs);
-            setSelectedPairId(formattedPairs[0].id);
-          }
+          // Preserve rich authoritative clusters (PAIR-LAB-001, PAIR-CHEM-002, PAIR-AUD-003) as the primary dataset
+          // Only append distinct live clusters so thumbnail strips and high-res photo comparisons are never wiped out
+          setRadarPairs((prev) => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const newClusters = live.clusters
+              .filter(c => !existingIds.has(c.cluster_id))
+              .map((c, idx) => ({
+                id: c.cluster_id || `PAIR_CLUSTER_${idx}`,
+                category: c.photo_category || 'Infrastructure Photo',
+                title: `Detected Reuse Cluster: ${c.photo_category || 'Campus Photo'}`,
+                severity: c.risk_level || 'CRITICAL',
+                ai_wording: `Indicator for review: Cross-institutional photo reuse detected across ${c.institutions_count || 2} institutions`,
+                similarity_score: 96.5,
+                hamming_distance: 2,
+                clip_cosine: 0.94,
+                match_type: c.match_types_present?.join(', ') || 'Near-Duplicate',
+                difference_summary: c.explanation || 'Shared visual asset detected across institutional applications.',
+                original_photo: {
+                  institution_name: c.institutions?.[0]?.institution_name || 'Original Applicant',
+                  institution_id: c.institutions?.[0]?.institution_id || 'INST_001',
+                  image_url: c.photos?.[0]?.filename ? `/images/${c.photos[0].filename}` : '/images/computer_lab_original.jpg',
+                  file_name: c.photos?.[0]?.filename || 'original_evidence.jpg',
+                  phash: c.photos?.[0]?.phash || 'a8f0c3d2e1b4a5f6',
+                },
+                duplicate_photo: {
+                  institution_name: c.institutions?.[1]?.institution_name || 'Reusing Applicant',
+                  institution_id: c.institutions?.[1]?.institution_id || 'INST_002',
+                  image_url: c.photos?.[1]?.filename ? `/images/${c.photos[1].filename}` : '/images/computer_lab_reused.jpg',
+                  file_name: c.photos?.[1]?.filename || 'reused_evidence.jpg',
+                  phash: c.photos?.[1]?.phash || 'a8f0c3d2e1b4a5f8',
+                }
+              }));
+            return [...prev, ...newClusters];
+          });
           setIsDemoData(false);
         } else {
           setIsDemoData(true);
