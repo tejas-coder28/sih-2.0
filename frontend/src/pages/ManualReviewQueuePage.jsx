@@ -106,6 +106,7 @@ export default function ManualReviewQueuePage({
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [verifyingMap, setVerifyingMap] = useState({});
   const [copiedHash, setCopiedHash] = useState(null);
+  const [issuerUnavailable, setIssuerUnavailable] = useState(false);
 
   // Resolve Modal State
   const [resolveItem, setResolveItem] = useState(null);
@@ -138,12 +139,18 @@ export default function ManualReviewQueuePage({
     setError(null);
     try {
       const res = await api.getManualReviewQueue();
-      if (Array.isArray(res) && res.length > 0) {
-        setQueueItems(res);
-        setIsDemoData(false);
-      } else {
-        throw new Error('Empty or invalid queue response from API');
+      let items = [];
+      let isIssuerDown = false;
+      if (Array.isArray(res)) {
+        items = res;
+        isIssuerDown = res.some(i => Boolean(i.issuer_unavailable));
+      } else if (res && typeof res === 'object') {
+        items = Array.isArray(res.items) ? res.items : [];
+        isIssuerDown = Boolean(res.issuer_unavailable);
       }
+      setQueueItems(items);
+      setIssuerUnavailable(isIssuerDown);
+      setIsDemoData(false);
     } catch (err) {
       console.warn('Backend manual queue endpoint offline:', err.message);
       setError('Queue unavailable. Retry');
@@ -366,6 +373,21 @@ export default function ManualReviewQueuePage({
           </select>
         </div>
       </div>
+
+      {/* Statutory Gateway Advisory Banner if degraded */}
+      {issuerUnavailable && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex items-center justify-between gap-3 text-amber-700 dark:text-amber-400 text-xs shadow-xs">
+          <div className="flex items-center space-x-2.5">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-500" />
+            <span>
+              <strong>Statutory Gateway Unavailable:</strong> External authority gateways (State Fire Services, Land Registry, University Affiliation) are currently unreachable. Review tickets are preserved in local decision buffer for officer adjudication.
+            </span>
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
+            Buffer Mode
+          </span>
+        </div>
+      )}
 
       {/* 3. Ticket Cards List */}
       <div className="space-y-3.5">
