@@ -14,7 +14,8 @@ import {
   Building2, 
   Clock, 
   ChevronRight,
-  Maximize2
+  Maximize2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 /**

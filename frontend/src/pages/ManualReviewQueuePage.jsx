@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import DemoDataBadge from '../components/DemoDataBadge';
 import StatusChip from '../components/StatusChip';
+import Skeleton from '../components/ui/Skeleton';
+import CopyButton from '../components/ui/CopyButton';
 import { api } from '../services/api';
 
 /**
@@ -72,6 +74,7 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
     } catch (err) {
       console.warn('Backend manual queue endpoint offline or empty, falling back to mock queue:', err.message);
       setIsDemoData(true);
+      setError('Queue unavailable. Retry');
       setQueueItems([
         {
           queue_id: 'Q-2025-0891',
@@ -238,6 +241,22 @@ export default function ManualReviewQueuePage({ currentUser, onNavigateToAudit }
   return (
     <div className="space-y-5 max-w-[1720px] mx-auto">
       {/* 1. Header Toolbar */}
+      {error && (
+        <div className="bg-surface-2 border border-border p-3.5 rounded-xl flex items-center justify-between text-xs shadow-xs">
+          <div className="flex items-center space-x-2 font-medium text-text">
+            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button
+            type="button"
+            onClick={fetchQueue}
+            className="px-3 py-1 rounded-lg btn-outline text-xs font-semibold flex items-center space-x-1.5 cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry</span>
+          </button>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div>
           <div className="flex items-center space-x-2.5">

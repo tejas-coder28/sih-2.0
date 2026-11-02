@@ -19,6 +19,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import StatusChip from './StatusChip';
+import CopyButton from './ui/CopyButton';
 import DemoDataBadge from './DemoDataBadge';
 import { api } from '../services/api';
 
