@@ -474,6 +474,8 @@ export default function App() {
         scrollProgress={scrollProgress}
         onSelectTab={setActiveTab}
         onNavigateTab={setActiveTab}
+        applications={applications}
+        onSelectApplication={handleSelectApplication}
       />
 
       <div className="flex-1 min-h-0 flex overflow-hidden relative z-10">

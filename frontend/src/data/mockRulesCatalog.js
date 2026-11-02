@@ -159,3 +159,4 @@ export const FALLBACK_APH_RULES = [
     description: "Institutions requesting more than 180 seats in any single engineering or technical discipline must hold valid NBA accreditation for at least 50% of eligible programs."
   }
 ];
+

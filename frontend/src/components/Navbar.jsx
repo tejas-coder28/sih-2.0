@@ -10,7 +10,18 @@ import {
   UserCheck,
   Monitor,
   Search,
-  Layers
+  Layers,
+  SearchCode,
+  FileSearch,
+  BookOpenCheck,
+  PlaneTakeoff,
+  FileCheck2,
+  Compass,
+  Clock,
+  LayoutDashboard,
+  Network,
+  ScanEye,
+  Workflow
 } from 'lucide-react';
 import AlertBellDrawer from './AlertBellDrawer';
 import ConfirmModal from './ui/ConfirmModal';
@@ -80,7 +91,9 @@ export default function Navbar({
   isScrolled = false,
   scrollProgress = 0,
   onSelectTab,
-  onNavigateTab
+  onNavigateTab,
+  applications = [],
+  onSelectApplication
 }) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -108,13 +121,122 @@ export default function Navbar({
   });
 
   const userMenuRef = useRef(null);
+  const searchContainerRef = useRef(null);
+  const searchInputRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Global Ctrl/Cmd + K shortcut for Site Search palette
+  const PERMITTED_PAGES = [
+    { id: 'dashboard', label: 'Dashboard', desc: 'Triage overview & metrics', category: 'Scrutiny', icon: LayoutDashboard, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor', 'institution_user'] },
+    { id: 'evidence-lens', label: 'Evidence Lens', desc: 'Multi-modal discrepancy verification', category: 'Scrutiny', icon: SearchCode, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor'] },
+    { id: 'manual-review-queue', label: 'Review Queue', desc: 'Manual review & officer escalations', category: 'Scrutiny', icon: Clock, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor'] },
+    { id: 'preflight', label: 'Pre-Flight Scorecard', desc: 'Readiness & deficiency self-check', category: 'Scrutiny', icon: PlaneTakeoff, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'institution_user'] },
+    { id: 'document-intelligence', label: 'Doc Intelligence', desc: 'OCR & deed forensics', category: 'Intelligence', icon: FileSearch, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor', 'institution_user'] },
+    { id: 'photo-radar', label: 'Photo Radar', desc: 'Perceptual photo hash clustering', category: 'Intelligence', icon: ScanEye, roles: ['scrutiny_officer', 'senior_officer', 'admin'] },
+    { id: 'impossibility-engine', label: 'Impossibility Engine', desc: 'Faculty spatio-temporal validation', category: 'Intelligence', icon: Network, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor'] },
+    { id: 'audit-ledger', label: 'Audit & Receipts', desc: 'Cryptographic SHA-256 action chain', category: 'Audit & Rules', icon: FileCheck2, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor', 'institution_user'] },
+    { id: 'regulations', label: 'Rules Catalog', desc: 'APH 2025-26 rules & simulator', category: 'Audit & Rules', icon: BookOpenCheck, roles: ['senior_officer', 'admin'] },
+    { id: 'inspection-planner', label: 'Inspection Planner', desc: 'Surprise inspection itinerary optimization', category: 'Planning', icon: Compass, roles: ['scrutiny_officer', 'senior_officer', 'admin'] },
+    { id: 'system-architecture', label: 'System Architecture', desc: 'Interactive spec & blueprint', category: 'Showcase', icon: Workflow, roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor', 'institution_user'] },
+  ];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Filter permitted pages and loaded applications
+  const q = searchQuery.trim().toLowerCase();
+  const allowedPages = PERMITTED_PAGES.filter(p => p.roles.includes(currentRole));
+  const matchingPages = allowedPages.filter(p => 
+    !q || p.label.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+  );
+
+  const matchingApps = (applications || []).filter(a =>
+    q && (
+      (a.institution_name && a.institution_name.toLowerCase().includes(q)) ||
+      (a.application_no && a.application_no.toLowerCase().includes(q)) ||
+      (a.state && a.state.toLowerCase().includes(q)) ||
+      (a.category && a.category.toLowerCase().includes(q))
+    )
+  ).slice(0, 5);
+
+  const combinedResults = [
+    ...matchingPages.map(p => ({
+      uniqueId: `page-${p.id}`,
+      type: 'page',
+      id: p.id,
+      title: p.label,
+      subtitle: p.desc,
+      badge: p.category,
+      icon: p.icon
+    })),
+    ...matchingApps.map(a => ({
+      uniqueId: `app-${a.id}`,
+      type: 'app',
+      rawApp: a,
+      title: a.institution_name,
+      subtitle: `${a.application_no} • ${a.state || 'Karnataka'}`,
+      badge: a.category || 'Triage Dossier',
+      icon: SearchCode
+    }))
+  ];
+
+  const handleSelectItem = (item) => {
+    setIsDropdownOpen(false);
+    setSearchQuery('');
+    if (item.type === 'page') {
+      (onSelectTab || onNavigateTab)?.(item.id);
+    } else if (item.type === 'app') {
+      onSelectApplication?.(item.rawApp);
+      (onSelectTab || onNavigateTab)?.('evidence-lens');
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (!isDropdownOpen || combinedResults.length === 0) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        setIsDropdownOpen(true);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % combinedResults.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + combinedResults.length) % combinedResults.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (combinedResults[selectedIndex]) {
+        handleSelectItem(combinedResults[selectedIndex]);
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsDropdownOpen(false);
+      searchInputRef.current?.blur();
+    }
+  };
+
+  // Global Ctrl/Cmd + K shortcut for Quick Search input & palette
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsSearchOpen(prev => !prev);
+        if (typeof window !== 'undefined' && window.innerWidth >= 1024 && searchInputRef.current) {
+          searchInputRef.current.focus();
+          setIsDropdownOpen(true);
+        } else {
+          setIsSearchOpen(prev => !prev);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -325,6 +447,89 @@ export default function Navbar({
             )}
           </div>
 
+          {/* CENTER: Compact Quick-Search (36px, min 220px to 360px on focus) */}
+          <div className="relative flex-1 max-w-[380px] mx-2 hidden lg:flex items-center" ref={searchContainerRef}>
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                  setSelectedIndex(0);
+                }}
+                onFocus={() => setIsDropdownOpen(true)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Search pages, applications..."
+                className="w-[220px] focus:w-full transition-all duration-200 h-9 pl-10 pr-14 text-xs rounded-xl bg-surface-2 border border-border text-text placeholder:text-text-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:bg-surface"
+                aria-label="Search pages and applications"
+                id="header-quick-search-input"
+              />
+              <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono text-text-subtle bg-surface border border-border shadow-2xs pointer-events-none">
+                Ctrl K
+              </kbd>
+            </div>
+
+            {/* Solid Results Dropdown */}
+            {isDropdownOpen && (
+              <div 
+                id="header-search-dropdown"
+                className="absolute top-full left-0 mt-1.5 w-full min-w-[320px] max-w-[420px] bg-surface border border-border rounded-xl shadow-xl z-50 overflow-hidden py-1 max-h-[380px] overflow-y-auto"
+                role="listbox"
+              >
+                {combinedResults.length === 0 ? (
+                  <div className="px-4 py-3 text-xs text-text-muted text-center">
+                    No matching pages or applications found for &quot;{searchQuery}&quot;
+                  </div>
+                ) : (
+                  combinedResults.map((item, idx) => {
+                    const isSelected = selectedIndex === idx;
+                    const ItemIcon = item.icon;
+                    return (
+                      <div
+                        key={item.uniqueId}
+                        onClick={() => handleSelectItem(item)}
+                        onMouseEnter={() => setSelectedIndex(idx)}
+                        className={`px-3 py-2 text-xs flex items-center justify-between cursor-pointer transition-colors ${
+                          isSelected ? 'bg-primary text-white font-medium' : 'text-text hover:bg-surface-2'
+                        }`}
+                        role="option"
+                        aria-selected={isSelected}
+                      >
+                        <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                          <div className={`p-1.5 rounded-lg border ${
+                            isSelected 
+                              ? 'bg-white/20 border-white/30 text-white' 
+                              : item.type === 'page'
+                              ? 'bg-surface-2 border-border text-primary'
+                              : 'bg-rose-100 dark:bg-rose-950/60 border-rose-200 dark:border-rose-900 text-rose-600'
+                          }`}>
+                            <ItemIcon className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-semibold truncate">{item.title}</div>
+                            <div className={`text-[10px] truncate ${
+                              isSelected ? 'text-white/80' : 'text-text-muted'
+                            }`}>
+                              {item.subtitle}
+                            </div>
+                          </div>
+                        </div>
+                        <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded border ${
+                          isSelected ? 'bg-white/20 border-white/30 text-white' : 'bg-surface-2 border-border text-text-subtle'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
+
           {/* RIGHT: Compact Status Pill + Bell + 36px Theme Toggle + User Menu */}
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
             
@@ -392,14 +597,14 @@ export default function Navbar({
             {/* Operational Alert Bell with Drawer */}
             <AlertBellDrawer currentRole={currentRole} />
 
-            {/* Quick Site Search Button (Ctrl+K) */}
+            {/* Mobile Search Button (visible only below 1024px) */}
             <button
               type="button"
               id="site-search-btn"
               onClick={() => setIsSearchOpen(true)}
-              aria-label="Search navigation modules (Ctrl+K)"
-              title="Search modules (Ctrl+K)"
-              className="w-9 h-9 rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              aria-label="Search navigation modules"
+              title="Search modules"
+              className="lg:hidden w-9 h-9 rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Search className="w-4 h-4 text-text-muted hover:text-text" />
             </button>
@@ -429,7 +634,7 @@ export default function Navbar({
               </div>
             </button>
 
-            {/* Direct Header Sign-Out Button (Always Visible across Viewports) */}
+            {/* Direct Header Sign-Out Button (Hidden below 1280px) */}
             {onLogout && (
               <button
                 type="button"
@@ -437,10 +642,10 @@ export default function Navbar({
                 onClick={() => setShowLogoutConfirm(true)}
                 title="Sign Out"
                 aria-label="Sign Out"
-                className="h-9 px-2.5 rounded-lg border border-border bg-surface-2 hover:bg-danger/10 hover:border-danger/30 text-danger flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+                className="hidden xl:flex h-9 px-2.5 rounded-lg border border-border bg-surface-2 hover:bg-danger/10 hover:border-danger/30 text-danger items-center space-x-1.5 transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
               >
                 <LogOut className="w-4 h-4 shrink-0" />
-                <span className="text-xs font-semibold hidden md:inline">Sign Out</span>
+                <span className="text-xs font-semibold">Sign Out</span>
               </button>
             )}
 
