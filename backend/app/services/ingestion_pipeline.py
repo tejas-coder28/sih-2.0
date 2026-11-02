@@ -430,6 +430,30 @@ class IngestionPipeline:
         """
         start_time = time.perf_counter()
 
+        # Generate rendered preview image of page 1 (for high-fidelity visual preview)
+        import base64
+        preview_image = None
+        try:
+            if fitz:
+                if filename.lower().endswith(".pdf"):
+                    pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
+                    if len(pdf_doc) > 0:
+                        pix = pdf_doc[0].get_pixmap(dpi=150)
+                        preview_image = f"data:image/png;base64,{base64.b64encode(pix.tobytes('png')).decode('ascii')}"
+                elif any(filename.lower().endswith(ext) for ext in [".png", ".jpg", ".jpeg"]):
+                    ext_type = filename.split(".")[-1].lower()
+                    if ext_type == "jpg":
+                        ext_type = "jpeg"
+                    img_doc = fitz.open(stream=file_bytes, filetype=ext_type)
+                    pix = img_doc[0].get_pixmap(dpi=150)
+                    preview_image = f"data:image/png;base64,{base64.b64encode(pix.tobytes('png')).decode('ascii')}"
+            if not preview_image and not filename.lower().endswith(".pdf"):
+                mime = "image/jpeg" if filename.lower().endswith((".jpg", ".jpeg")) else "image/png"
+                preview_image = f"data:{mime};base64,{base64.b64encode(file_bytes).decode('ascii')}"
+        except Exception as e:
+            logger.debug(f"Preview image generation failed: {e}")
+
+
         # Step 1: Run Pluggable OCR Layer
         ocr_res = ocr_service.extract(file_bytes, filename)
         duration_ms = max(12, int((time.perf_counter() - start_time) * 1000))
@@ -457,7 +481,8 @@ class IngestionPipeline:
                 "manual_review_required": True,
                 "review_reason": ocr_res.status_message,
                 "extracted_fields": [],
-                "processing_time_ms": duration_ms
+                "processing_time_ms": duration_ms,
+                "preview_image": preview_image
             }
 
         # Step 2: Format per-page OCR and word boxes
@@ -502,7 +527,7 @@ class IngestionPipeline:
                 bbox = getattr(f_obj, "bounding_box", None)
                 extracted_fields_list.append({
                     "key": k,
-                    "label": k.replace("_", " ").title(),
+                    "label": "AICTE ID" if k.lower() == "aicte_id" else k.replace("_", " ").title(),
                     "value": getattr(f_obj, "value", ""),
                     "confidence": round(f_conf * 100, 1) if f_conf <= 1.0 else f_conf,
                     "page": getattr(f_obj, "page", 1),
@@ -533,7 +558,8 @@ class IngestionPipeline:
             "manual_review_required": low_confidence_detected,
             "review_reason": "Low confidence OCR extraction or illegible scan requires officer review." if low_confidence_detected else None,
             "extracted_fields": extracted_fields_list,
-            "processing_time_ms": duration_ms
+            "processing_time_ms": duration_ms,
+            "preview_image": preview_image
         }
 
 
