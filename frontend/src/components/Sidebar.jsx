@@ -121,7 +121,7 @@ export default function Sidebar({
           id: 'document-intelligence',
           label: 'Doc Intelligence',
           icon: FileSearch,
-          roles: ['scrutiny_officer', 'senior_officer', 'admin', 'auditor'],
+          roles: ['institution_user', 'scrutiny_officer', 'senior_officer', 'admin', 'auditor'],
         },
         {
           id: 'photo-radar',
