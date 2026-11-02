@@ -501,7 +501,7 @@ export default function ManualReviewQueuePage({
                   </div>
 
                   {/* Col 3: Source & Hashes */}
-                  <div className="lg:col-span-3 bg-surface-2/70 backdrop-blur-md border border-border rounded-2xl p-3.5 space-y-2 text-xs shadow-xs">
+                  <div className="lg:col-span-3 bg-surface-2 border border-border rounded-2xl p-3.5 space-y-2 text-xs shadow-xs">
                     <div>
                       <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider block">Gateway Source</span>
                       <span className="font-medium text-text text-xs break-words">{item.source}</span>

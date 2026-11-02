@@ -722,7 +722,7 @@ export default function RuleConfigPage() {
                               ? 'bg-rose-100 text-rose-800 border-rose-300'
                               : 'bg-surface-2 text-text-muted border-border'
                           }`}>
-                            {isCleared ? '✓ STATUS CLEARED' : isFlagged ? '⚠ NEWLY FLAGGED' : 'UNTOUCHED'}
+                            {isCleared ? 'STATUS CLEARED' : isFlagged ? 'NEWLY FLAGGED' : 'UNTOUCHED'}
                           </span>
                         </td>
                       </tr>
@@ -779,7 +779,7 @@ export default function RuleConfigPage() {
               <div className="flex justify-between font-mono font-bold">
                 <span>Rule Code: {currentRule.rule_code}</span>
                 <span className="text-purple-700">
-                  {activeRuleVersion} ➔ v1.0.{Number(activeRuleVersion.split('.')[2]) + 1}
+                  {activeRuleVersion} &rarr; v1.0.{Number(activeRuleVersion.split('.')[2]) + 1}
                 </span>
               </div>
               <div className="text-[11px] text-text-muted">

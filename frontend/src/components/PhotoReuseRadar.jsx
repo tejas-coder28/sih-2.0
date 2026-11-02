@@ -399,7 +399,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
               className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white text-xs font-bold shadow-md shadow-rose-500/20 transition-all flex items-center space-x-2 active:scale-95 cursor-pointer"
             >
               <Zap className={`w-4 h-4 ${isSimulating ? 'animate-spin' : ''}`} />
-              <span>{isSimulating ? 'Computing Hashes...' : '⚡ Simulate Photo Upload (Demo)'}</span>
+              <span>{isSimulating ? 'Computing Hashes...' : 'Simulate Photo Upload (Demo)'}</span>
             </button>
 
             {/* Manual Upload Input */}
