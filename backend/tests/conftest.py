@@ -11,7 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Configure isolated test database in OS temp directory
-TEST_DB_PATH = Path(tempfile.gettempdir()) / "pramaan_x_test.db"
+TEST_DB_PATH = Path(tempfile.gettempdir()) / f"pramaan_x_test_{os.getpid()}.db"
 TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 

@@ -104,10 +104,16 @@ def seed_rules_from_engine(db: Session):
 
 
 def seed_database(reset: bool = False):
+    import backend.app.core.database as core_db
+    cur_engine = core_db.engine
+    cur_session = core_db.SessionLocal
     if reset:
-        Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-    db: Session = SessionLocal()
+        try:
+            Base.metadata.drop_all(bind=cur_engine, checkfirst=True)
+        except Exception:
+            pass
+    Base.metadata.create_all(bind=cur_engine)
+    db: Session = cur_session()
 
     # If users already exist and not resetting, check if Institution Twin tables need seeding & ensure RBAC accounts exist
     if not reset and db.query(User).first():
