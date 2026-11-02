@@ -432,6 +432,9 @@ export const MOCK_RADAR_GRAPH = {
       isConflict: true,
       thumbnail: '/images/computer_lab_reused.jpg',
       application_no: 'APP-2025-09812',
+      x: 230,
+      y: -30,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_002',
@@ -444,6 +447,9 @@ export const MOCK_RADAR_GRAPH = {
       isConflict: true,
       thumbnail: '/images/computer_lab_original.jpg',
       application_no: 'APP-2024-ENG-1102',
+      x: 350,
+      y: 140,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_003',
@@ -456,6 +462,9 @@ export const MOCK_RADAR_GRAPH = {
       isWarning: true,
       thumbnail: '/images/INST_003_computer_lab_near_duplicate.jpg',
       application_no: 'APP-2025-MAH-3012',
+      x: -10,
+      y: 70,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_004',
@@ -468,6 +477,9 @@ export const MOCK_RADAR_GRAPH = {
       isConflict: true,
       thumbnail: '/images/chemistry_lab_photo.jpg',
       application_no: 'APP-2025-POLY-8190',
+      x: -240,
+      y: -10,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_005',
@@ -480,6 +492,9 @@ export const MOCK_RADAR_GRAPH = {
       isConflict: true,
       thumbnail: '/images/INST_005_distinct_botany_garden.jpg',
       application_no: 'APP-2025-ENG-4491',
+      x: -20,
+      y: -200,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_006',
@@ -492,6 +507,9 @@ export const MOCK_RADAR_GRAPH = {
       isClean: true,
       thumbnail: '/images/INST_006_distinct_solar_rooftop.jpg',
       application_no: 'APP-2025-KA-0012',
+      x: 160,
+      y: -130,
+      fixed: { x: true, y: true },
     },
     {
       id: 'INST_007',
@@ -504,6 +522,9 @@ export const MOCK_RADAR_GRAPH = {
       isConflict: true,
       thumbnail: '/images/INST_007_distinct_cafeteria_hall.jpg',
       application_no: 'APP-2025-TN-9988',
+      x: 90,
+      y: 190,
+      fixed: { x: true, y: true },
     },
   ],
 

@@ -97,14 +97,7 @@ export default function PhotoClusterGraph({
 
   const handleReset = () => {
     if (networkRef.current) {
-      networkRef.current.setOptions({ physics: { enabled: true } });
-      networkRef.current.stabilize(100);
-      setTimeout(() => {
-        if (networkRef.current) {
-          networkRef.current.setOptions({ physics: { enabled: false } });
-          networkRef.current.fit({ animation: { duration: 400 } });
-        }
-      }, 250);
+      networkRef.current.fit({ animation: { duration: 300 } });
     }
   };
 
@@ -151,6 +144,9 @@ export default function PhotoClusterGraph({
           shapeProperties: {
             borderRadius: 10
           },
+          x: node.x !== undefined ? node.x : 0,
+          y: node.y !== undefined ? node.y : 0,
+          fixed: { x: true, y: true },
           color: {
             background: isDark ? '#1A1A1D' : '#FFFFFF',
             border: isConflict ? '#D97706' : isClean ? '#10B981' : (isDark ? '#52525B' : '#94A3B8'),
@@ -234,51 +230,24 @@ export default function PhotoClusterGraph({
       })
     );
 
-    // 3. Options: Force-directed physics that stabilizes then freezes
+    // 3. Options: Fixed deterministic layout with physics disabled (constant, zero jitter)
     const options = {
       autoResize: true,
       physics: {
-        solver: 'forceAtlas2Based',
-        forceAtlas2Based: {
-          gravitationalConstant: -180,
-          centralGravity: 0.008,
-          springLength: 260,
-          springConstant: 0.04,
-          damping: 0.6,
-        },
-        stabilization: {
-          enabled: true,
-          iterations: 150,
-          updateInterval: 25,
-        },
+        enabled: false,
       },
       interaction: {
         hover: true,
         zoomView: true,
         dragView: true,
-        dragNodes: true,
+        dragNodes: false,
         tooltipDelay: 120,
       },
     };
 
     const network = new Network(containerRef.current, { nodes, edges }, options);
     networkRef.current = network;
-
-    // Freeze physics upon stabilization so cards don't jitter or jump when clicked
-    const handleStabilized = () => {
-      network.setOptions({ physics: { enabled: false } });
-      network.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
-    };
-
-    network.once('stabilizationIterationsDone', handleStabilized);
-    network.once('stabilized', handleStabilized);
-
-    const safetyTimer = setTimeout(() => {
-      if (networkRef.current) {
-        networkRef.current.setOptions({ physics: { enabled: false } });
-        networkRef.current.fit();
-      }
-    }, 400);
+    network.fit({ animation: false });
 
     // 4. Custom canvas drawing pass for the 168x72px card interior
     network.on('afterDrawing', (ctx) => {
@@ -442,8 +411,7 @@ export default function PhotoClusterGraph({
     });
 
     return () => {
-      clearTimeout(safetyTimer);
-      if (networkRef.current) {
+            if (networkRef.current) {
         networkRef.current.destroy();
         networkRef.current = null;
       }
