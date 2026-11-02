@@ -1133,7 +1133,7 @@ tbody tr:hover {
 
 tbody td {
   padding: 14px 16px !important;
-  color: #FFFFFF !important;
+  color: var(--text);
   border-bottom: 1px solid var(--border) !important;
   border-left: none !important;
   border-right: none !important;

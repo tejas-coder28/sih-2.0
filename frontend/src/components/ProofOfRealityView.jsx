@@ -707,17 +707,25 @@ export default function ProofOfRealityView() {
                         <th className="py-2 px-3">Est. Built-Up (m²)</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-text-muted">
+                    <tbody className="divide-y divide-border text-text">
                       {builtUpResult.buildings.map((b, idx) => (
-                        <tr key={b.id || idx} className="hover:bg-surface-2">
-                          <td className="py-2 px-3">
+                        <tr key={b.id || idx} className="hover:bg-surface-2 transition-colors">
+                          <td className="py-2.5 px-3">
                             <div className="font-bold text-text">{b.name || b.id}</div>
                             <div className="text-[10px] font-mono text-text-subtle">{b.id}</div>
                           </td>
-                          <td className="py-2 px-3 capitalize text-text-muted">{b.building_type || 'Instructional'}</td>
-                          <td className="py-2 px-3 font-mono font-bold text-text">{(b.footprint_area_sqm ?? 0).toLocaleString()}</td>
-                          <td className="py-2 px-3 font-mono">{b.levels || 2}</td>
-                          <td className="py-2 px-3 font-mono font-bold text-indigo-700">{(b.estimated_built_up_sqm ?? (b.footprint_area_sqm ? b.footprint_area_sqm * (b.levels || 2) : 0)).toLocaleString()}</td>
+                          <td className="py-2.5 px-3">
+                            <span className="capitalize font-medium text-text-muted">{b.building_type || 'Instructional'}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="font-bold text-text">{(b.footprint_area_sqm ?? 0).toLocaleString()}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="text-text">{b.levels || 2}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="font-bold text-indigo-600 dark:text-indigo-400">{(b.estimated_built_up_sqm ?? (b.footprint_area_sqm ? b.footprint_area_sqm * (b.levels || 2) : 0)).toLocaleString()}</span>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
