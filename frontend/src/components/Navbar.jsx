@@ -447,10 +447,10 @@ export default function Navbar({
             )}
           </div>
 
-          {/* CENTER: Compact Quick-Search (36px, min 220px to 360px on focus) */}
-          <div className="relative flex-1 max-w-[380px] mx-2 hidden lg:flex items-center" ref={searchContainerRef}>
+          {/* CENTER: Enlarged Quick-Search Bar (h-10, full width 280-440px, clear Ctrl+K button) */}
+          <div className="relative flex-1 min-w-[280px] max-w-[440px] mx-2 hidden lg:flex items-center" ref={searchContainerRef}>
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -463,13 +463,25 @@ export default function Navbar({
                 onFocus={() => setIsDropdownOpen(true)}
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search pages, applications..."
-                className="w-[220px] focus:w-full transition-all duration-200 h-9 pl-10 pr-14 text-xs rounded-xl bg-surface-2 border border-border text-text placeholder:text-text-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:bg-surface"
+                className="w-full h-10 pl-10 pr-24 text-xs font-medium rounded-xl bg-surface-2 border border-border text-text placeholder:text-text-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:bg-surface transition-all shadow-xs"
                 aria-label="Search pages and applications"
                 id="header-quick-search-input"
               />
-              <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono text-text-subtle bg-surface border border-border shadow-2xs pointer-events-none">
-                Ctrl K
-              </kbd>
+              <button
+                type="button"
+                onClick={() => {
+                  if (searchInputRef.current) {
+                    searchInputRef.current.focus();
+                    setIsDropdownOpen(true);
+                  }
+                }}
+                className="p-0 px-2.5 py-1 absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center space-x-1 rounded-lg text-xs font-mono font-medium text-text-subtle bg-surface border border-border hover:bg-surface-2 hover:text-text shadow-2xs transition-colors cursor-pointer"
+                title="Press Ctrl+K to search"
+                aria-label="Search keyboard shortcut Ctrl+K"
+              >
+                <span className="text-[10px] opacity-70">⌘</span>
+                <span>Ctrl K</span>
+              </button>
             </div>
 
             {/* Solid Results Dropdown */}
@@ -597,16 +609,23 @@ export default function Navbar({
             {/* Operational Alert Bell with Drawer */}
             <AlertBellDrawer currentRole={currentRole} />
 
-            {/* Mobile Search Button (visible only below 1024px) */}
+            {/* Quick Site Search Button (Enlarged 40x40px with p-0 and crisp 20px icon) */}
             <button
               type="button"
               id="site-search-btn"
-              onClick={() => setIsSearchOpen(true)}
-              aria-label="Search navigation modules"
-              title="Search modules"
-              className="lg:hidden w-9 h-9 rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.innerWidth >= 1024 && searchInputRef.current) {
+                  searchInputRef.current.focus();
+                  setIsDropdownOpen(true);
+                } else {
+                  setIsSearchOpen(true);
+                }
+              }}
+              aria-label="Search navigation modules (Ctrl+K)"
+              title="Search modules and applications (Ctrl+K)"
+              className="p-0 w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <Search className="w-4 h-4 text-text-muted hover:text-text" />
+              <Search className="w-5 h-5 text-text-muted hover:text-primary transition-colors shrink-0" />
             </button>
 
             {/* Compact 36px Icon Theme Toggle with Sun/Moon 18px morph */}
