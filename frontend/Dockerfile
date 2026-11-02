@@ -27,12 +27,17 @@ RUN echo 'server { \
         try_files $uri $uri/ /index.html; \
     } \
     location /health { \
-        access_log off; \
-        return 200 "{\"status\":\"HEALTHY\",\"service\":\"frontend\"}\n"; \
-        add_header Content-Type application/json; \
+        proxy_pass http://backend:8000/health; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
     } \
     location /api/ { \
         proxy_pass http://backend:8000/api/; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+    location /uploads/ { \
+        proxy_pass http://backend:8000/uploads/; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
     } \
