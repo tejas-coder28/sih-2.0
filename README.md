@@ -238,10 +238,26 @@ We believe in complete technical transparency with Hackathon evaluators.
 | **Digital Signatures** | **HYBRID** | PDF `/ByteRange` structural integrity inspection is real. X.509 PKI trust anchor chain validation is a stub. |
 | **Verification Receipts** | **REAL** | Asymmetric Ed25519 digital signatures (RFC 8032) and SHA-256 Merkle chain with SQLite/Postgres DB triggers. |
 | **Statutory Authority Gateways** | **SIMULATED** | Local Mock Statutory Issuer (`127.0.0.1:8001`) with 510 pre-seeded JSON records. Live API Setu and DigiLocker are not integrated. |
-| **OCR for Degraded Scans** | **NOT INSTALLED** | Native OCR binaries (PaddleOCR / Tesseract) are not in the environment; pipeline parses text-embedded PDFs. |
+| **OCR for Scans & Images** | **REAL (RapidOCR / Tesseract / PyMuPDF)** | Pluggable OCR layer: Digital PDFs use PyMuPDF text layer; scans/images processed via **RapidOCR** (`rapidocr-onnxruntime`, installed & verified on this machine) with OpenCV preprocessing, or Tesseract 5.x binary when present. |
 | **APH 2025-26 Rule Parameters** | **PLACEHOLDERS** | All 12 rule parameters in `aicte_aph_2025.yaml` are engineering placeholders awaiting gazetted sign-off. |
 | **Docker Compose** | **VALIDATED / NOT VERIFIED** | `docker-compose.yml` validates syntactically; runtime container build was not verified locally due to inactive daemon. |
 | **Manual Scrutiny Baseline** | **ASSUMED** | The 180.0 min manual review baseline is an assumed benchmark figure, not an empirical time study. |
+
+---
+
+
+### Pluggable OCR Architecture for Scans & Images
+PRAMAAN-X features a unified pluggable OCR layer (`backend/app/services/ocr/`):
+1. **PyMuPDF Text Layer**: Used when a PDF page contains embedded vector text (fast, 0.99 confidence).
+2. **Tesseract 5.x**: Autodetected via `TESSERACT_PATH`, Windows default (`C:\Program Files\Tesseract-OCR\tesseract.exe`), or system `PATH` (`eng+hin` + regional data).
+3. **RapidOCR (`rapidocr-onnxruntime`)**: Pip-installable ONNX Runtime OCR engine (**installed & verified on this host**), requiring no external native C++ installers. Includes OpenCV preprocessing (deskew, CLAHE contrast enhancement).
+4. **Graceful Fail-Safe**: If no engine is available for an image, returns `status: "ocr_unavailable"` with an explicit error banner rather than silent empty text. Low-confidence extractions automatically route to the Manual Review Queue.
+
+**Operational Limitations & Caveats:**
+- **Handwriting**: Handwritten signatures, marginalia, and endorsement notes are not recognized by the printed OCR models and are flagged for Scrutiny Officer manual review.
+- **Extreme Scan Degradation**: Severely crumpled, torn, or low-resolution scans (< 100 DPI) produce lower confidence and are safely diverted to manual review.
+- **Regional Languages**: Hindi (`hin`), Kannada (`kan`), and Tamil (`tam`) require their respective `.traineddata` models installed in Tesseract's `tessdata` directory.
+- **Synthetic Benchmark Caveat**: Standard benchmark evaluations are conducted on synthetically generated certificates calibrated to AICTE APH 2025-26 statutory clauses.
 
 ---
 
