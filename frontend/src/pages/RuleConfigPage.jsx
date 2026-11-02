@@ -54,10 +54,16 @@ export default function RuleConfigPage() {
 
   const handleSelectRuleForSimulation = (rule) => {
     const matched = SIMULATION_RULES.find(
-      (r) => r.rule_code === rule.rule_code || (r.clause_id && rule.clause_id && r.clause_id.includes(rule.clause_id))
+      (r) => r.rule_code === rule?.rule_code || 
+             (r.clause_id && rule?.clause_id && r.clause_id.includes(rule.clause_id)) ||
+             (rule?.id && (r.id === rule.id || r.rule_code === rule.id))
     ) || SIMULATION_RULES[0];
     setSelectedRuleId(matched.id);
+    setCurrentRule(matched);
+    const initialVal = matched.default_simulated_value ?? matched.baseline_value;
+    setSliderValue(initialVal);
     setActiveTopTab('simulator');
+    executeDryRun(matched, initialVal);
   };
 
   // Dry-Run API execution calling POST /rules/dry-run

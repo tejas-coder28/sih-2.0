@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import Spinner from './components/ui/Spinner';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import FloatingContactButton from './components/ui/FloatingContactButton';
 import StorageConsentBanner from './components/ui/StorageConsentBanner';
 import { useUtm } from './hooks/useUtm';
@@ -520,7 +521,8 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <Suspense fallback={
+              <ErrorBoundary key={activeTab} activeTab={activeTab} onNavigateToDashboard={() => setActiveTab('dashboard')}>
+                <Suspense fallback={
                 <div className="p-12 flex flex-col items-center justify-center gap-3">
                   <Spinner size="lg" label="Loading regulatory module..." />
                   <span className="text-xs font-semibold text-text-muted">Loading scrutiny module...</span>
@@ -604,7 +606,8 @@ export default function App() {
                 {activeTab === 'system-architecture' && (
                   <SystemArchitecturePage onNavigateTab={setActiveTab} />
                 )}
-              </Suspense>
+                </Suspense>
+              </ErrorBoundary>
             )}
           </div>
         </main>
