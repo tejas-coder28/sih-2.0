@@ -523,39 +523,39 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
 
                   <div className="h-4 w-px bg-border mx-1" />
 
-                  {/* Quick Zoom Presets: 75%, 100%, 150% */}
-                  <button 
-                    type="button"
-                    onClick={() => handleSetExactZoom(0.75)} 
-                    className={`h-7 px-1.5 rounded text-[11px] font-mono border transition-colors cursor-pointer ${
-                      zoomLevel === 0.75 ? 'bg-primary text-white border-primary font-bold' : 'border-border text-muted hover:text-text'
-                    }`}
-                    title="Zoom to 75%"
-                  >
-                    75%
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleSetExactZoom(1.0)} 
-                    className={`h-7 px-1.5 rounded text-[11px] font-mono border transition-colors cursor-pointer ${
-                      zoomLevel === 1.0 ? 'bg-primary text-white border-primary font-bold' : 'border-border text-muted hover:text-text'
-                    }`}
-                    title="Zoom to 100%"
-                  >
-                    100%
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleSetExactZoom(1.5)} 
-                    className={`h-7 px-1.5 rounded text-[11px] font-mono border transition-colors cursor-pointer ${
-                      zoomLevel === 1.5 ? 'bg-primary text-white border-primary font-bold' : 'border-border text-muted hover:text-text'
-                    }`}
-                    title="Zoom to 150%"
-                  >
-                    150%
-                  </button>
-
-                  <div className="h-4 w-px bg-border mx-0.5" />
+                  {/* Quick Zoom Presets: Unified Segmented Control */}
+                  <div className="inline-flex items-center rounded-lg border border-border bg-surface-2 p-0.5 h-8">
+                    <button 
+                      type="button"
+                      onClick={() => handleSetExactZoom(0.75)} 
+                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                        zoomLevel === 0.75 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
+                      }`}
+                      title="Zoom to 75%"
+                    >
+                      75%
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleSetExactZoom(1.0)} 
+                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                        zoomLevel === 1.0 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
+                      }`}
+                      title="Zoom to 100%"
+                    >
+                      100%
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleSetExactZoom(1.5)} 
+                      className={`h-full px-2.5 rounded-md text-[11px] font-mono transition-colors cursor-pointer ${
+                        zoomLevel === 1.5 ? 'bg-primary text-white font-bold shadow-xs' : 'text-text-muted hover:text-text'
+                      }`}
+                      title="Zoom to 150%"
+                    >
+                      150%
+                    </button>
+                  </div>
 
                   <button 
                     type="button"
@@ -881,53 +881,57 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 </span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs table-fixed">
-                  <thead className="bg-surface-2/70 text-[11px] font-semibold text-muted uppercase border-b border-border">
-                    <tr>
-                      <th className="w-[40%] py-2.5 px-3">Field</th>
-                      <th className="w-[40%] py-2.5 px-3">Value</th>
-                      <th className="w-[20%] py-2.5 px-3 text-right">Conf.</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border text-text">
-                    {documentResult.extracted_fields?.map((f) => {
-                      const isHovered = hoveredFieldKey === f.key;
-                      const isSelected = selectedFieldKey === f.key;
-                      const isRowActive = isHovered || isSelected;
+              <div className="w-full text-left text-xs">
+                {/* Unified Shared Grid Header: Field 38% | Value 44% | Conf. 18% */}
+                <div className="grid grid-cols-[38%_44%_18%] bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border py-2.5 px-3 select-none">
+                  <div className="pr-2">Field</div>
+                  <div className="pr-2">Value</div>
+                  <div className="text-right">Conf.</div>
+                </div>
 
-                      return (
-                        <tr 
-                          key={f.key}
-                          id={`table-row-${f.key}`}
-                          onClick={() => handleRowClick(f.key)}
-                          onMouseEnter={() => setHoveredFieldKey(f.key)}
-                          onMouseLeave={() => setHoveredFieldKey(null)}
-                          className={`h-12 transition-colors cursor-pointer ${
-                            isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
-                          }`}
-                        >
-                          <td className="py-2.5 px-3 align-middle">
-                            <div className="font-semibold text-text truncate" title={f.label}>{f.label}</div>
-                            <div className="text-[10px] font-mono text-muted truncate">{f.key}</div>
-                          </td>
-                          <td className="py-2.5 px-3 font-medium text-text align-middle">
-                            <div className="line-clamp-2 break-words" title={f.value}>{f.value}</div>
-                          </td>
-                          <td className="py-2.5 px-3 align-middle text-right">
-                            <span className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-semibold font-mono ${
-                              f.confidence >= 95 
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                            }`}>
-                              {f.confidence}%
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                {/* Unified Shared Grid Rows: Exact Same Column Template */}
+                <div className="divide-y divide-border text-text">
+                  {documentResult.extracted_fields?.map((f) => {
+                    const isHovered = hoveredFieldKey === f.key;
+                    const isSelected = selectedFieldKey === f.key;
+                    const isRowActive = isHovered || isSelected;
+
+                    const conf = Number(f.confidence) || 0;
+                    const confBadgeClass = conf >= 95 
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
+                      : conf >= 90 
+                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' 
+                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+
+                    return (
+                      <div
+                        key={f.key}
+                        id={`table-row-${f.key}`}
+                        onClick={() => handleRowClick(f.key)}
+                        onMouseEnter={() => setHoveredFieldKey(f.key)}
+                        onMouseLeave={() => setHoveredFieldKey(null)}
+                        className={`grid grid-cols-[38%_44%_18%] items-center py-2.5 px-3 min-h-[48px] transition-colors cursor-pointer ${
+                          isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
+                        }`}
+                      >
+                        <div className="pr-2 min-w-0">
+                          <div className="font-semibold text-text truncate" title={f.label}>{f.label}</div>
+                          <div className="text-[10px] font-mono text-text-muted truncate">{f.key}</div>
+                        </div>
+                        <div className="pr-2 min-w-0">
+                          <div className="line-clamp-2 break-words text-text font-medium text-xs leading-snug" title={f.value}>
+                            {f.value}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-semibold font-mono ${confBadgeClass}`}>
+                            {conf}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
