@@ -312,7 +312,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
         is_valid: false,
         total_receipts: tamperedReceipts.length,
         broken_link_index: 2, // Block 2 is the tampered block
-        message: `🚨 TAMPERING DETECTED: Block #2 payload hash modified directly in ledger! Downstream Block #3 parent hash verification immediately severed.`,
+        message: `TAMPERING DETECTED: Block #2 payload hash modified directly in ledger! Downstream Block #3 parent hash verification immediately severed.`,
       });
 
       setTamperDetails({
@@ -408,7 +408,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
                       : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                     : 'bg-rose-600 text-white border-rose-700 animate-bounce'
                 }`}>
-                  {isIntact ? `✓ ${receipts.length} Blocks Verified Intact` : '❌ Hash Mismatch Broken Link'}
+                  {isIntact ? `${receipts.length} Blocks Verified Intact` : 'Hash Mismatch Broken Link'}
                 </span>
 
                 <span className="text-[10px] uppercase font-bold tracking-wider text-text-subtle bg-surface-2 border border-border px-2 py-0.5 rounded-md">
@@ -663,12 +663,12 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
                         {isInvalidBlock ? (
                           <>
                             <Unlink className="w-3 h-3 text-rose-600" />
-                            <span>⚡ BROKEN CHAIN LINK: Parent Hash Mismatch!</span>
+                            <span>BROKEN CHAIN LINK: Parent Hash Mismatch!</span>
                           </>
                         ) : (
                           <>
                             <Link2 className={`w-3 h-3 ${isBlockAnimatingGreen ? 'text-emerald-600' : 'text-text-subtle'}`} />
-                            <span>Linked to Block #{blockIndex - 1} • SHA-256 Verified ✓</span>
+                            <span>Linked to Block #{blockIndex - 1} • SHA-256 Verified</span>
                           </>
                         )}
                       </div>

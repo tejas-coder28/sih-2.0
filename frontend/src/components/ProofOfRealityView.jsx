@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Sun, 
+  Sun,
+  Camera, 
   Satellite, 
   Compass, 
   Building2, 
@@ -17,13 +18,14 @@ const SUN_SHADOW_PRESETS = [
     id: 'outdoor_sunlit_quad',
     name: 'Outdoor Sunlit Quadrangle (Consistent)',
     scenario: 'Outdoor Campus',
-    latitude: 18.5295,
-    longitude: 73.8565,
-    timestamp: '2026-05-15T11:30:00Z',
-    camera_heading: 21.0,
+    latitude: 19.0760,
+    longitude: 72.8777,
+    timestamp: '2026-03-20T09:30:00Z',
+    camera_heading: 90.0,
     photo_category: 'campus_exterior',
     is_indoor: false,
-    file_path: 'generated_data/forensic_samples/gt_clean_authentic_scan.jpg',
+    file_path: 'generated_data/photos/sun_shadow_benchmark/mumbai_campus_afternoon_valid.jpg',
+    image_url: '/images/mumbai_campus_afternoon_valid.jpg',
     desc: 'Outdoor campus quadrangle with clear solar shadow projection coherent with azimuth.'
   },
   {
@@ -36,7 +38,8 @@ const SUN_SHADOW_PRESETS = [
     camera_heading: null,
     photo_category: 'computer_lab',
     is_indoor: true,
-    file_path: 'generated_data/forensic_samples/gt_clean_authentic_affidavit.pdf',
+    file_path: 'generated_data/photos/sun_shadow_benchmark/indoor_smart_classroom.jpg',
+    image_url: '/images/indoor_smart_classroom.jpg',
     desc: 'Indoor laboratory with fluorescent lighting; solar shadow plausibility automatically skipped.'
   },
   {
@@ -49,8 +52,9 @@ const SUN_SHADOW_PRESETS = [
     camera_heading: 180.0,
     photo_category: 'campus_facade',
     is_indoor: false,
-    file_path: 'generated_data/forensic_samples/gt_ela_tampered.jpg',
-    desc: 'Shadow angle deviates by 78° from expected astronomical sun azimuth for claimed time.'
+    file_path: 'generated_data/photos/sun_shadow_benchmark/delhi_campus_spoofed_timestamp.jpg',
+    image_url: '/images/delhi_campus_spoofed_timestamp.jpg',
+    desc: 'Shadow angle deviates by 87.9° from expected astronomical sun azimuth for claimed time.'
   }
 ];
 
@@ -209,7 +213,7 @@ export default function ProofOfRealityView() {
       // Fallback
       const measured = lat === 18.5295 ? 5980.0 : (lat === 26.8466 ? 320.0 : 5400.0);
       const diff = measured - claimed;
-      const diffPct = (diff / claimed) * 100;
+      const diffPct = claimed > 0 ? (diff / claimed) * 100 : 0;
       const lower = claimed * (1 - tol / 100);
       const isDeficit = measured < lower;
 
@@ -335,21 +339,30 @@ export default function ProofOfRealityView() {
                 <button
                   key={p.id}
                   onClick={() => setSelectedSunPreset(p)}
-                  className={`p-3 rounded-xl text-left border transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl text-left border transition-all cursor-pointer flex items-center space-x-3 ${
                     isSelected
                       ? 'bg-amber-50/50 border-amber-500 ring-2 ring-amber-500/20 shadow-xs'
                       : 'bg-surface hover:bg-surface-2 border-border text-text-muted'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-text">{p.name}</span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                  <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-border bg-black/5">
+                    <img 
+                      src={p.image_url} 
+                      alt={p.name}
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-text truncate">{p.name}</span>
+                    </div>
+                    <span className={`inline-block text-[9px] font-bold px-1.5 py-0.5 rounded uppercase mb-1 ${
                       p.is_indoor ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-800'
                     }`}>
                       {p.scenario}
                     </span>
+                    <p className="text-[11px] text-text-subtle line-clamp-1">{p.desc}</p>
                   </div>
-                  <p className="text-[11px] text-text-subtle line-clamp-1">{p.desc}</p>
                 </button>
               );
             })}
@@ -367,76 +380,119 @@ export default function ProofOfRealityView() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/60">
               <div className="flex items-center space-x-2">
                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase border ${
-                  sunShadowResult.status === 'SKIPPED_INDOOR'
+                  sunShadowResult.status === 'SKIPPED_INDOOR' || sunShadowResult.status?.startsWith('SKIPPED')
                     ? 'bg-indigo-50 text-indigo-800 border-indigo-200'
                     : sunShadowResult.status === 'PLAUSIBLE'
                     ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border-rose-200'
+                    : 'bg-amber-50 text-amber-800 border-amber-200'
                 }`}>
                   Status: {sunShadowResult.status}
                 </span>
 
                 <span className="text-xs text-text-subtle font-mono">
-                  Plausibility Score: <strong>{(sunShadowResult.plausibility_score * 100).toFixed(0)}%</strong>
+                  Plausibility Score: <strong>{typeof sunShadowResult.plausibility_score === 'number' ? `${(sunShadowResult.plausibility_score * 100).toFixed(0)}%` : 'N/A (Skipped)'}</strong>
                 </span>
               </div>
 
               <div className="text-[11px] font-mono text-text-subtle flex items-center space-x-3">
-                <span>GPS: {sunShadowResult.claimed_gps?.latitude?.toFixed(4)}, {sunShadowResult.claimed_gps?.longitude?.toFixed(4)}</span>
+                <span>GPS: {typeof sunShadowResult.claimed_gps?.latitude === 'number' ? sunShadowResult.claimed_gps.latitude.toFixed(4) : 'N/A'}, {typeof sunShadowResult.claimed_gps?.longitude === 'number' ? sunShadowResult.claimed_gps.longitude.toFixed(4) : 'N/A'}</span>
                 <span>•</span>
                 <span>Time: {sunShadowResult.claimed_timestamp ? new Date(sunShadowResult.claimed_timestamp).toLocaleTimeString() : 'N/A'}</span>
               </div>
             </div>
 
-            {/* Plain-Language Reason Card */}
-            <div className={`p-3.5 rounded-xl border text-xs leading-relaxed font-medium ${
-              sunShadowResult.status === 'FLAGGED_DISCREPANCY'
-                ? 'bg-amber-50 border-amber-300 text-amber-950'
-                : 'bg-surface border-border text-text'
-            }`}>
-              <div className="font-bold text-text mb-1 flex items-center space-x-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                <span>Advisory Finding Breakdown</span>
-              </div>
-              <p>{sunShadowResult.human_readable_summary}</p>
-            </div>
+            {/* Inspected Photographic Evidence & Findings Side-by-Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+              {/* Photo Evidence Card (5 cols on lg) */}
+              <div className="lg:col-span-5 bg-surface border border-border rounded-xl p-3.5 flex flex-col justify-between shadow-2xs">
+                <div>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-xs font-bold text-text flex items-center space-x-1.5">
+                      <Camera className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Inspected Image Evidence</span>
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase border ${
+                      selectedSunPreset.is_indoor 
+                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                        : 'bg-amber-50 text-amber-800 border-amber-200'
+                    }`}>
+                      {selectedSunPreset.is_indoor ? 'Indoor Facility' : 'Outdoor Infrastructure'}
+                    </span>
+                  </div>
+                  
+                  <div className="relative rounded-lg overflow-hidden border border-border bg-black/10 aspect-video flex items-center justify-center">
+                    <img 
+                      src={selectedSunPreset.image_url} 
+                      alt={selectedSunPreset.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Visual Overlay Badge */}
+                    <div className="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-xs text-white text-[10px] px-2.5 py-1.5 rounded-md flex items-center justify-between font-mono">
+                      <span className="font-bold">{selectedSunPreset.scenario}</span>
+                      <span>{selectedSunPreset.is_indoor ? 'Indoor: Shadows Skipped' : `Sun Azimuth: ${typeof sunShadowResult.sun_position?.azimuth_deg === 'number' ? `${sunShadowResult.sun_position.azimuth_deg.toFixed(1)}°` : 'N/A'}`}</span>
+                    </div>
+                  </div>
+                </div>
 
-            {/* Solar Metric Badges Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="bg-surface p-3 rounded-xl border border-border">
-                <div className="text-[10px] text-text-subtle font-bold uppercase">Scene Classification</div>
-                <div className="text-sm font-bold text-text mt-1 capitalize">
-                  {sunShadowResult.scene_classification?.scene_type?.replace(/_/g, ' ') || 'Outdoor'}
+                <div className="mt-2.5 pt-2 border-t border-border/60 text-[10px] font-mono text-text-subtle flex items-center justify-between">
+                  <span>File: {selectedSunPreset.file_path.split('/').pop()}</span>
+                  <span>Category: {selectedSunPreset.photo_category}</span>
                 </div>
-                <div className="text-[10px] text-text-subtle mt-0.5">
-                  {sunShadowResult.scene_classification?.is_indoor ? 'Indoor: Skipped' : 'Outdoor Sunlit'}
-                </div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-border">
-                <div className="text-[10px] text-text-subtle font-bold uppercase">Astronomical Sun Azimuth</div>
-                <div className="text-sm font-bold text-amber-600 font-mono mt-1">
-                  {sunShadowResult.sun_position?.azimuth_deg ? `${sunShadowResult.sun_position.azimuth_deg.toFixed(1)}°` : 'N/A (Indoor)'}
-                </div>
-                <div className="text-[10px] text-text-subtle mt-0.5">Expected shadow: {sunShadowResult.sun_position?.expected_shadow_azimuth_deg ? `${sunShadowResult.sun_position.expected_shadow_azimuth_deg.toFixed(1)}°` : 'N/A'}</div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-border">
-                <div className="text-[10px] text-text-subtle font-bold uppercase">Observed Shadow Direction</div>
-                <div className="text-sm font-bold text-text font-mono mt-1">
-                  {sunShadowResult.estimated_shadow?.dominant_image_angle_deg ? `${sunShadowResult.estimated_shadow.dominant_image_angle_deg.toFixed(1)}°` : 'N/A (Indoor)'}
-                </div>
-                <div className="text-[10px] text-text-subtle mt-0.5">Coherence: {sunShadowResult.estimated_shadow?.directional_coherence || 'N/A'}</div>
               </div>
 
-              <div className="bg-surface p-3 rounded-xl border border-border">
-                <div className="text-[10px] text-text-subtle font-bold uppercase">Angular Discrepancy</div>
-                <div className={`text-sm font-bold font-mono mt-1 ${
-                  (sunShadowResult.angular_discrepancy_deg || 0) > 45 ? 'text-rose-600' : 'text-emerald-600'
+              {/* Advisory Findings & Solar Metrics (7 cols on lg) */}
+              <div className="lg:col-span-7 flex flex-col justify-between space-y-3">
+                {/* Plain-Language Reason Card */}
+                <div className={`p-3.5 rounded-xl border text-xs leading-relaxed font-medium ${
+                  sunShadowResult.status === 'FLAGGED_DISCREPANCY' || sunShadowResult.status === 'SUSPICIOUS_MISMATCH'
+                    ? 'bg-amber-50 border-amber-300 text-amber-950'
+                    : 'bg-surface border-border text-text'
                 }`}>
-                  {sunShadowResult.angular_discrepancy_deg !== undefined ? `${sunShadowResult.angular_discrepancy_deg.toFixed(1)}°` : '0.0°'}
+                  <div className="font-bold text-text mb-1 flex items-center space-x-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Advisory Finding Breakdown</span>
+                  </div>
+                  <p>{sunShadowResult.human_readable_summary}</p>
                 </div>
-                <div className="text-[10px] text-text-subtle mt-0.5">Tolerance band: ±45°</div>
+
+                {/* Solar Metric Badges Grid (2x2) */}
+                <div className="grid grid-cols-2 gap-2.5 text-xs">
+                  <div className="bg-surface p-3 rounded-xl border border-border">
+                    <div className="text-[10px] text-text-subtle font-bold uppercase">Scene Classification</div>
+                    <div className="text-sm font-bold text-text mt-1 capitalize">
+                      {sunShadowResult.scene_classification?.scene_type?.replace(/_/g, ' ') || 'Outdoor'}
+                    </div>
+                    <div className="text-[10px] text-text-subtle mt-0.5">
+                      {sunShadowResult.scene_classification?.is_indoor ? 'Indoor: Skipped' : 'Outdoor Sunlit'}
+                    </div>
+                  </div>
+
+                  <div className="bg-surface p-3 rounded-xl border border-border">
+                    <div className="text-[10px] text-text-subtle font-bold uppercase">Astronomical Sun Azimuth</div>
+                    <div className="text-sm font-bold text-amber-600 font-mono mt-1">
+                      {typeof sunShadowResult.sun_position?.azimuth_deg === 'number' ? `${sunShadowResult.sun_position.azimuth_deg.toFixed(1)}°` : 'N/A (Indoor)'}
+                    </div>
+                    <div className="text-[10px] text-text-subtle mt-0.5">Expected shadow: {typeof sunShadowResult.sun_position?.expected_shadow_azimuth_deg === 'number' ? `${sunShadowResult.sun_position.expected_shadow_azimuth_deg.toFixed(1)}°` : 'N/A'}</div>
+                  </div>
+
+                  <div className="bg-surface p-3 rounded-xl border border-border">
+                    <div className="text-[10px] text-text-subtle font-bold uppercase">Observed Shadow Direction</div>
+                    <div className="text-sm font-bold text-text font-mono mt-1">
+                      {typeof sunShadowResult.estimated_shadow?.dominant_image_angle_deg === 'number' ? `${sunShadowResult.estimated_shadow.dominant_image_angle_deg.toFixed(1)}°` : 'N/A (Diffuse/Indoor)'}
+                    </div>
+                    <div className="text-[10px] text-text-subtle mt-0.5">Coherence: {typeof sunShadowResult.estimated_shadow?.directional_coherence === 'number' ? sunShadowResult.estimated_shadow.directional_coherence.toFixed(2) : (sunShadowResult.estimated_shadow?.directional_coherence || 'N/A')}</div>
+                  </div>
+
+                  <div className="bg-surface p-3 rounded-xl border border-border">
+                    <div className="text-[10px] text-text-subtle font-bold uppercase">Angular Discrepancy</div>
+                    <div className={`text-sm font-bold font-mono mt-1 ${
+                      (typeof sunShadowResult.angular_discrepancy_deg === 'number' && sunShadowResult.angular_discrepancy_deg > 45) ? 'text-amber-600' : 'text-emerald-600'
+                    }`}>
+                      {typeof sunShadowResult.angular_discrepancy_deg === 'number' ? `${sunShadowResult.angular_discrepancy_deg.toFixed(1)}°` : 'N/A (Skipped)'}
+                    </div>
+                    <div className="text-[10px] text-text-subtle mt-0.5">Tolerance band: ±45°</div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -489,7 +545,7 @@ export default function ProofOfRealityView() {
                   }`}
                 >
                   <div className="text-xs font-bold text-text mb-0.5 line-clamp-1">{p.name}</div>
-                  <div className="text-[10px] text-text-subtle font-mono mb-1">Claim: {p.claimed_built_up_area.toLocaleString()} m²</div>
+                  <div className="text-[10px] text-text-subtle font-mono mb-1">Claim: {(p.claimed_built_up_area ?? 0).toLocaleString()} m²</div>
                   <p className="text-[11px] text-text-subtle line-clamp-1">{p.desc}</p>
                 </button>
               );
@@ -598,7 +654,7 @@ export default function ProofOfRealityView() {
               <div className="bg-surface p-3 rounded-xl border border-border">
                 <div className="text-[10px] text-text-subtle font-bold uppercase">Claimed Built-Up Area</div>
                 <div className="text-sm font-bold text-text font-mono mt-1">
-                  {builtUpResult.numbers_used?.claimed_built_up_area_sqm?.toLocaleString()} m²
+                  {(builtUpResult.numbers_used?.claimed_built_up_area_sqm ?? 0).toLocaleString()} m²
                 </div>
                 <div className="text-[10px] text-text-subtle mt-0.5">Institutional Self-Declaration</div>
               </div>
@@ -606,7 +662,7 @@ export default function ProofOfRealityView() {
               <div className="bg-surface p-3 rounded-xl border border-border">
                 <div className="text-[10px] text-text-subtle font-bold uppercase">Satellite Ground Footprint</div>
                 <div className="text-sm font-bold text-indigo-600 font-mono mt-1">
-                  {builtUpResult.numbers_used?.measured_footprint_sqm?.toLocaleString()} m²
+                  {(builtUpResult.numbers_used?.measured_footprint_sqm ?? 0).toLocaleString()} m²
                 </div>
                 <div className="text-[10px] text-text-subtle mt-0.5">Sum of Open Buildings Polygons</div>
               </div>
@@ -616,7 +672,7 @@ export default function ProofOfRealityView() {
                 <div className={`text-sm font-bold font-mono mt-1 ${
                   (builtUpResult.numbers_used?.discrepancy_sqm || 0) < 0 ? 'text-amber-700' : 'text-emerald-700'
                 }`}>
-                  {builtUpResult.numbers_used?.discrepancy_sqm?.toLocaleString()} m² ({builtUpResult.numbers_used?.discrepancy_pct?.toFixed(1)}%)
+                  {(builtUpResult.numbers_used?.discrepancy_sqm ?? 0).toLocaleString()} m² ({typeof builtUpResult.numbers_used?.discrepancy_pct === 'number' ? `${builtUpResult.numbers_used.discrepancy_pct.toFixed(1)}%` : '0.0%'})
                 </div>
                 <div className="text-[10px] text-text-subtle mt-0.5">Band: ±{customTolerance}%</div>
               </div>
@@ -624,7 +680,7 @@ export default function ProofOfRealityView() {
               <div className="bg-surface p-3 rounded-xl border border-border">
                 <div className="text-[10px] text-text-subtle font-bold uppercase">Tolerance Interval</div>
                 <div className="text-sm font-bold text-text font-mono mt-1">
-                  {builtUpResult.numbers_used?.tolerance_lower_bound_sqm?.toLocaleString()} - {builtUpResult.numbers_used?.tolerance_upper_bound_sqm?.toLocaleString()} m²
+                  {(builtUpResult.numbers_used?.tolerance_lower_bound_sqm ?? 0).toLocaleString()} - {(builtUpResult.numbers_used?.tolerance_upper_bound_sqm ?? 0).toLocaleString()} m²
                 </div>
                 <div className="text-[10px] text-text-subtle mt-0.5">Valid Statutory Range</div>
               </div>
@@ -651,17 +707,25 @@ export default function ProofOfRealityView() {
                         <th className="py-2 px-3">Est. Built-Up (m²)</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-text-muted">
+                    <tbody className="divide-y divide-border text-text">
                       {builtUpResult.buildings.map((b, idx) => (
-                        <tr key={b.id || idx} className="hover:bg-surface-2">
-                          <td className="py-2 px-3">
+                        <tr key={b.id || idx} className="hover:bg-surface-2 transition-colors">
+                          <td className="py-2.5 px-3">
                             <div className="font-bold text-text">{b.name || b.id}</div>
                             <div className="text-[10px] font-mono text-text-subtle">{b.id}</div>
                           </td>
-                          <td className="py-2 px-3 capitalize text-text-muted">{b.building_type || 'Instructional'}</td>
-                          <td className="py-2 px-3 font-mono font-bold text-text">{b.footprint_area_sqm?.toLocaleString()}</td>
-                          <td className="py-2 px-3 font-mono">{b.levels || 2}</td>
-                          <td className="py-2 px-3 font-mono font-bold text-indigo-700">{b.estimated_built_up_sqm?.toLocaleString() || (b.footprint_area_sqm * (b.levels || 2)).toLocaleString()}</td>
+                          <td className="py-2.5 px-3">
+                            <span className="capitalize font-medium text-text-muted">{b.building_type || 'Instructional'}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="font-bold text-text">{(b.footprint_area_sqm ?? 0).toLocaleString()}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="text-text">{b.levels || 2}</span>
+                          </td>
+                          <td className="py-2.5 px-3 font-mono">
+                            <span className="font-bold text-indigo-600 dark:text-indigo-400">{(b.estimated_built_up_sqm ?? (b.footprint_area_sqm ? b.footprint_area_sqm * (b.levels || 2) : 0)).toLocaleString()}</span>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

@@ -146,8 +146,8 @@ export default function StatusChip({ status, size = 'md' }) {
 
   return (
     <span
-      title={config.explanation}
-      className={`inline-flex items-center gap-1.5 rounded-full border h-6 select-none font-semibold transition-all duration-150 hover:brightness-105 cursor-help ${
+      title={config.label}
+      className={`inline-flex items-center gap-1.5 rounded-full border h-6 max-w-full select-none font-semibold transition-all duration-150 hover:brightness-105 cursor-help ${
         isSm ? 'px-2 text-[11px]' : 'px-2.5 text-[12px]'
       } ${config.themeClasses}`}
     >
@@ -157,7 +157,9 @@ export default function StatusChip({ status, size = 'md' }) {
         aria-hidden="true"
       />
       <Icon className={`shrink-0 opacity-80 ${isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'}`} />
-      <span className="font-semibold tracking-tight whitespace-nowrap leading-none">{config.label}</span>
+      <span className="font-semibold tracking-tight whitespace-nowrap leading-none truncate" title={config.label}>
+        {config.label}
+      </span>
     </span>
   );
 }
