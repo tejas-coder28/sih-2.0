@@ -1,7 +1,9 @@
 import os
+from pathlib import Path
 
 # Read the full 154-element table
-with open('tools/audit/recount_154_table.md', 'r', encoding='utf-8') as f:
+table_path = Path(__file__).resolve().parent / 'recount_154_table.md'
+with open(table_path, 'r', encoding='utf-8') as f:
     table_content = f.read()
 
 report = f"""# PRAMAAN-X (प्रमाण-X) Full End-to-End Audit & Verification Report
