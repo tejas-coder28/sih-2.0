@@ -10,7 +10,21 @@
 [![Tests: 182 Passing](https://img.shields.io/badge/Tests-182%20Passing%20(100%25)-success.svg?logo=pytest&logoColor=white)](evidence_pack/pytest_output.txt)
 [![Status: Advisory Only](https://img.shields.io/badge/Status-Advisory%20Decision--Support-amber.svg)](backend/app/rules/aicte_aph_2025.yaml)
 
-> **Quick Links**: [3-Min Walkthrough Demo (Coming Soon)](#) • [Presentation Pitch Deck Outline](SLIDE_DECK_OUTLINE.md) • [Full Evaluation Report](evaluation_report.md) • [154-Element Audit Report](AUDIT_REPORT.md) • [OCR Setup Guide](docs/OCR_SETUP.md)
+> **Quick Links**: [Live Demo](#-live-production-demo) • [Presentation Pitch Deck](docs/presentation/PramaanX_AnomalyX.pdf) • [Presentation Outline](docs/SLIDE_DECK_OUTLINE.md) • [Full Evaluation Report](docs/evaluation_report.md) • [154-Element Audit Report](docs/AUDIT_REPORT.md) • [Deployment Guide](docs/DEPLOY.md) • [OCR Setup Guide](docs/OCR_SETUP.md)
+
+---
+
+## 🌐 Live Production Demo
+
+The PRAMAAN-X platform is live and operational on Render across three decoupled tiers:
+
+| Operational Tier | Service Component | Live Endpoint | Health & Telemetry | Technology Stack |
+| :--- | :--- | :--- | :---: | :--- |
+| **Frontend** | Scrutiny Console | [pramaan-frontend.onrender.com](https://pramaan-frontend.onrender.com) | `Active` | React 19 + Vite + Tailwind CSS |
+| **Backend API** | Core Regulatory Gateway | [pramaan-backend-y3bl.onrender.com](https://pramaan-backend-y3bl.onrender.com) | [`/health`](https://pramaan-backend-y3bl.onrender.com/health) | FastAPI + PostgreSQL + NetworkX |
+| **Mock Authority**| Statutory Issuer Service | [pramaan-mock-issuer.onrender.com](https://pramaan-mock-issuer.onrender.com) | [`/health`](https://pramaan-mock-issuer.onrender.com/health) | FastAPI + 510-Record Registry |
+
+> 🔑 **Demo Login Credentials**: To evaluate immediately, log in as **Scrutiny Officer** using `scrutiny.officer@aicte-india.org` / `AicteOfficer@2025` (additional roles detailed in [Demo Accounts](#-demo-accounts-synthetic-testing-credentials)).
 
 ---
 
@@ -158,7 +172,7 @@ sequenceDiagram
 
 ## 📊 Benchmark Results & Performance Charts
 
-All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`evaluation_report.md`](evaluation_report.md).
+All quantitative figures below are extracted directly from [`evidence_pack/metrics.json`](evidence_pack/metrics.json) and [`docs/evaluation_report.md`](docs/evaluation_report.md).
 
 | Metric Dimension | Measured Value | Benchmark Context |
 | :--- | :---: | :--- |
@@ -338,16 +352,28 @@ SIH_AKXY/
 │   │   ├── models/          # SQLAlchemy schemas (Dossiers, Receipts, AuditLog)
 │   │   ├── rules/           # AICTE APH 2025-26 YAML rule packs & JSON schemas
 │   │   └── services/        # 6 core engines (Extraction, OCR, Forensics, Radar, Twin)
-│   └── tests/               # 14 automated test suites (173 tests)
+│   ├── tests/               # 14 automated test suites (173 tests)
+│   └── test_api.py          # Integration endpoint test suite (7 tests)
 ├── mock_issuer/             # Mock Statutory Issuer service on port 8001 (9 tests)
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # EvidenceLens, PhotoRadar, Navbar, BoundingBoxViewer
 │   │   ├── pages/           # 11 scrutiny screens (Dashboard, Preflight, Ledger)
-│   │   └── services/        # API client and live/offline fallback connectors
+│   │   └── services/        # API client and cold-start retry connectors
+│   └── package.json
+├── synthetic_generator/     # Synthetic dossier & photo defect generation tools
+├── generated_data/          # Ground truth CSVs, catalogs, and test PDFs
 ├── evidence_pack/           # Ground truth metrics.json, defect_coverage.csv, reports
-├── docs/                    # Architecture diagrams, screenshots, and evaluation charts
-└── AUDIT_REPORT.md          # 154-element end-to-end verification audit report
+├── docs/                    # Architecture diagrams, screenshots, reports, presentations
+│   ├── presentation/        # Slide deck (.pptx and .pdf)
+│   ├── DEPLOY.md            # Multi-tier deployment & operations guide
+│   └── AUDIT_REPORT.md      # 154-element end-to-end verification audit report
+├── tools/                   # Smoke verification & deployment testing scripts
+├── scripts/                 # Maintenance and demo database reset scripts
+├── docker-compose.yml       # Production multi-tier container composition
+├── render.yaml              # Infrastructure-as-Code blueprint for Render
+├── run_all.bat              # 1-click Windows full-stack launcher
+└── README.md
 ```
 
 ### Running the Test Suite
