@@ -32,7 +32,7 @@
   - Achieved **0.9013 Macro F1-Score** (Precision: **0.8861**, Recall: **0.9170**) across 60 evaluated multi-page statutory certificates.
   - **100.0% Precision & Recall** on critical land metrics: `survey_numbers` (F1: **1.000**) and `extent_acres` (F1: **1.000**).
   - Robust handling of non-standard formats: ordinal dates (*"31st March 2027"*), dot delimiters, and tenure clauses (*"valid for 3 years from issue"*).
-- **Visual:** Chart from [`1_field_extraction_metrics.png`](generated_data/charts/1_field_extraction_metrics.png) displaying precision, recall, and F1 across reference numbers, validity dates, institution names, and land surveys.
+- **Visual:** Chart from [`1_field_extraction_metrics.png`](charts/1_field_extraction_metrics.png) displaying precision, recall, and F1 across reference numbers, validity dates, institution names, and land surveys.
 - **Speaker Notes:** *"We benchmarked our field-level extraction across 60 multi-page documents containing authentic scanning degradation, noise, and unusual formats. As shown in chart 1, our Macro F1 is 0.9013, surpassing the 0.900 threshold. Most importantly, on land revenue parcel IDs and acreages, precision and recall were both 100%, ensuring zero false alarms on title deeds."*
 
 ---
@@ -43,7 +43,7 @@
   - Evaluated on held-out **Seed 7 test set** encompassing **100 institutions**, **500 compliance PDFs**, and **3,000+ faculty profiles**.
   - Detected **100.0% of planted defects** across all **20 statutory categories** (240 out of 240 true positives).
   - Zero missed cases on critical breaches: expired documents (**19/19**), dual faculty employment (**21/21**), pre-dated certificates (**21/21**), and area shortfalls (**17/17**).
-- **Visual:** Horizontal bar chart from [`2_defect_type_accuracy.png`](generated_data/charts/2_defect_type_accuracy.png) with all 20 bars reaching 100.0% accuracy with green checkmarks.
+- **Visual:** Horizontal bar chart from [`2_defect_type_accuracy.png`](charts/2_defect_type_accuracy.png) with all 20 bars reaching 100.0% accuracy with green checkmarks.
 - **Speaker Notes:** *"To validate regulatory detection, we evaluated 20 distinct statutory violation types across 100 institutions. As verified in metrics.json and our ground truth ledger, PRAMAAN-X achieved 100% recall on all 240 planted defects—from faculty duplicates across state borders to inverted validity intervals and backdated NOCs."*
 
 ---
@@ -65,7 +65,7 @@
   - Cross-institution visual comparison leveraging **pHash** (Hamming $\le 10$) and **OpenCLIP ViT-B/32** hypersphere cosine similarity ($\ge 0.85$).
   - Achieved **88.24% Precision**, **100.0% Recall**, and **93.75% F1-Score** across 18 evaluated facility queries.
   - Successfully uncovered **4 multi-college facility clusters** where laboratories and computer centers were fraudulently reused across colleges.
-- **Visual:** Side-by-side comparison from [`4_radar_and_anomaly_metrics.png`](generated_data/charts/4_radar_and_anomaly_metrics.png) showing CAD Lab photo reuse between Apex Institute and Horizon Institute with 0.984 cosine similarity.
+- **Visual:** Side-by-side comparison from [`4_radar_and_anomaly_metrics.png`](charts/4_radar_and_anomaly_metrics.png) showing CAD Lab photo reuse between Apex Institute and Horizon Institute with 0.984 cosine similarity.
 - **Speaker Notes:** *"Physical inspections cannot easily spot when a college submits a photo of a workshop that belongs to an institution in another district. Our Photo Reuse Radar indexes images into perceptual hash and OpenCLIP hyperspheres. On our 100-college dataset, it achieved 100% recall with 88.24% precision, exposing 4 multi-college facility sharing clusters."*
 
 ---
@@ -87,7 +87,7 @@
   - **Automated PRAMAAN-X Processing Time (Measured):** **2.08 seconds** per institutional dossier.
   - **Manual Scrutiny Committee Baseline (Assumed):** **180.0 minutes** per application.
   - Delivers a **5,200x speedup**, saving **180.0 minutes per application** with **3.21 ms mean alert dispatch latency** (P95: **3.22 ms**).
-- **Visual:** Chart from [`3_processing_time_comparison.png`](generated_data/charts/3_processing_time_comparison.png) showing the 180-minute manual bar dramatically dropping to the 2.08-second measured automated bar (5200x speedup callout).
+- **Visual:** Chart from [`3_processing_time_comparison.png`](charts/3_processing_time_comparison.png) showing the 180-minute manual bar dramatically dropping to the 2.08-second measured automated bar (5200x speedup callout).
 - **Speaker Notes:** *"Here is the operational impact. A complete multi-stage scrutiny run—OCR, forensic analysis, photo radar, graph contradiction checks, and receipt minting—takes 2.08 seconds of measured compute time. Compared against the assumed 180-minute manual review, that is a 5,200-fold speedup. Crucially, alert notifications dispatch in just 3.21 milliseconds with 100% deduplication."*
 
 ---
