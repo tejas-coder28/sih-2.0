@@ -30,7 +30,8 @@ import urllib.parse
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 DEFAULT_SAMPLE_PDF = REPO_ROOT / "audit_fixtures" / "live_test_digital.pdf"
-DEFAULT_SCREENSHOTS_DIR = REPO_ROOT / "audit_screenshots" / "deploy_smoke"
+import tempfile
+DEFAULT_SCREENSHOTS_DIR = None
 
 DEMO_ROLES = [
     ("scrutiny_officer", "scrutiny.officer@aicte-india.org", "AicteOfficer@2025"),
@@ -100,7 +101,7 @@ def upload_multipart_pdf(url, file_path, headers=None, timeout=30):
         return 0, None, str(e)
 
 
-def run_smoke_tests(backend_url, frontend_url, skip_browser=False, screenshots_dir=DEFAULT_SCREENSHOTS_DIR):
+def run_smoke_tests(backend_url, frontend_url, skip_browser=False, screenshots_dir=None):
     backend_url = backend_url.rstrip("/")
     frontend_url = frontend_url.rstrip("/")
     print("=" * 75)
@@ -236,6 +237,8 @@ def run_smoke_tests(backend_url, frontend_url, skip_browser=False, screenshots_d
             summary_results.append(("Headless Browser Smoke", "FAIL", "browser_smoke.cjs not found"))
         else:
             try:
+                if not screenshots_dir:
+                    screenshots_dir = tempfile.mkdtemp(prefix="smoke_shots_")
                 cmd = ["node", str(browser_script), frontend_url, str(screenshots_dir)]
                 proc = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
                 
@@ -313,7 +316,7 @@ if __name__ == "__main__":
     parser.add_argument("--backend-url", default=None, help="Explicit backend URL override")
     parser.add_argument("--frontend-url", default=os.getenv("FRONTEND_URL", "http://127.0.0.1:5173"), help="Frontend Base URL")
     parser.add_argument("--skip-browser", action="store_true", help="Skip headless browser tests")
-    parser.add_argument("--screenshots-dir", default=str(DEFAULT_SCREENSHOTS_DIR), help="Path to save screenshots")
+    parser.add_argument("--screenshots-dir", default=None, help="Optional path to save screenshots (defaults to temporary directory)")
 
     args = parser.parse_args()
     target_backend = args.backend_url or args.base_url

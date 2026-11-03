@@ -48,18 +48,18 @@ All 14 statutory modules (Pages A through N) were rigorously tested using automa
 
 | Page Identifier | Visual Evidence Artifact | Key Validated Elements |
 | :--- | :--- | :--- |
-| **Page A: Login** | ![Login Gateway](screenshots/login.png) | AICTE portal branding, 5 one-click demo role accounts, secure JWT credentials inputs. |
-| **Page B/C: Dashboard** | ![Dashboard](screenshots/dashboard.png) | Active ledger badge (`INTACT (7 Blocks)`), triage queue, risk KPI cards, application search. |
-| **Page D: Evidence Lens** | ![Evidence Lens](screenshots/evidence_lens.png) | Dossier selector, bounding box viewer, non-punitive "Indicator for review" banner, replacement upload. |
-| **Page E: Impossibility** | ![Impossibility Engine](screenshots/impossibility_engine.png) | Multi-institution conflicting subgraph network, dual-employment conflict detection, geometry checks. |
-| **Page F: Photo Radar** | ![Photo Radar](screenshots/photo_radar.png) | Force-directed cluster network, quick select pills, side-by-side comparison, difference overlay. |
-| **Page G: Document Intelligence** | ![Document Intelligence](screenshots/document_intelligence.png) | OCR text search, bounding box coordinates, schema-extracted structured fields, confidence scoring. |
-| **Page H: Manual Review** | ![Manual Review Queue](screenshots/manual_review_queue.png) | Risk priority chips, live external verification query connector, officer resolution modal. |
-| **Page I: Pre-Flight** | ![Pre-Flight Scorecard](screenshots/preflight.png) | Unclipped circular score gauge, 3-lens traffic-light signal, plain-language fix guide, document uploader. |
-| **Page J: Rules & What-If** | ![Rules and What-If](screenshots/regulations.png) | AICTE APH clause citations, searchable rule catalog, dynamic parameter sliders, cohort dry-run impact. |
-| **Page K: Inspection Planner** | ![Inspection Planner](screenshots/inspection_planner.png) | Geographic state & district institution clusters, suggested travel itinerary, squad dispatch ordering. |
-| **Page L: Audit Ledger** | ![Audit and Receipts](screenshots/audit_ledger.png) | Cryptographic hash-chain timeline, Ed25519 digital signatures, verify integrity button, tamper demo. |
-| **Page N: Roles (RBAC)** | ![RBAC Roles](screenshots/rbac_roles.png) | Multi-role permission isolation, institution-user boundary protection, authorized module access. |
+| **Page A: Login** | ![Login Gateway](../frontend/public/screenshots/login.png) | AICTE portal branding, 5 one-click demo role accounts, secure JWT credentials inputs. |
+| **Page B/C: Dashboard** | ![Dashboard](../frontend/public/screenshots/dashboard.png) | Active ledger badge (`INTACT (7 Blocks)`), triage queue, risk KPI cards, application search. |
+| **Page D: Evidence Lens** | ![Evidence Lens](../frontend/public/screenshots/evidence_lens.png) | Dossier selector, bounding box viewer, non-punitive "Indicator for review" banner, replacement upload. |
+| **Page E: Impossibility** | ![Impossibility Engine](../frontend/public/screenshots/impossibility_engine.png) | Multi-institution conflicting subgraph network, dual-employment conflict detection, geometry checks. |
+| **Page F: Photo Radar** | ![Photo Radar](../frontend/public/screenshots/photo_radar.png) | Force-directed cluster network, quick select pills, side-by-side comparison, difference overlay. |
+| **Page G: Document Intelligence** | ![Document Intelligence](../frontend/public/screenshots/document_intelligence.png) | OCR text search, bounding box coordinates, schema-extracted structured fields, confidence scoring. |
+| **Page H: Manual Review** | ![Manual Review Queue](../frontend/public/screenshots/manual_review_queue.png) | Risk priority chips, live external verification query connector, officer resolution modal. |
+| **Page I: Pre-Flight** | ![Pre-Flight Scorecard](../frontend/public/screenshots/preflight.png) | Unclipped circular score gauge, 3-lens traffic-light signal, plain-language fix guide, document uploader. |
+| **Page J: Rules & What-If** | ![Rules and What-If](../frontend/public/screenshots/regulations.png) | AICTE APH clause citations, searchable rule catalog, dynamic parameter sliders, cohort dry-run impact. |
+| **Page K: Inspection Planner** | ![Inspection Planner](../frontend/public/screenshots/inspection_planner.png) | Geographic state & district institution clusters, suggested travel itinerary, squad dispatch ordering. |
+| **Page L: Audit Ledger** | ![Audit and Receipts](../frontend/public/screenshots/audit_ledger.png) | Cryptographic hash-chain timeline, Ed25519 digital signatures, verify integrity button, tamper demo. |
+| **Page N: Roles (RBAC)** | ![RBAC Roles](../frontend/public/screenshots/rbac_roles.png) | Multi-role permission isolation, institution-user boundary protection, authorized module access. |
 
 ---
 

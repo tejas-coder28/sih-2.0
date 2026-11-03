@@ -359,26 +359,26 @@ In the user interface (`frontend/src/services/api.js`), each screen includes an 
 
 ### Verified High-Resolution Presentation Screenshots (1920x1080)
 
-All screenshots were captured in a clean browser session with no personally identifiable information (PII) exposed, and saved in [`evidence_pack/screenshots/`](file:///a:/SIH_AKXY/evidence_pack/screenshots/):
+All screenshots were captured in a clean browser session with no personally identifiable information (PII) exposed, and saved in [`frontend/public/screenshots/`](file:///a:/SIH_AKXY/frontend/public/screenshots/):
 
 1. **Dashboard Overview:**  
-   [`evidence_pack/screenshots/dashboard.png`](file:///a:/SIH_AKXY/evidence_pack/screenshots/dashboard.png)  
+   [`frontend/public/screenshots/dashboard.png`](file:///a:/SIH_AKXY/frontend/public/screenshots/dashboard.png)  
    *Displays live institutional scrutiny counts, risk tier distributions, and recent applications.*
 
 2. **Evidence Lens with Real Finding Loaded:**  
-   [`evidence_pack/screenshots/evidence_lens.png`](file:///a:/SIH_AKXY/evidence_pack/screenshots/evidence_lens.png)  
+   [`frontend/public/screenshots/evidence_lens.png`](file:///a:/SIH_AKXY/frontend/public/screenshots/evidence_lens.png)  
    *Displays split-view document PDF canvas with bounding-box OCR overlay and statutory regulatory finding.*
 
 3. **Pre-Flight Scorecard Result:**  
-   [`evidence_pack/screenshots/preflight_scorecard.png`](file:///a:/SIH_AKXY/evidence_pack/screenshots/preflight_scorecard.png)  
+   [`frontend/public/screenshots/preflight_scorecard.png`](file:///a:/SIH_AKXY/frontend/public/screenshots/preflight_scorecard.png)  
    *Displays deficit radar, checklist readiness, and statutory document defect flags.*
 
 4. **Photo Reuse Radar:**  
-   [`evidence_pack/screenshots/photo_reuse_radar.png`](file:///a:/SIH_AKXY/evidence_pack/screenshots/photo_reuse_radar.png)  
+   [`frontend/public/screenshots/photo_reuse_radar.png`](file:///a:/SIH_AKXY/frontend/public/screenshots/photo_reuse_radar.png)  
    *Displays multi-college photo clusters, perceptual hash Hamming distances, and facility images.*
 
 5. **Audit and Receipts Ledger:**  
-   [`evidence_pack/screenshots/audit_receipts.png`](file:///a:/SIH_AKXY/evidence_pack/screenshots/audit_receipts.png)  
+   [`frontend/public/screenshots/audit_receipts.png`](file:///a:/SIH_AKXY/frontend/public/screenshots/audit_receipts.png)  
    *Displays Ed25519 digital signature receipts, Merkle block hashes, and unbroken chain integrity status.*
 
 ---
