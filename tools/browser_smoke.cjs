@@ -16,7 +16,7 @@ try {
 
 const CHROME_PATH = process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const FRONTEND_URL = process.argv[2] || process.env.FRONTEND_URL || 'http://127.0.0.1:5173';
-const SCREENSHOTS_DIR = process.argv[3] || process.env.SCREENSHOTS_DIR || path.resolve(__dirname, '../audit_screenshots/deploy_smoke');
+const SCREENSHOTS_DIR = process.argv[3] || process.env.SCREENSHOTS_DIR || path.join(require('os').tmpdir(), 'pramaan_smoke_screenshots');
 
 if (!fs.existsSync(SCREENSHOTS_DIR)) {
   fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
