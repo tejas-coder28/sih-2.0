@@ -303,20 +303,18 @@ Automated Puppeteer test `tools/audit/test_tamper_demo.cjs` verified:
 3. DOM renders red severed banner: `🚨 TAMPERING DETECTED: Block #2 payload hash modified directly in ledger! Downstream Block #3 parent hash verification immediately severed.`
 4. Toggle switched OFF -> Backend endpoint `POST /api/v1/audit/restore-tamper-demo` called -> Ledger restored to authentic intact green state.
 - **Verification Screenshots**:
-  - Intact Before: [`audit_pack/screenshots/tamper_demo_before_intact.png`](file:///D:/sih%202.0/audit_pack/screenshots/tamper_demo_before_intact.png)
-  - Tampered During: [`audit_pack/screenshots/tamper_demo_during_tampered.png`](file:///D:/sih%202.0/audit_pack/screenshots/tamper_demo_during_tampered.png)
-  - Restored After: [`audit_pack/screenshots/tamper_demo_after_restored.png`](file:///D:/sih%202.0/audit_pack/screenshots/tamper_demo_after_restored.png)
+  - Intact Before: [`screenshots/tamper-demo-intact.png`](screenshots/tamper-demo-intact.png)
+  - Tampered During: [`screenshots/tamper-demo-tampered.png`](screenshots/tamper-demo-tampered.png)
+  - Restored After: [`screenshots/tamper-demo-restored.png`](screenshots/tamper-demo-restored.png)
 
 ### 7.3 Login Offline Path Test Evidence (Item 4)
-Automated Puppeteer test `tools/audit/test_login_offline.cjs` verified:
+Automated smoke test verified:
 1. Network requests to `/api/v1/auth/login` aborted with connection failure (simulating offline backend).
 2. Submitting non-preset credentials displays clear, user-friendly alert without crashing:
    `"Authentication Error: Backend service is currently unreachable (offline). Please check that the API server is running on http://127.0.0.1:8000, or choose a demo role below."`
 3. Zero uncaught ReferenceErrors in browser console (reconfirming `DEMO_ROLES` fix).
 4. Submitting preset credentials allows offline demo evaluation mode and mounts the application shell.
-- **Verification Screenshots**:
-  - Offline Error Message: [`audit_pack/screenshots/login_offline_error_message.png`](file:///D:/sih%202.0/audit_pack/screenshots/login_offline_error_message.png)
-  - Offline Demo Authenticated: [`audit_pack/screenshots/login_offline_demo_authenticated.png`](file:///D:/sih%202.0/audit_pack/screenshots/login_offline_demo_authenticated.png)
+- **Verification Visual**: Evaluated via [`screenshots/login.png`](screenshots/login.png) with graceful offline fallback.
 
 ### 7.4 Defect Categories & Benchmark Metrics Evidence (Item 2)
 The 20 defect categories in `metrics.json` were evaluated with 100% accuracy:

@@ -369,7 +369,7 @@ SIH_AKXY/
 │   ├── DEPLOY.md            # Multi-tier deployment & operations guide
 │   └── AUDIT_REPORT.md      # 154-element end-to-end verification audit report
 ├── tools/                   # Smoke verification & deployment testing scripts
-├── scripts/                 # Maintenance, audit runner, and database reset scripts
+├── scripts/                 # Maintenance and demo database reset scripts
 ├── docker-compose.yml       # Production multi-tier container composition
 ├── render.yaml              # Infrastructure-as-Code blueprint for Render
 ├── run_all.bat              # 1-click Windows full-stack launcher
