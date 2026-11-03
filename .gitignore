@@ -1,12 +1,13 @@
-# Python
-.venv/
-venv/
+# ========================================================
+# PRAMAAN-X Version Control Exclusion Rules (.gitignore)
+# ========================================================
+
+# --- Python Bytecode & Build Output ---
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -23,26 +24,46 @@ wheels/
 .installed.cfg
 *.egg
 .pytest_cache/
+.coverage
+htmlcov/
+*.log
 
-# Databases & local state
+# --- Virtual Environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Databases & Local SQLite State ---
 *.db
+*.db-journal
+*.sqlite
 *.sqlite3
 pramaan_x.db
+test.db
+test_*.db
 augraphy_cache/
 
-# Environment & Secrets
+# --- Environment Configurations & Secrets ---
 .env
 .env.local
+.env.*.local
 *.key
 *.pem
-generated_data/keys/
 keys/
+generated_data/keys/
 
-# Uploads & User Files
-uploads/
-backend/uploads/
+# --- Runtime Uploads & Forensics Output ---
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+augraphy_cache/
+test_generated_data/
+audit_screenshots/
+scratch/
 
-# Node / Frontend
+# --- Node.js & Frontend Build Artifacts ---
 node_modules/
 frontend/node_modules/
 frontend/dist/
@@ -51,22 +72,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE / OS
+# --- Operating System & IDE Files ---
 .idea/
 .vscode/
 *.swp
 *.swo
 .DS_Store
 Thumbs.db
-
-# Synthetic test output
-test_generated_data/
-
-audit_screenshots/
-dist/
-.env
-venv/
-node_modules/
-generated_data/keys/
-
-scratch/
+desktop.ini
