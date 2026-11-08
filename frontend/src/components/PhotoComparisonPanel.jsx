@@ -103,7 +103,7 @@ export default function PhotoComparisonPanel({
   };
 
   return (
-    <div className="flex flex-col bg-surface border border-border rounded-xl shadow-xs overflow-hidden max-h-[calc(100vh-140px)] min-h-[600px]">
+    <div className="flex flex-col bg-surface border border-border rounded-xl shadow-xs overflow-hidden max-h-none sm:max-h-[calc(100vh-140px)] min-h-0 sm:min-h-[600px]">
       {/* Side Panel Header */}
       <div className="p-4 bg-surface-2 text-text border-b border-border flex items-center justify-between gap-3">
         <div className="min-w-0">
@@ -145,7 +145,7 @@ export default function PhotoComparisonPanel({
 
       <div className="flex-1 p-4 overflow-y-auto space-y-4">
         
-        {/* Compact "Shared Photos" Thumbnail Strip (3-6 thumbnails) */}
+        {/* Compact "Shared Photos" Thumbnail Strip (3-6 thumbnails): Scrollable */}
         {shared_photos.length > 0 && (
           <div className="bg-surface-2 p-2.5 rounded-xl border border-border space-y-2">
             <div className="flex items-center justify-between text-[11px] font-bold text-text px-0.5">
@@ -155,7 +155,7 @@ export default function PhotoComparisonPanel({
               </span>
               <span className="text-[10px] text-text-subtle font-mono">Select thumbnail to view</span>
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none snap-x pb-1 pt-0.5 flex-nowrap">
               {shared_photos.map((photo, pIdx) => {
                 const isSelected = activeSubPhotoId === photo.id || (!activeSubPhotoId && pIdx === 0);
                 return (
@@ -163,7 +163,7 @@ export default function PhotoComparisonPanel({
                     key={photo.id}
                     type="button"
                     onClick={() => setActiveSubPhotoId(photo.id)}
-                    className={`flex-none flex items-center space-x-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                    className={`min-h-[44px] flex-none flex items-center space-x-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer snap-start ${
                       isSelected
                         ? 'bg-surface border-primary ring-2 ring-primary/20 shadow-xs'
                         : 'bg-surface/70 border-border hover:bg-surface hover:border-border-hover'
@@ -201,39 +201,39 @@ export default function PhotoComparisonPanel({
             <button
               id="view-mode-side-by-side"
               onClick={() => setViewMode('side_by_side')}
-              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-l-md ${
+              className={`min-h-[44px] sm:min-h-0 px-3.5 sm:px-2.5 py-2 sm:py-1 text-xs sm:text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-l-md ${
                 viewMode === 'side_by_side'
                   ? 'bg-primary text-white font-bold shadow-xs'
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              <Split className="w-3 h-3" />
+              <Split className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span>Dual</span>
             </button>
 
             <button
               id="view-mode-wipe-slider"
               onClick={() => setViewMode('wipe_slider')}
-              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
+              className={`min-h-[44px] sm:min-h-0 px-3.5 sm:px-2.5 py-2 sm:py-1 text-xs sm:text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer ${
                 viewMode === 'wipe_slider'
                   ? 'bg-primary text-white font-bold shadow-xs'
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              <Sliders className="w-3 h-3" />
+              <Sliders className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span>Split</span>
             </button>
 
             <button
               id="view-mode-difference-overlay"
               onClick={() => setViewMode('difference_overlay')}
-              className={`px-2.5 py-1 text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-r-md ${
+              className={`min-h-[44px] sm:min-h-0 px-3.5 sm:px-2.5 py-2 sm:py-1 text-xs sm:text-[11px] font-semibold transition-all flex items-center space-x-1.5 cursor-pointer rounded-r-md ${
                 viewMode === 'difference_overlay'
                   ? 'bg-primary text-white font-bold shadow-xs'
                   : 'text-text-muted hover:text-text'
               }`}
             >
-              <Layers className="w-3 h-3" />
+              <Layers className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span>Difference</span>
             </button>
           </div>
@@ -542,7 +542,7 @@ export default function PhotoComparisonPanel({
             <button
               onClick={() => handleOpenApp(original_photo.application_no, original_photo.institution_name)}
               id="open-app-original-btn"
-              className="p-2.5 rounded-xl border border-border bg-surface hover:bg-surface-2 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
+              className="p-3 sm:p-2.5 rounded-xl border border-border bg-surface hover:bg-surface-2 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer min-h-[44px]"
             >
               <div className="min-w-0 pr-1">
                 <div className="text-[10px] text-text-subtle font-mono">Origin Application</div>
@@ -555,7 +555,7 @@ export default function PhotoComparisonPanel({
             <button
               onClick={() => handleOpenApp(duplicate_photo.application_no, duplicate_photo.institution_name)}
               id="open-app-duplicate-btn"
-              className="p-2.5 rounded-xl border border-amber-300 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-50 dark:hover:bg-amber-950/50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer"
+              className="p-3 sm:p-2.5 rounded-xl border border-amber-300 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-50 dark:hover:bg-amber-950/50 text-text text-xs font-medium transition-all text-left flex items-center justify-between group shadow-2xs cursor-pointer min-h-[44px]"
             >
               <div className="min-w-0 pr-1">
                 <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-bold">Current Flagged Dossier</div>
@@ -569,7 +569,7 @@ export default function PhotoComparisonPanel({
           <button
             onClick={() => onOpenEvidenceLens && onOpenEvidenceLens(pairData)}
             id="jump-to-evidence-lens-btn"
-            className="w-full py-2.5 px-4 rounded-xl bg-[#CFE3FA] dark:bg-sky-950/50 hover:bg-[#B9D6F5] dark:hover:bg-sky-900/60 text-text dark:text-sky-200 border border-[#8DB6E6] dark:border-sky-800 text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full min-h-[44px] h-12 sm:h-10 py-2.5 px-4 rounded-xl bg-[#CFE3FA] dark:bg-sky-950/50 hover:bg-[#B9D6F5] dark:hover:bg-sky-900/60 text-text dark:text-sky-200 border border-[#8DB6E6] dark:border-sky-800 text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer"
           >
             <FileText className="w-4 h-4 text-text dark:text-sky-200" />
             <span>Open Finding in Evidence Lens Regulatory Strip</span>

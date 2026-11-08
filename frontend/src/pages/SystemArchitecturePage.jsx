@@ -450,12 +450,12 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
             </p>
           </div>
 
-          {/* Top Action Button (FIX 7: solid primary #0B3D91 light / #2F5BE8 dark, 40px height, white text) */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Top Action Button */}
+          <div className="flex items-center gap-3 shrink-0 w-full lg:w-auto">
             <button
               id="btn-deep-dive-specifications"
               onClick={() => setActiveSection('components')}
-              className="h-10 px-4 rounded-lg bg-[#0B3D91] dark:bg-[#2F5BE8] hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-full lg:w-auto min-h-[44px] h-12 sm:h-10 px-4 rounded-lg bg-[#0B3D91] dark:bg-[#2F5BE8] hover:opacity-95 text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Cpu className="w-4 h-4 text-white" />
               <span>Deep-Dive Specifications</span>
@@ -487,8 +487,8 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
           </div>
         </div>
 
-        {/* Navigation Mode Tabs */}
-        <div className="flex flex-wrap items-center gap-2 mt-6 pt-5 border-t border-border">
+        {/* Navigation Mode Tabs: Scrollable on mobile */}
+        <div className="flex items-center gap-2 mt-6 pt-5 border-t border-border overflow-x-auto scrollbar-none snap-x flex-nowrap w-full">
           {[
             { id: 'architecture', label: 'Interactive Architecture', icon: Workflow },
             { id: 'pipeline', label: 'End-to-End Pipeline Simulator', icon: Activity },
@@ -503,7 +503,7 @@ export default function SystemArchitecturePage({ onNavigateTab }) {
                 key={tab.id}
                 id={`tab-${tab.id}`}
                 onClick={() => setActiveSection(tab.id)}
-                className={`h-10 px-3.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive
+                className={`min-h-[44px] sm:min-h-0 h-11 sm:h-10 px-3.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary shrink-0 snap-start whitespace-nowrap ${isActive
                     ? 'bg-primary text-white shadow-xs'
                     : 'bg-surface-2 text-text-muted hover:bg-surface-3 hover:text-text border border-border'
                   }`}

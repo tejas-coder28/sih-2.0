@@ -444,13 +444,13 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
           </div>
 
           {/* Controls: Verify Chain Button & Demo Tamper Toggle */}
-          <div className="flex flex-wrap items-center gap-3.5 shrink-0 pt-2 lg:pt-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 pt-2 lg:pt-0 w-full lg:w-auto">
             {/* 1. Verify Chain Button */}
             <button
               id="verify-chain-button"
               onClick={handleVerifyChain}
               disabled={verifying}
-              className={`px-5 py-3 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center space-x-2.5 cursor-pointer disabled:opacity-50 ${
+              className={`w-full sm:w-auto min-h-[44px] h-12 sm:h-auto px-5 py-3 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2.5 cursor-pointer disabled:opacity-50 ${
                 isGreenChainAnimating
                   ? 'bg-emerald-700 text-white ring-4 ring-emerald-500/50 shadow-emerald-700/40 scale-102'
                   : 'bg-emerald-700 hover:bg-emerald-800 text-white'
@@ -464,7 +464,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             {/* 2. Demo: Tamper Toggle (Demo Mode Only) */}
             <div 
               id="demo-tamper-container"
-              className="flex items-center space-x-3 bg-surface border border-border rounded-xl px-4 py-2.5 shadow-xs"
+              className="flex items-center justify-between sm:justify-start space-x-3 bg-surface border border-border rounded-xl px-4 py-2.5 shadow-xs w-full sm:w-auto min-h-[44px]"
             >
               <div className="flex flex-col">
                 <div className="flex items-center space-x-1.5">
@@ -500,14 +500,14 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
 
       {/* 2. Top Metric Ribbon & View Switcher */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-border">
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Navigation Tabs: Horizontally scrollable row on mobile */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none snap-x pb-1 w-full lg:w-auto flex-nowrap">
           <button
             id="tab-receipts-timeline"
             role="tab"
             aria-selected={viewMode === 'timeline'}
             onClick={() => setViewMode('timeline')}
-            className={`tab px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+            className={`tab min-h-[44px] sm:min-h-0 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 snap-start whitespace-nowrap ${
               viewMode === 'timeline'
                 ? 'is-active btn-solid shadow-sm'
                 : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -522,7 +522,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             role="tab"
             aria-selected={viewMode === 'table'}
             onClick={() => setViewMode('table')}
-            className={`tab px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+            className={`tab min-h-[44px] sm:min-h-0 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 snap-start whitespace-nowrap ${
               viewMode === 'table'
                 ? 'is-active btn-solid shadow-sm'
                 : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -537,7 +537,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             role="tab"
             aria-selected={viewMode === 'officer-decisions'}
             onClick={() => setViewMode('officer-decisions')}
-            className={`tab px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+            className={`tab min-h-[44px] sm:min-h-0 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 snap-start whitespace-nowrap ${
               viewMode === 'officer-decisions'
                 ? 'is-active btn-solid shadow-sm'
                 : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -552,7 +552,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             role="tab"
             aria-selected={viewMode === 'manual-review-queue'}
             onClick={() => setViewMode('manual-review-queue')}
-            className={`tab px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+            className={`tab min-h-[44px] sm:min-h-0 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 snap-start whitespace-nowrap ${
               viewMode === 'manual-review-queue'
                 ? 'is-active btn-solid shadow-sm'
                 : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -567,7 +567,7 @@ export default function AuditAndReceiptsPage({ activeApplicationId = 1 }) {
             role="tab"
             aria-selected={viewMode === 'access-logs'}
             onClick={() => setViewMode('access-logs')}
-            className={`tab px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+            className={`tab min-h-[44px] sm:min-h-0 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 snap-start whitespace-nowrap ${
               viewMode === 'access-logs'
                 ? 'is-active btn-solid shadow-sm'
                 : 'text-text-muted hover:text-text hover:bg-surface-2'

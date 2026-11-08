@@ -304,74 +304,74 @@ export default function InspectionPlannerPage() {
         <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-sky-500/10 to-transparent pointer-events-none" />
       </div>
 
-      {/* 2. Key Metrics Ribbon: Flat Tinted Square, No Glow, 28px/700 Tabular Numbers */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 2xl:gap-6">
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-            <Building2 className="w-5 h-5" />
+      {/* 2. Key Metrics Ribbon: 2x2 Grid on Mobile, Flat Tinted Square, No Glow */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 2xl:gap-6">
+        <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3.5 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-text-muted font-medium truncate">Flagged Institutions</div>
-            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+            <div className="text-[11px] sm:text-xs text-text-muted font-medium truncate">Flagged Institutions</div>
+            <div className="text-xl sm:text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
               {plannerData.total_flagged_institutions || 0}
             </div>
-            <div className="text-[11px] text-text-muted truncate">Across {plannerData.total_states || 0} States</div>
+            <div className="text-[10px] sm:text-[11px] text-text-muted truncate">Across {plannerData.total_states || 0} States</div>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0">
-            <MapPin className="w-5 h-5" />
+        <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3.5 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-text-muted font-medium truncate">District Clusters</div>
-            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+            <div className="text-[11px] sm:text-xs text-text-muted font-medium truncate">District Clusters</div>
+            <div className="text-xl sm:text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
               {plannerData.total_clusters || 0}
             </div>
-            <div className="text-[11px] text-text-muted truncate">Optimal Itinerary Routes</div>
+            <div className="text-[10px] sm:text-[11px] text-text-muted truncate">Optimal Routes</div>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-600 border border-rose-500/20 flex items-center justify-center shrink-0">
-            <ShieldAlert className="w-5 h-5" />
+        <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3.5 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-rose-500/10 text-rose-600 border border-rose-500/20 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-text-muted font-medium truncate">Critical Urgency</div>
-            <div className="text-[28px] font-bold text-rose-600 tabular-nums leading-tight mt-0.5">
+            <div className="text-[11px] sm:text-xs text-text-muted font-medium truncate">Critical Urgency</div>
+            <div className="text-xl sm:text-[28px] font-bold text-rose-600 tabular-nums leading-tight mt-0.5">
               3
             </div>
-            <div className="text-[11px] text-text-muted truncate">Mandatory Physical Audits</div>
+            <div className="text-[10px] sm:text-[11px] text-text-muted truncate">Mandatory Physical Audits</div>
           </div>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex items-center space-x-3.5">
-          <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 flex items-center justify-center shrink-0">
-            <Route className="w-5 h-5" />
+        <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3.5 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 flex items-center justify-center shrink-0">
+            <Route className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs text-text-muted font-medium truncate">AI Sequencing Engine</div>
-            <div className="text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
+            <div className="text-[11px] sm:text-xs text-text-muted font-medium truncate">AI Sequencing</div>
+            <div className="text-xl sm:text-[28px] font-bold text-text tabular-nums leading-tight mt-0.5">
               Active
             </div>
-            <div className="text-[11px] text-text-muted truncate">Prioritized by Risk & Proximity</div>
+            <div className="text-[10px] sm:text-[11px] text-text-muted truncate">Risk & Proximity</div>
           </div>
         </div>
       </div>
 
-      {/* 3. Filter Controls Deck: 40px Height Controls, Solid Primary Selected Pill */}
-      <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-text">
+      {/* 3. Filter Controls Deck: Scrollable pills on mobile */}
+      <div className="bg-surface border border-border rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 min-w-0">
+          <div className="flex items-center space-x-2 text-xs font-semibold text-text shrink-0">
             <Filter className="w-4 h-4 text-primary" />
             <span>State Cluster:</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none snap-x pb-1 w-full flex-nowrap">
             {statesList.map(st => (
               <button
                 key={st}
                 onClick={() => setSelectedState(st)}
-                className={`h-10 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer border flex items-center justify-center ${
+                className={`min-h-[44px] sm:min-h-0 h-11 sm:h-10 px-4 rounded-xl text-xs font-semibold transition-all cursor-pointer border flex items-center justify-center shrink-0 snap-start ${
                   selectedState === st
                     ? 'bg-primary text-white border-primary shadow-xs'
                     : 'bg-surface-2 text-text-muted hover:text-text border-border hover:bg-surface'
@@ -383,12 +383,12 @@ export default function InspectionPlannerPage() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 text-xs">
-          <span className="font-semibold text-text-muted">Min Risk Priority:</span>
+        <div className="flex items-center justify-between sm:justify-end space-x-3 text-xs pt-1 sm:pt-0 border-t sm:border-t-0 border-border">
+          <span className="font-semibold text-text-muted shrink-0">Min Risk Priority:</span>
           <select
             value={minPriority}
             onChange={(e) => setMinPriority(Number(e.target.value))}
-            className="h-10 bg-surface border border-border rounded-xl px-3 text-xs font-medium text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shadow-xs"
+            className="min-h-[44px] sm:min-h-0 h-11 sm:h-10 bg-surface border border-border rounded-xl px-3 text-xs font-medium text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer shadow-xs"
           >
             <option value="0">All Priorities</option>
             <option value="40">Moderate+ (≥ 40)</option>
@@ -505,23 +505,25 @@ export default function InspectionPlannerPage() {
                               </div>
 
                               {/* Right: Scores & Actions (Single row with divider, stacks below 1280px) */}
-                              <div className="flex flex-wrap items-center gap-4 xl:self-center shrink-0 pt-2 xl:pt-0 border-t xl:border-t-0 border-border">
-                                <div className="text-left xl:text-right">
-                                  <div className="text-[11px] font-medium text-text-muted">Urgency Score</div>
-                                  <div className={`text-base font-bold tabular-nums ${
-                                    inst.priority_score >= 80 ? 'text-rose-600' :
-                                    inst.priority_score >= 50 ? 'text-amber-600' : 'text-text-muted'
-                                  }`}>
-                                    {inst.priority_score}/100
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-3 xl:self-center shrink-0 pt-3 xl:pt-0 border-t xl:border-t-0 border-border w-full xl:w-auto">
+                                <div className="flex items-center justify-between sm:justify-start gap-4">
+                                  <div className="text-left xl:text-right">
+                                    <div className="text-[11px] font-medium text-text-muted">Urgency Score</div>
+                                    <div className={`text-base font-bold tabular-nums ${
+                                      inst.priority_score >= 80 ? 'text-rose-600' :
+                                      inst.priority_score >= 50 ? 'text-amber-600' : 'text-text-muted'
+                                    }`}>
+                                      {inst.priority_score}/100
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="hidden xl:block h-8 w-px bg-border" />
+                                  <div className="hidden sm:block xl:block h-8 w-px bg-border" />
 
-                                <div className="text-left xl:text-right">
-                                  <div className="text-[10px] font-semibold text-text-muted uppercase">Recommended Mode</div>
-                                  <div className="text-xs font-semibold text-text">
-                                    {formatEnum(inst.recommended_inspection_type)}
+                                  <div className="text-right sm:text-left xl:text-right">
+                                    <div className="text-[10px] font-semibold text-text-muted uppercase">Recommended Mode</div>
+                                    <div className="text-xs font-semibold text-text">
+                                      {formatEnum(inst.recommended_inspection_type)}
+                                    </div>
                                   </div>
                                 </div>
 
@@ -531,7 +533,7 @@ export default function InspectionPlannerPage() {
                                   id={`btn-schedule-inspection-${inst.institution_id}`}
                                   onClick={() => handleScheduleOrder(inst.institution_id)}
                                   disabled={isOrdered}
-                                  className={`h-10 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer border ${
+                                  className={`w-full sm:w-auto min-h-[44px] h-12 sm:h-10 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer border ${
                                     isOrdered 
                                       ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 cursor-default'
                                       : 'btn-outline text-text hover:bg-surface-2'

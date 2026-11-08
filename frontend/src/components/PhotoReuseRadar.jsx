@@ -302,12 +302,12 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
 
   return (
     <div className="space-y-6 max-w-[1720px] mx-auto">
-      {/* Three Sub-Tabs Navigation for Photo Radar & Forensics */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-surface-2 rounded-xl border border-border p-1 w-fit">
+      {/* Three Sub-Tabs Navigation for Photo Radar & Forensics: Scrollable on mobile */}
+      <div className="flex items-center gap-2 p-1 bg-surface-2 rounded-xl border border-border w-full sm:w-fit overflow-x-auto scrollbar-none snap-x flex-nowrap">
         <button
           id="tab-photo-reuse-radar"
           onClick={() => setForensicsSubTab('radar')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+          className={`min-h-[44px] sm:min-h-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shrink-0 snap-start ${
             forensicsSubTab === 'radar'
               ? 'bg-primary text-white shadow-xs font-semibold'
               : 'text-muted hover:text-text hover:bg-surface'
@@ -320,7 +320,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
         <button
           id="tab-document-forensics"
           onClick={() => setForensicsSubTab('document-forensics')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+          className={`min-h-[44px] sm:min-h-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shrink-0 snap-start ${
             forensicsSubTab === 'document-forensics'
               ? 'bg-primary text-white shadow-xs font-semibold'
               : 'text-muted hover:text-text hover:bg-surface'
@@ -333,7 +333,7 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
         <button
           id="tab-proof-of-reality"
           onClick={() => setForensicsSubTab('proof-of-reality')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+          className={`min-h-[44px] sm:min-h-0 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shrink-0 snap-start ${
             forensicsSubTab === 'proof-of-reality'
               ? 'bg-primary text-white shadow-xs font-semibold'
               : 'text-muted hover:text-text hover:bg-surface'
@@ -383,20 +383,20 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
           </div>
 
           {/* Action Controls: Simulate Upload & Upload Custom */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0 w-full lg:w-auto">
             {/* SIMULATE UPLOAD BUTTON FOR DEMOS */}
             <button
               onClick={handleSimulateUpload}
               disabled={isSimulating}
               id="simulate-upload-btn"
-              className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white text-xs font-bold shadow-md shadow-rose-500/20 transition-all flex items-center space-x-2 active:scale-95 cursor-pointer"
+              className="min-h-[44px] h-12 sm:h-10 py-2 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white text-xs font-bold shadow-md shadow-rose-500/20 transition-all flex items-center justify-center space-x-2 active:scale-95 cursor-pointer w-full sm:w-auto"
             >
               <Zap className={`w-4 h-4 ${isSimulating ? 'animate-spin' : ''}`} />
               <span>{isSimulating ? 'Computing Hashes...' : 'Simulate Photo Upload (Demo)'}</span>
             </button>
 
             {/* Manual Upload Input */}
-            <label className="py-2.5 px-3.5 rounded-xl bg-surface hover:bg-surface-2 border border-border text-text text-xs font-bold transition-all shadow-2xs flex items-center space-x-2 cursor-pointer">
+            <label className="min-h-[44px] h-12 sm:h-10 py-2 px-3.5 rounded-xl bg-surface hover:bg-surface-2 border border-border text-text text-xs font-bold transition-all shadow-2xs flex items-center justify-center space-x-2 cursor-pointer w-full sm:w-auto">
               <Upload className="w-4 h-4 text-text-muted" />
               <span>{customUploadLoading ? 'Scanning...' : 'Upload Image'}</span>
               <input
@@ -492,14 +492,14 @@ export default function PhotoReuseRadar({ onNavigateTab, onSelectApplication }) 
             />
 
             {/* Quick Cluster Selector Pills */}
-            <div className="bg-surface border border-border rounded-xl p-3 shadow-2xs flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-semibold text-text">Quick Select Reuse Case:</span>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="bg-surface border border-border rounded-xl p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <span className="text-xs font-semibold text-text shrink-0">Quick Select Reuse Case:</span>
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none snap-x pb-1 w-full sm:w-auto flex-nowrap">
                 {radarPairs.map((pair) => (
                   <button
                     key={pair.id}
                     onClick={() => setSelectedPairId(pair.id)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                    className={`min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1 rounded-lg text-xs font-medium border transition-all shrink-0 snap-start flex items-center ${
                       selectedPairId === pair.id
                         ? 'bg-primary text-white border-primary font-bold shadow-xs'
                         : 'bg-surface border-border text-text hover:bg-surface-2'

@@ -452,7 +452,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={() => !loading && fileInputRef.current?.click()}
-            className={`flex-1 flex items-center justify-between px-3.5 py-2 rounded-lg border border-dashed border-border bg-surface-2 transition-colors cursor-pointer text-xs ${
+            className={`flex-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 px-3.5 py-2.5 sm:py-2 rounded-lg border border-dashed border-border bg-surface-2 transition-colors cursor-pointer text-xs ${
               loading ? 'opacity-70 cursor-not-allowed' : 'hover:border-primary/50'
             }`}
           >
@@ -477,13 +477,13 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                   <span className="text-[11px] font-mono text-muted">({(uploadedFile.size / 1024).toFixed(0)} KB)</span>
                 </div>
               ) : (
-                <span className="text-muted">
+                <span className="text-muted text-[11px] sm:text-xs">
                   <strong className="text-text font-medium">PDF, JPG or PNG (max 25MB)</strong>. Text read from text layer or OCR.
                 </span>
               )}
             </div>
 
-            <div className="flex items-center space-x-2 shrink-0">
+            <div className="flex items-center space-x-2 shrink-0 self-end sm:self-auto">
               {uploadedFile && (
                 <button
                   type="button"
@@ -497,10 +497,11 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     setDocumentResult(null);
                     processDocument(PRESET_INTELLIGENCE_DOCS[0]);
                   }}
-                  className="p-1 text-muted hover:text-text rounded"
+                  className="w-10 h-10 sm:w-7 sm:h-7 flex items-center justify-center text-muted hover:text-text rounded cursor-pointer"
                   title="Clear uploaded file"
+                  aria-label="Clear uploaded file"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 </button>
               )}
               <button
@@ -515,7 +516,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                     fileInputRef.current?.click();
                   }
                 }}
-                className={`btn-solid h-8 px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shadow-xs ${
+                className={`btn-solid min-h-[44px] sm:min-h-0 h-11 sm:h-8 px-4 sm:px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer shadow-xs ${
                   loading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
@@ -525,9 +526,9 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
             </div>
           </div>
 
-          {/* Sample Document Pills */}
-          <div className="flex items-center space-x-1.5 flex-wrap gap-y-1.5">
-            <span className="text-[11px] font-medium text-muted mr-1">Samples:</span>
+          {/* Sample Document Pills: Horizontally scrollable row on mobile */}
+          <div className="flex items-center space-x-1.5 overflow-x-auto scrollbar-none snap-x pb-1 w-full sm:w-auto flex-nowrap">
+            <span className="text-[11px] font-medium text-muted mr-1 shrink-0">Samples:</span>
             {PRESET_INTELLIGENCE_DOCS.map((doc) => {
               const isSelected = activeSourceType === 'sample' && selectedPreset?.id === doc.id;
               return (
@@ -537,7 +538,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                   id={`btn-sample-${doc.id}`}
                   disabled={loading}
                   onClick={() => handleSelectPreset(doc)}
-                  className={`h-8 px-3 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                  className={`min-h-[44px] sm:min-h-0 h-11 sm:h-8 px-3.5 sm:px-3 rounded-lg text-xs font-medium border transition-colors cursor-pointer shrink-0 snap-start flex items-center ${
                     isSelected
                       ? 'btn-solid shadow-xs'
                       : 'bg-surface border-border text-text-muted hover:text-text hover:bg-surface-2'
@@ -1027,15 +1028,58 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                 </span>
               </div>
 
-              {/* Header Grid */}
-              <div className="bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border px-3.5 py-2 grid grid-cols-[38%_44%_18%] items-center">
-                <div>Field</div>
-                <div>Value</div>
-                <div className="text-right">Conf.</div>
+              {/* Desktop Table View (>= 768px) */}
+              <div className="hidden md:block">
+                <div className="bg-surface-2/70 text-[11px] font-semibold text-text-muted uppercase border-b border-border px-3.5 py-2 grid grid-cols-[38%_44%_18%] items-center">
+                  <div>Field</div>
+                  <div>Value</div>
+                  <div className="text-right">Conf.</div>
+                </div>
+
+                {/* Row Grid */}
+                <div className="divide-y divide-border text-text" id="doc-intel-field-rows">
+                  {documentResult.extracted_fields?.map((f) => {
+                    const isHovered = hoveredFieldKey === f.key;
+                    const isSelected = selectedFieldKey === f.key;
+                    const isRowActive = isHovered || isSelected;
+
+                    const confBadgeClass = f.confidence >= 95
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                      : f.confidence >= 90
+                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+
+                    return (
+                      <div 
+                        key={f.key}
+                        id={`table-row-${f.key}`}
+                        onClick={() => handleRowClick(f.key)}
+                        onMouseEnter={() => setHoveredFieldKey(f.key)}
+                        onMouseLeave={() => setHoveredFieldKey(null)}
+                        className={`px-3.5 py-2.5 grid grid-cols-[38%_44%_18%] items-center transition-colors cursor-pointer min-h-[48px] ${
+                          isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
+                        }`}
+                      >
+                        <div className="pr-2 min-w-0">
+                          <div className="font-semibold text-text truncate text-xs" title={f.label}>{f.label}</div>
+                          <div className="text-[10px] font-mono text-text-muted truncate">{f.key}</div>
+                        </div>
+                        <div className="pr-2 min-w-0">
+                          <div className="line-clamp-2 break-words text-xs font-medium text-text leading-snug" title={f.value}>{f.value}</div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`inline-flex items-center justify-center w-12 py-0.5 rounded text-[11px] font-semibold font-mono ${confBadgeClass}`}>
+                            {f.confidence}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Row Grid */}
-              <div className="divide-y divide-border text-text" id="doc-intel-field-rows">
+              {/* Mobile Stacked Label/Value Cards (< 768px) */}
+              <div className="divide-y divide-border text-text md:hidden" id="doc-intel-field-rows-mobile">
                 {documentResult.extracted_fields?.map((f) => {
                   const isHovered = hoveredFieldKey === f.key;
                   const isSelected = selectedFieldKey === f.key;
@@ -1050,25 +1094,23 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                   return (
                     <div 
                       key={f.key}
-                      id={`table-row-${f.key}`}
+                      id={`table-row-mobile-${f.key}`}
                       onClick={() => handleRowClick(f.key)}
-                      onMouseEnter={() => setHoveredFieldKey(f.key)}
-                      onMouseLeave={() => setHoveredFieldKey(null)}
-                      className={`px-3.5 py-2.5 grid grid-cols-[38%_44%_18%] items-center transition-colors cursor-pointer min-h-[48px] ${
+                      className={`p-3 space-y-1.5 transition-colors cursor-pointer min-h-[44px] ${
                         isRowActive ? 'bg-primary/10 font-semibold' : 'hover:bg-surface-2/50'
                       }`}
                     >
-                      <div className="pr-2 min-w-0">
-                        <div className="font-semibold text-text truncate text-xs" title={f.label}>{f.label}</div>
-                        <div className="text-[10px] font-mono text-text-muted truncate">{f.key}</div>
-                      </div>
-                      <div className="pr-2 min-w-0">
-                        <div className="line-clamp-2 break-words text-xs font-medium text-text leading-snug" title={f.value}>{f.value}</div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`inline-flex items-center justify-center w-12 py-0.5 rounded text-[11px] font-semibold font-mono ${confBadgeClass}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <span className="font-semibold text-text text-xs">{f.label}</span>
+                          <span className="text-[10px] font-mono text-text-muted ml-1.5">({f.key})</span>
+                        </div>
+                        <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-semibold font-mono shrink-0 ${confBadgeClass}`}>
                           {f.confidence}%
                         </span>
+                      </div>
+                      <div className="text-xs text-text font-medium break-words leading-relaxed">
+                        {f.value}
                       </div>
                     </div>
                   );
@@ -1094,7 +1136,7 @@ export default function DocumentIntelligencePage({ onNavigateTab, onSelectApplic
                   <button
                     type="button"
                     onClick={() => onNavigateTab('evidence-lens')}
-                    className="w-full h-9 bg-primary hover:bg-primary/90 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="w-full h-11 sm:h-9 min-h-[44px] bg-primary hover:bg-primary/90 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <span>Send to Evidence Lens</span>
                     <ArrowRight className="w-3.5 h-3.5" />
