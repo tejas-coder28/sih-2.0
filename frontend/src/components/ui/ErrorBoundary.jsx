@@ -41,11 +41,8 @@ export default class ErrorBoundary extends React.Component {
               <AlertTriangle className="w-6 h-6" />
             </div>
 
-            <div className="space-y-1">
-              <h2 className="text-lg font-bold text-text tracking-tight">This page couldn't load</h2>
-              <p className="text-xs text-text-muted leading-relaxed">
-                An unexpected error occurred while rendering this module.
-              </p>
+            <div className="py-1">
+              <p className="text-sm font-semibold text-text">This page couldn't load.</p>
             </div>
 
             <div className="flex items-center justify-center gap-3 pt-2">

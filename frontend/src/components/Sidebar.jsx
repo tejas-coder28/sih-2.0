@@ -303,13 +303,15 @@ export default function Sidebar({
                           onClick={() => handleItemClick(item.id)}
                           onMouseEnter={() => setHoveredTab(item.id)}
                           title={item.label}
-                          className={`w-full flex items-center rounded-lg text-left transition-colors group cursor-pointer relative h-10 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                          className={`w-full flex items-center rounded-lg text-left transition-colors group cursor-pointer relative h-10 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                             isCollapsed 
                               ? 'lg:justify-center lg:p-2' 
                               : 'px-3 py-2 justify-between gap-2'
                           } ${
-                            isActive || isHovered
-                              ? 'text-primary dark:text-white font-semibold'
+                            isActive
+                              ? 'bg-primary/10 dark:bg-white/10 text-primary dark:text-white font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:bg-primary before:rounded-r'
+                              : isHovered
+                              ? 'bg-surface-2 text-text font-medium'
                               : 'text-text-muted hover:text-text font-medium'
                           }`}
                         >

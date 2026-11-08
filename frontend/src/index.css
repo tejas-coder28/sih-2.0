@@ -1177,9 +1177,19 @@ aside button[id^="sidebar-tab-"]:hover {
 aside button[id^="sidebar-tab-"][class*="bg-sky-50"],
 aside button[id^="sidebar-tab-"].active,
 aside button[id^="sidebar-tab-"][class*="font-semibold"] {
-  background-color: transparent !important;
+  background-color: rgba(59, 108, 255, 0.08) !important;
   color: var(--primary) !important;
   font-weight: 600 !important;
+}
+
+aside button[id^="sidebar-tab-"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+aside button[id^="sidebar-tab-"]:focus-visible {
+  outline: 2px solid var(--accent, #3B6CFF) !important;
+  outline-offset: 1px !important;
 }
 
 aside button[id^="sidebar-tab-"][class*="bg-sky-50"] *,
@@ -1198,6 +1208,7 @@ aside button[id^="sidebar-tab-"][class*="font-semibold"] * {
 [data-theme="dark"] aside button[id^="sidebar-tab-"][class*="font-semibold"],
 .dark aside button[id^="sidebar-tab-"].active,
 .dark aside button[id^="sidebar-tab-"][class*="font-semibold"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
   color: #FFFFFF !important;
 }
 
