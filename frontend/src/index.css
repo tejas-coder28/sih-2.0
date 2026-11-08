@@ -705,7 +705,7 @@ button[type="submit"]:not(#login-root *):not(.login-root *) *,
 }
 
 /* Secondary Buttons: white background, 1px solid #BFC5CC border, black text. Hover: #F1F3F5 */
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(.btn-icon),
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(.btn-icon),
 .btn-secondary,
 #launch-audit-ledger-btn {
   background-color: var(--surface) !important; /* #FFFFFF */
@@ -727,7 +727,7 @@ button:not(#login-root button):not(.login-root button):not(#login-root *):not(.l
   cursor: pointer !important;
 }
 
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(.btn-icon):hover,
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(.btn-icon):hover,
 .btn-secondary:hover,
 #launch-audit-ledger-btn:hover {
   background-color: var(--secondary-hover) !important; /* #F1F3F5 */
@@ -1750,8 +1750,12 @@ div[class*="flex-wrap"][class*="gap-3"] > button {
 }
 
 /* Button groups: 8px gap. Icon to label inside buttons: 8px. Button padding 10px 16px */
-button:not([class*="px-2"]):not([class*="px-2.5"]):not([class*="px-3"]):not([class*="p-1"]):not([class*="p-0"]):not(.zoom-controls button) {
+button:not([class*="px-2"]):not([class*="px-2.5"]):not([class*="px-3"]):not([class*="p-1"]):not([class*="p-0"]):not(.zoom-controls button):not(.btn-icon):not([class*="btn-icon"]):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(#theme-toggle-btn):not(#site-search-btn) {
   padding: 10px 16px !important;
+}
+
+.btn-icon {
+  padding: 0 !important;
 }
 
 button {
@@ -3371,6 +3375,16 @@ button#theme-toggle-btn:not(#login-root button):not(.login-root button),
   min-height: 36px !important;
   max-width: 36px !important;
   max-height: 36px !important;
+  padding: 0 !important;
+}
+
+/* Alert Bell & Header Icon Buttons Strict 0 Padding */
+#alert-bell-btn,
+button#alert-bell-btn,
+#sidebar-toggle-btn,
+button#sidebar-toggle-btn,
+#site-search-btn,
+button#site-search-btn {
   padding: 0 !important;
 }
 

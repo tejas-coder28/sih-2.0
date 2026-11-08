@@ -400,7 +400,7 @@ export default function Navbar({
               aria-expanded={isMobileMenuOpen}
               aria-controls="sidebar-nav"
               title="Toggle sidebar"
-              className="btn-icon w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="btn-icon p-0 w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Menu className="w-5 h-5 shrink-0" />
             </button>
