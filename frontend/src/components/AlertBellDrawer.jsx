@@ -134,7 +134,7 @@ export default function AlertBellDrawer({ currentRole }) {
             fetchNotifications();
           }
         }}
-        className="relative w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="btn-icon relative w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         title="Statutory Alerts & Risk Warnings"
         aria-label="Statutory Alerts & Risk Warnings"
       >

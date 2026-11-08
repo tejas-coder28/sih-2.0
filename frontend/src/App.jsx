@@ -623,7 +623,7 @@ export default function App() {
         aria-label="Back to top"
         title="Back to top"
         style={{ bottom: 'calc(16px + env(safe-area-inset-bottom))' }}
-        className={`fixed right-4 sm:right-6 z-40 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-surface flex items-center justify-center text-text hover:text-primary transition-all duration-200 cursor-pointer shadow-lg outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        className={`btn-icon fixed right-4 sm:right-6 z-40 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-surface flex items-center justify-center text-text hover:text-primary transition-all duration-200 cursor-pointer shadow-lg outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           showBackToTop 
             ? 'opacity-100 translate-y-0 pointer-events-auto' 
             : 'opacity-0 translate-y-2 pointer-events-none'

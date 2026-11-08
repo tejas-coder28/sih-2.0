@@ -400,7 +400,7 @@ export default function Navbar({
               aria-expanded={isMobileMenuOpen}
               aria-controls="sidebar-nav"
               title="Toggle sidebar"
-              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="btn-icon w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Menu className="w-5 h-5 shrink-0" />
             </button>
@@ -626,7 +626,7 @@ export default function Navbar({
               }}
               aria-label="Search navigation modules (Ctrl+K)"
               title="Search modules and applications (Ctrl+K)"
-              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex lg:hidden items-center justify-center transition-all cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="btn-icon w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex lg:hidden items-center justify-center transition-all cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Search className="w-5 h-5 text-text-muted hover:text-primary transition-colors shrink-0" />
             </button>
@@ -638,7 +638,7 @@ export default function Navbar({
               onClick={toggleTheme}
               aria-label="Switch theme"
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent relative overflow-hidden group"
+              className="btn-icon w-11 h-11 min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent relative overflow-hidden group"
             >
               <div className="relative w-[18px] h-[18px] flex items-center justify-center">
                 <Sun 
