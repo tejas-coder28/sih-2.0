@@ -346,12 +346,12 @@ export default function PreFlightScorecard({ currentUser }) {
           </div>
 
           {/* Action: Re-Check Compliance Audit Button */}
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex items-center space-x-3 shrink-0 w-full sm:w-auto">
             <button
               onClick={handleReCheck}
               disabled={isAuditing}
               id="recheck-preflight-btn"
-              className="h-10 px-4 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-xs transition-all flex items-center space-x-2 active:scale-95 cursor-pointer disabled:opacity-60"
+              className="w-full sm:w-auto h-12 sm:h-10 min-h-[44px] px-4 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-xs transition-all flex items-center justify-center space-x-2 active:scale-95 cursor-pointer disabled:opacity-60"
             >
               <RotateCcw className={`w-4 h-4 ${isAuditing ? 'animate-spin' : ''}`} />
               <span>{isAuditing ? 'Scanning Backend Engine...' : 'Re-Check Compliance Audit'}</span>
@@ -585,8 +585,8 @@ export default function PreFlightScorecard({ currentUser }) {
               PDF, JPG or PNG (max 25MB). Text is read from the PDF text layer, or by OCR for scans and images. The engine used is shown on each result.
             </p>
 
-            <label className="mt-3 inline-block">
-              <span className="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer">
+            <label className="mt-3 block sm:inline-block w-full sm:w-auto">
+              <span className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer">
                 Select Document to Upload
               </span>
               <input
@@ -745,22 +745,22 @@ export default function PreFlightScorecard({ currentUser }) {
                   </div>
 
                   {/* Quick Action Bar on each item */}
-                  <div className="mt-3 flex items-center justify-between text-xs pt-1">
+                  <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs pt-1">
                     <button
                       onClick={() => handleToggleResolve(item.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                      className={`w-full sm:w-auto min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
                         isResolved
                           ? 'bg-emerald-700 text-white'
                           : 'bg-surface border border-border text-text hover:bg-surface-2'
                       }`}
                     >
-                      <Check className="w-3 h-3" />
+                      <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
                       <span>{isResolved ? 'Marked Resolved' : 'Mark as Fixed'}</span>
                     </button>
 
-                    <label className="text-xs font-bold text-sky-700 hover:text-sky-800 flex items-center space-x-1 cursor-pointer">
+                    <label className="w-full sm:w-auto min-h-[44px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-lg border border-border sm:border-0 bg-surface sm:bg-transparent text-xs font-bold text-sky-700 dark:text-sky-400 hover:text-sky-800 flex items-center justify-center space-x-1 cursor-pointer">
                       <span>{item.actionLabel}</span>
-                      <ArrowRight className="w-3 h-3" />
+                      <ArrowRight className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
                       <input
                         type="file"
                         onChange={(e) => handleFileUpload(item.docType, e)}

@@ -26,7 +26,7 @@ export default function ConflictingSubgraphNetwork({
 }) {
   const containerRef = useRef(null);
   const networkRef = useRef(null);
-  const [, setThemeVersion] = useState(0);
+  const [themeVersion, setThemeVersion] = useState(0);
   const [selectedNodeData, setSelectedNodeData] = useState(null);
   const [layoutMode, setLayoutMode] = useState('tree'); // 'tree' (generic hierarchical) | 'force' (organic)
 
@@ -133,12 +133,13 @@ export default function ConflictingSubgraphNetwork({
                    document.documentElement.getAttribute('data-theme') === 'dark';
 
     // Map nodes generically using calculated topological depth and semantic role
+    const rawNodes = (subgraph?.nodes || []).filter(Boolean);
     const nodes = new DataSet(
-      (subgraph.nodes || []).map((node) => {
+      rawNodes.map((node) => {
         const rawType = (node.type || node.group || '').toLowerCase();
         const labelLower = (node.label || node.name || '').toLowerCase();
         const idLower = String(node.id || '').toLowerCase();
-        const level = nodeLevels[node.id] ?? 0;
+        const level = nodeLevels?.[node.id] ?? 0;
 
         // Generic conflict/anomaly detection
         const isConflictNode = 
@@ -158,9 +159,10 @@ export default function ConflictingSubgraphNetwork({
           rawType.includes('cert') || 
           rawType.includes('roster') || 
           idLower.startsWith('doc_') ||
-          (level > 0 && (outDegree[node.id] || 0) > 0);
+          (level > 0 && (outDegree?.[node.id] || 0) > 0);
 
         // Palette configuration: light surface fill (#FFFFFF light / #1A1A1D dark), 1.5px accent/conflict border, text token font
+        const shape = node.shape || 'box';
         const nodeBg = isDark ? '#1A1A1D' : '#FFFFFF';
         const nodeText = isDark ? '#F4F4F5' : '#111827';
         const accentBorder = isDark ? '#3B82F6' : '#2563EB';
@@ -176,7 +178,7 @@ export default function ConflictingSubgraphNetwork({
           label: displayName,
           level,
           rawNode: node,
-          shape: 'box',
+          shape: shape,
           shapeProperties: {
             borderRadius: 8,
           },
@@ -193,26 +195,22 @@ export default function ConflictingSubgraphNetwork({
             }
           },
           borderWidth: 1.5,
-          margin: { top: 8, bottom: 8, left: 12, right: 12 },
-          widthConstraint: { min: 140 },
+          margin: shape === 'box' ? {
+            top: 10,
+            bottom: 10,
+            left: 14,
+            right: 14,
+          } : { top: 8, bottom: 8, left: 12, right: 12 },
+          widthConstraint: shape === 'box' ? {
+            minimum: 110,
+            maximum: 180,
+          } : { min: 140 },
           font: { 
             color: nodeText, 
             size: 13, 
             face: 'Inter, system-ui, -apple-system, sans-serif', 
             bold: true,
           },
-          // Auto-wrap box text cleanly within generic bounded width
-          widthConstraint: shape === 'box' ? {
-            minimum: 110,
-            maximum: 180,
-          } : undefined,
-          margin: shape === 'box' ? {
-            top: 10,
-            bottom: 10,
-            left: 14,
-            right: 14,
-          } : undefined,
-          borderWidth: 2,
           shadow: { 
             enabled: true, 
             color: isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.12)', 
@@ -225,8 +223,9 @@ export default function ConflictingSubgraphNetwork({
     );
 
     // Stagger edge curves and apply solid badge pill styling to eliminate label collisions
+    const rawEdges = (subgraph?.edges || []).filter(Boolean);
     const edges = new DataSet(
-      (subgraph.edges || []).map((edge, idx) => {
+      rawEdges.map((edge, idx) => {
         const fromId = edge.from || edge.source;
         const toId = edge.to || edge.target;
         const labelText = edge.label || edge.relation || edge.conflict_type || '';
@@ -237,7 +236,7 @@ export default function ConflictingSubgraphNetwork({
                            labelText.toLowerCase().includes('overlap') ||
                            labelText.toLowerCase().includes('claimed');
 
-        const multiEdges = (targetEdgeCounts[toId] || 0) > 1;
+        const multiEdges = (targetEdgeCounts?.[toId] || 0) > 1;
         const isEven = idx % 2 === 0;
 
         return {
@@ -245,8 +244,8 @@ export default function ConflictingSubgraphNetwork({
           from: fromId,
           to: toId,
           label: labelText,
-          color: isConflict ? '#EF4444' : (isDark ? '#94A3B8' : '#64748B'),
-          width: isConflict ? 2.5 : 1.5,
+          color: isConflict ? (isDark ? '#F87171' : '#C0262D') : (isDark ? '#94A3B8' : '#64748B'),
+          width: isConflict ? 2 : 1.5,
           dashes: isConflict ? [5, 5] : false,
           arrows: {
             to: { enabled: true, scaleFactor: 0.85 },
@@ -337,6 +336,15 @@ export default function ConflictingSubgraphNetwork({
       },
     };
 
+    if (networkRef.current) {
+      try {
+        networkRef.current.destroy();
+      } catch (e) {
+        // ignore
+      }
+      networkRef.current = null;
+    }
+
     const network = new Network(containerRef.current, { nodes, edges }, options);
     networkRef.current = network;
 
@@ -387,10 +395,16 @@ export default function ConflictingSubgraphNetwork({
 
     return () => {
       resizeObserver.disconnect();
-      network.destroy();
-      networkRef.current = null;
+      if (networkRef.current) {
+        try {
+          networkRef.current.destroy();
+        } catch (e) {
+          // ignore
+        }
+        networkRef.current = null;
+      }
     };
-  }, [subgraph, layoutMode, nodeLevels, outDegree, targetEdgeCounts]);
+  }, [subgraph, layoutMode, nodeLevels, outDegree, targetEdgeCounts, themeVersion]);
 
   const handleZoomIn = () => {
     if (networkRef.current) {

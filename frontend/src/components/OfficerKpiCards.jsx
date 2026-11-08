@@ -135,7 +135,7 @@ function KpiCardItem({ card, isSelected, onClick, loading }) {
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
       onMouseMove={handleMouseMove}
-      className={`kpi-glass-card rounded-xl p-4 sm:p-5 border cursor-pointer group flex flex-col justify-between h-full select-none relative overflow-hidden outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 ${
+      className={`kpi-glass-card rounded-xl p-3.5 sm:p-5 border cursor-pointer group flex flex-col justify-between h-full select-none relative overflow-hidden outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-all duration-200 ${
         isSelected
           ? 'ring-2 ring-primary border-primary shadow-xs'
           : 'border-border hover:border-border-strong shadow-card'
@@ -148,16 +148,16 @@ function KpiCardItem({ card, isSelected, onClick, loading }) {
         </div>
 
         {card.id === 'verified' && (
-          <CircularProgressRing percentage={card.value} />
+          <CircularProgressRing percentage={card.value} size={44} />
         )}
       </div>
 
       {/* Metric Content */}
-      <div className="flex flex-col gap-1 mt-3 relative z-10">
-        <div className="text-sm font-medium text-text-muted">
+      <div className="flex flex-col gap-1 mt-2.5 sm:mt-3 relative z-10">
+        <div className="text-[13px] sm:text-sm font-medium text-text-muted line-clamp-2">
           {card.title}
         </div>
-        <div className="text-[28px] leading-tight font-bold text-text tracking-tight font-sans tabular-nums">
+        <div className="text-2xl sm:text-[28px] leading-tight font-bold text-text tracking-tight font-sans tabular-nums">
           {animatedValue}{card.unit}
         </div>
         <p className="text-xs text-text-muted truncate mt-0.5" title={card.subtitle}>
@@ -231,7 +231,7 @@ export default function OfficerKpiCards({
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4 items-stretch w-full">
+    <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 items-stretch w-full">
       {cards.map((card) => {
         const isSelected = selectedStatusFilter === card.filterTarget;
 

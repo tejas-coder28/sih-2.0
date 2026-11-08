@@ -179,6 +179,26 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="tab"] {
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 639px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 
   body {
@@ -685,7 +705,7 @@ button[type="submit"]:not(#login-root *):not(.login-root *) *,
 }
 
 /* Secondary Buttons: white background, 1px solid #BFC5CC border, black text. Hover: #F1F3F5 */
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(.btn-icon),
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(.btn-icon),
 .btn-secondary,
 #launch-audit-ledger-btn {
   background-color: var(--surface) !important; /* #FFFFFF */
@@ -707,7 +727,7 @@ button:not(#login-root button):not(.login-root button):not(#login-root *):not(.l
   cursor: pointer !important;
 }
 
-button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(.btn-icon):hover,
+button:not(#login-root button):not(.login-root button):not(#login-root *):not(.login-root *):not(.btn-primary):not([type="submit"]):not(.btn-solid):not(.btn-outline):not(.btn-ghost):not(.tab):not([role="tab"]):not(.btn-verify-chain):not([id*="verify-chain"]):not([id^="resolve-btn"]):not([id^="btn-confirm-resolve"]):not(.bg-sky-600):not(.bg-purple-600):not(.bg-purple-700):not(.bg-indigo-600):not(.bg-emerald-600):not(.bg-amber-600):not(#launch-evidence-lens-btn):not([class*="from-sky-600"]):not([class*="from-purple-700"]):not([class*="from-amber-600"]):not([class*="bg-primary"]):not([id^="sidebar-tab-"]):not(.p-1):not(.p-0):not(#theme-toggle-btn):not(#site-search-btn):not(#user-menu-btn):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(.btn-icon):hover,
 .btn-secondary:hover,
 #launch-audit-ledger-btn:hover {
   background-color: var(--secondary-hover) !important; /* #F1F3F5 */
@@ -1177,9 +1197,19 @@ aside button[id^="sidebar-tab-"]:hover {
 aside button[id^="sidebar-tab-"][class*="bg-sky-50"],
 aside button[id^="sidebar-tab-"].active,
 aside button[id^="sidebar-tab-"][class*="font-semibold"] {
-  background-color: transparent !important;
+  background-color: rgba(59, 108, 255, 0.08) !important;
   color: var(--primary) !important;
   font-weight: 600 !important;
+}
+
+aside button[id^="sidebar-tab-"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+aside button[id^="sidebar-tab-"]:focus-visible {
+  outline: 2px solid var(--accent, #3B6CFF) !important;
+  outline-offset: 1px !important;
 }
 
 aside button[id^="sidebar-tab-"][class*="bg-sky-50"] *,
@@ -1198,6 +1228,7 @@ aside button[id^="sidebar-tab-"][class*="font-semibold"] * {
 [data-theme="dark"] aside button[id^="sidebar-tab-"][class*="font-semibold"],
 .dark aside button[id^="sidebar-tab-"].active,
 .dark aside button[id^="sidebar-tab-"][class*="font-semibold"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
   color: #FFFFFF !important;
 }
 
@@ -1719,8 +1750,12 @@ div[class*="flex-wrap"][class*="gap-3"] > button {
 }
 
 /* Button groups: 8px gap. Icon to label inside buttons: 8px. Button padding 10px 16px */
-button:not([class*="px-2"]):not([class*="px-2.5"]):not([class*="px-3"]):not([class*="p-1"]):not([class*="p-0"]):not(.zoom-controls button) {
+button:not([class*="px-2"]):not([class*="px-2.5"]):not([class*="px-3"]):not([class*="p-1"]):not([class*="p-0"]):not(.zoom-controls button):not(.btn-icon):not([class*="btn-icon"]):not(#alert-bell-btn):not(#sidebar-toggle-btn):not(#theme-toggle-btn):not(#site-search-btn) {
   padding: 10px 16px !important;
+}
+
+.btn-icon {
+  padding: 0 !important;
 }
 
 button {
@@ -3343,6 +3378,16 @@ button#theme-toggle-btn:not(#login-root button):not(.login-root button),
   padding: 0 !important;
 }
 
+/* Alert Bell & Header Icon Buttons Strict 0 Padding */
+#alert-bell-btn,
+button#alert-bell-btn,
+#sidebar-toggle-btn,
+button#sidebar-toggle-btn,
+#site-search-btn,
+button#site-search-btn {
+  padding: 0 !important;
+}
+
 /* KPI Card Outline Elimination on Mouse Click */
 .kpi-glass-card {
   outline: none !important;
@@ -3437,4 +3482,28 @@ div[class*="document-paper-clause-callout"] {
 .document-paper-clause-callout span,
 .document-paper-clause-callout strong {
   color: #111827 !important;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS & TOUCH FOUNDATIONS (< 768px & (hover: none))
+   ========================================================================== */
+@media (max-width: 639px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (hover: none) {
+  .interactive-card:hover,
+  button:hover:not(:active),
+  a:hover:not(:active) {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .ambient-blur,
+  .hero-ambient-aura {
+    display: none !important;
+  }
 }

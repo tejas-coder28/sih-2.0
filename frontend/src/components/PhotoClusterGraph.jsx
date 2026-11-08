@@ -421,10 +421,10 @@ export default function PhotoClusterGraph({
   return (
     <div className="relative border border-border rounded-xl bg-surface overflow-hidden shadow-xs">
       {/* Top Floating Control Bar */}
-      <div className="absolute top-3 right-3 z-10 flex items-center space-x-1.5 bg-surface/90 backdrop-blur-md p-1 rounded-xl border border-border shadow-xs">
+      <div className="absolute top-3 right-3 z-10 flex items-center space-x-1 bg-surface/90 backdrop-blur-md p-1 rounded-xl border border-border shadow-xs">
         <button
           onClick={handleZoomIn}
-          className="p-1.5 text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
+          className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
           title="Zoom in"
           aria-label="Zoom in"
         >
@@ -432,7 +432,7 @@ export default function PhotoClusterGraph({
         </button>
         <button
           onClick={handleZoomOut}
-          className="p-1.5 text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
+          className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
           title="Zoom out"
           aria-label="Zoom out"
         >
@@ -440,7 +440,7 @@ export default function PhotoClusterGraph({
         </button>
         <button
           onClick={handleReset}
-          className="p-1.5 text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
+          className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-surface-2 rounded-lg transition-colors cursor-pointer"
           title="Re-stabilize layout"
           aria-label="Re-stabilize layout"
         >
@@ -451,7 +451,7 @@ export default function PhotoClusterGraph({
       {/* Network Canvas Container */}
       <div 
         ref={containerRef} 
-        className="w-full h-[580px] cursor-grab active:cursor-grabbing"
+        className="w-full h-[360px] sm:h-[480px] lg:h-[580px] min-h-[340px] cursor-grab active:cursor-grabbing"
       />
 
       {/* Legend Footer */}

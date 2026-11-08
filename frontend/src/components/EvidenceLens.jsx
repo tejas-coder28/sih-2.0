@@ -213,9 +213,9 @@ export default function EvidenceLens({
           </div>
         </div>
 
-        {/* Simple Finding Pills (#1 #2 #3 #4) */}
-        <div className="pt-3 flex items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-1.5">
+        {/* Finding Pills (#1 #2 #3 #4): Horizontally scrollable on mobile */}
+        <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
+          <div className="flex overflow-x-auto scrollbar-none gap-2 pb-1 snap-x flex-nowrap w-full sm:w-auto">
             {findingsList.map((finding, idx) => {
               const isSelected = selectedFindingIndex === idx;
               const isGraph = finding.finding_type === 'GRAPH_CONFLICT';
@@ -225,7 +225,7 @@ export default function EvidenceLens({
                   key={finding.id}
                   id={`select-finding-${String(finding.id).toLowerCase()}`}
                   onClick={() => handleSelectFinding(idx)}
-                  className={`tab px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center space-x-1.5 ${
+                  className={`tab px-3.5 py-1.5 sm:py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center space-x-1.5 shrink-0 snap-start min-h-[44px] sm:min-h-0 ${
                     isSelected
                       ? 'is-active btn-solid shadow-xs'
                       : 'btn-outline'
@@ -240,19 +240,19 @@ export default function EvidenceLens({
             })}
           </div>
 
-          <div className="text-xs text-text-muted">
+          <div className="text-xs text-text-muted shrink-0">
             Finding {safeIndex + 1} of {findingsList.length}
           </div>
         </div>
       </div>
 
-      {/* 3-Column Layout: Left (5 cols) | Center (4 cols) | Right (3 cols) at >= 1280px */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+      {/* Responsive Stacking: On mobile: Pipeline -> Document -> Action Panel; On desktop (>=1280px): Left (5) | Center (4) | Right (3) */}
+      <div className="flex flex-col xl:grid xl:grid-cols-12 gap-5 items-start w-full">
         
         {/* ========================================================================= */}
-        {/* LEFT COLUMN: DOCUMENT VIEWER OR VIS-NETWORK GRAPH                         */}
+        {/* LEFT COLUMN: DOCUMENT VIEWER OR VIS-NETWORK GRAPH (Mobile 2nd, Desktop 1st) */}
         {/* ========================================================================= */}
-        <div className="xl:col-span-5 h-full space-y-3">
+        <div className="order-2 xl:order-1 xl:col-span-5 w-full h-full space-y-3">
           <div className="flex items-center justify-between text-sm font-semibold text-text px-1">
             <span className="flex items-center space-x-2">
               {currentFinding.finding_type === 'GRAPH_CONFLICT' ? (
@@ -283,9 +283,9 @@ export default function EvidenceLens({
         </div>
 
         {/* ========================================================================= */}
-        {/* CENTER COLUMN: 6-STAGE PIPELINE STRIP                                     */}
+        {/* CENTER COLUMN: 6-STAGE PIPELINE STRIP (Mobile 1st, Desktop 2nd)           */}
         {/* ========================================================================= */}
-        <div className="xl:col-span-4 space-y-3">
+        <div className="order-1 xl:order-2 xl:col-span-4 w-full space-y-3">
           <div className="flex items-center justify-between text-sm font-semibold text-text px-1">
             <span className="flex items-center space-x-2">
               <Scale className="w-4 h-4 text-primary" />
@@ -447,9 +447,9 @@ export default function EvidenceLens({
         </div>
 
         {/* ========================================================================= */}
-        {/* RIGHT COLUMN: ACTION PANEL WITH MANDATORY COMMENT                         */}
+        {/* RIGHT COLUMN: ACTION PANEL WITH MANDATORY COMMENT (Mobile 3rd, Desktop 3rd) */}
         {/* ========================================================================= */}
-        <div className="xl:col-span-3 h-full space-y-3">
+        <div className="order-3 xl:order-3 xl:col-span-3 w-full h-full space-y-3">
           <div className="flex items-center justify-between text-sm font-semibold text-text px-1">
             <span className="flex items-center space-x-2">
               <UserCheck className="w-4 h-4 text-primary" />
@@ -544,7 +544,7 @@ export default function EvidenceLens({
 
                 <textarea
                   id="officer-mandatory-comment"
-                  rows={3}
+                  rows={4}
                   value={officerComment}
                   onChange={(e) => {
                     setOfficerComment(e.target.value);
@@ -562,12 +562,12 @@ export default function EvidenceLens({
                 )}
               </div>
 
-              {/* Submit Decision Button: White text on cobalt */}
+              {/* Submit Decision Button: White text on cobalt, 48px on phones */}
               <button
                 type="submit"
                 id="btn-submit-officer-action"
                 disabled={isSubmitting}
-                className="btn-solid w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
+                className="btn-solid w-full h-12 min-h-[48px] px-4 rounded-xl bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

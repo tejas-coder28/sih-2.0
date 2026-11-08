@@ -134,12 +134,13 @@ export default function AlertBellDrawer({ currentRole }) {
             fetchNotifications();
           }
         }}
-        className="relative p-2 rounded-xl text-text-muted hover:text-text hover:bg-surface-2 transition-colors focus:outline-none cursor-pointer"
+        className="btn-icon p-0 relative w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer flex-none shrink-0 shadow-xs outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary group"
         title="Statutory Alerts & Risk Warnings"
+        aria-label="Statutory Alerts & Risk Warnings"
       >
-        <Bell className="w-5 h-5 text-current" />
+        <Bell className="w-5 h-5 min-w-[20px] min-h-[20px] text-text-muted group-hover:text-text transition-colors shrink-0" />
         {activeAlertsCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center rounded-full h-4 min-w-[16px] px-1 bg-amber-600 text-[9px] font-bold text-white shadow-xs">
+          <span className="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full h-4.5 min-w-[18px] px-1 bg-amber-600 text-[10px] font-bold text-white shadow-xs pointer-events-none ring-2 ring-surface">
             {activeAlertsCount}
           </span>
         )}

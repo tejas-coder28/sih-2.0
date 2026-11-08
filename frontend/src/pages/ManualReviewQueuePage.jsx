@@ -591,21 +591,21 @@ export default function ManualReviewQueuePage({
         )}
       </div>
 
-      {/* 4. Fix 7: Robust Resolve Ticket Dialog (Backdrop-blur, 560px, Solid Surface, Focus Trap) */}
+      {/* 4. Fix 7: Robust Resolve Ticket Dialog (Full-screen sheet on phones, 560px on desktop) */}
       {resolveItem && (
         <div 
-          className="fixed inset-0 z-50 bg-black/55 dark:bg-black/70 flex items-center justify-center p-4 animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/55 dark:bg-black/70 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
           role="dialog"
           aria-modal="true"
           aria-labelledby="resolve-ticket-title"
         >
           <div 
             id="resolve-ticket-modal"
-            className="bg-surface border border-border rounded-xl w-[560px] max-w-[95vw] max-h-[90vh] overflow-y-auto p-6 shadow-xl space-y-4 animate-scale-up"
+            className="bg-surface border border-border rounded-t-2xl sm:rounded-xl w-full sm:w-[560px] max-w-full sm:max-w-[95vw] h-full sm:h-auto max-h-[92dvh] sm:max-h-[90vh] flex flex-col p-4 sm:p-6 shadow-2xl animate-scale-up"
           >
             
             {/* Modal Title Row */}
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-border pb-3 shrink-0">
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-primary shrink-0" />
                 <h3 id="resolve-ticket-title" className="text-base font-bold text-text">
@@ -618,15 +618,15 @@ export default function ManualReviewQueuePage({
               <button
                 type="button"
                 onClick={() => setResolveItem(null)}
-                className="text-text-muted hover:text-text p-1 rounded-lg hover:bg-surface-2 cursor-pointer transition-colors"
+                className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center text-text-muted hover:text-text rounded-lg hover:bg-surface-2 cursor-pointer transition-colors"
                 aria-label="Close dialog"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="space-y-3.5 text-xs">
+            {/* Modal Body: Scrollable */}
+            <div className="flex-1 overflow-y-auto py-3 space-y-3.5 text-xs">
               
               {/* Summary Row: 3 Key/Value Pairs */}
               <div className="grid grid-cols-3 gap-2.5 p-3 bg-surface-2 rounded-lg border border-border">
@@ -723,12 +723,12 @@ export default function ManualReviewQueuePage({
               </div>
             </div>
 
-            {/* Modal Footer: Cancel (ghost) and Confirm (solid cobalt) */}
-            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-border">
+            {/* Modal Footer: Sticky, 48px each on phones */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-3 border-t border-border shrink-0 pb-[env(safe-area-inset-bottom)]">
               <button
                 type="button"
                 onClick={() => setResolveItem(null)}
-                className="btn-ghost h-10 px-4 text-xs font-semibold text-text-muted hover:text-text rounded-lg hover:bg-surface-2 transition-colors cursor-pointer"
+                className="btn-ghost w-full sm:w-auto h-12 sm:h-10 px-4 text-xs font-semibold text-text-muted hover:text-text rounded-lg hover:bg-surface-2 transition-colors cursor-pointer flex items-center justify-center min-h-[44px]"
               >
                 Cancel
               </button>
@@ -738,7 +738,7 @@ export default function ManualReviewQueuePage({
                 disabled={resolving || !resolveNotes.trim()}
                 onClick={handleResolveSubmit}
                 title={!resolveNotes.trim() ? "Enter determination note to proceed" : "Confirm determination"}
-                className="btn-solid h-10 px-5 text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center space-x-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-solid w-full sm:w-auto h-12 sm:h-10 px-5 text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
               >
                 {resolving && <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />}
                 <span>Confirm</span>

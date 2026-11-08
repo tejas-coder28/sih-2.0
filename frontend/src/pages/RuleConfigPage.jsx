@@ -183,14 +183,14 @@ export default function RuleConfigPage() {
 
   return (
     <div className="space-y-6 max-w-[1720px] mx-auto">
-      {/* Sub-Tabs Switcher for Regulations */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-surface-2/80 rounded-xl border border-border/80 w-fit">
+      {/* Sub-Tabs Switcher for Regulations: Full-width segmented on mobile */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 bg-surface-2/80 rounded-xl border border-border/80 w-full sm:w-fit">
         <button
           id="tab-rules-catalog"
           role="tab"
           aria-selected={activeTopTab === 'catalog'}
           onClick={() => setActiveTopTab('catalog')}
-          className={`tab px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+          className={`tab min-h-[44px] sm:min-h-0 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer flex-1 sm:flex-initial ${
             activeTopTab === 'catalog'
               ? 'is-active btn-solid shadow-sm'
               : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -205,7 +205,7 @@ export default function RuleConfigPage() {
           role="tab"
           aria-selected={activeTopTab === 'simulator'}
           onClick={() => setActiveTopTab('simulator')}
-          className={`tab px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
+          className={`tab min-h-[44px] sm:min-h-0 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer flex-1 sm:flex-initial ${
             activeTopTab === 'simulator'
               ? 'is-active btn-solid shadow-sm'
               : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -248,11 +248,11 @@ export default function RuleConfigPage() {
           </div>
 
           {/* Publish New Rule Version Action */}
-          <div className="flex items-center space-x-3 shrink-0">
+          <div className="flex items-center space-x-3 shrink-0 w-full lg:w-auto">
             <button
               id="open-publish-modal-btn"
               onClick={() => setShowPublishModal(true)}
-              className="btn-solid py-2.5 px-5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white text-xs font-bold shadow-md shadow-purple-500/20 transition-all flex items-center space-x-2 active:scale-95 cursor-pointer"
+              className="btn-solid w-full lg:w-auto min-h-[44px] h-12 sm:h-10 py-2.5 px-5 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white text-xs font-bold shadow-md shadow-purple-500/20 transition-all flex items-center justify-center space-x-2 active:scale-95 cursor-pointer"
             >
               <Lock className="w-4 h-4 text-purple-200" />
               <span>Publish New Rule Version</span>
@@ -410,7 +410,7 @@ export default function RuleConfigPage() {
           </div>
 
           {/* Action Trigger */}
-          <div className="pt-3 border-t border-border flex items-center justify-between">
+          <div className="pt-3 border-t border-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <span className="text-xs text-text-subtle">
               Evaluates 150 live institution application dossiers across India.
             </span>
@@ -418,7 +418,7 @@ export default function RuleConfigPage() {
               onClick={handleExecuteDryRun}
               disabled={isRunningDryRun}
               id="run-dry-run-btn"
-              className="btn-solid px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-xs flex items-center space-x-2 active:scale-95 cursor-pointer"
+              className="btn-solid min-h-[44px] h-12 sm:h-10 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 active:scale-95 cursor-pointer w-full sm:w-auto shrink-0"
             >
               <Play className={`w-3.5 h-3.5 ${isRunningDryRun ? 'animate-spin' : ''}`} />
               <span>{isRunningDryRun ? 'Computing Impact...' : 'Run Policy Dry-Run Simulation'}</span>

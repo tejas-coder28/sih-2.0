@@ -209,7 +209,7 @@ export default function ImpossibilityGraph() {
           <button
             onClick={fetchGraphAndAnomalies}
             disabled={loading}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-surface border border-border hover:bg-surface-2 text-xs font-semibold text-text transition-colors shadow-xs shrink-0 disabled:opacity-60"
+            className="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-surface border border-border hover:bg-surface-2 text-xs font-semibold text-text transition-colors shadow-xs shrink-0 disabled:opacity-60 min-h-[44px] sm:min-h-0 w-full sm:w-auto cursor-pointer"
             type="button"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -242,8 +242,8 @@ export default function ImpossibilityGraph() {
         )}
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
+      {/* Filter Tabs: Horizontal scroll */}
+      <div className="flex space-x-2 overflow-x-auto pb-1 scrollbar-none snap-x flex-nowrap w-full">
         {[
           { id: 'ALL', label: 'All Indicators' },
           { id: 'DUAL_EMPLOYMENT', label: '1. Dual Full-Time Faculty' },
@@ -256,7 +256,7 @@ export default function ImpossibilityGraph() {
           <button
             key={f.id}
             onClick={() => setFilterType(f.id)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
+            className={`min-h-[44px] sm:min-h-0 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all shrink-0 snap-start flex items-center cursor-pointer ${
               filterType === f.id
                 ? 'bg-rose-50 border-rose-300 text-rose-800 shadow-xs'
                 : 'bg-surface border-border text-muted hover:text-text hover:bg-surface-2'
@@ -274,11 +274,11 @@ export default function ImpossibilityGraph() {
         {/* Left Column: Interactive Topology View */}
         <div className="lg:col-span-7 flex flex-col space-y-3">
           {/* Tab Switcher for Topology View */}
-          <div className="flex items-center justify-between bg-surface border border-border rounded-xl p-1.5 shadow-2xs">
-            <div className="flex space-x-1">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-surface border border-border rounded-xl p-1.5 shadow-2xs gap-1.5">
+            <div className="flex space-x-1 overflow-x-auto scrollbar-none">
               <button
                 onClick={() => setActiveTopologyTab('SUBGRAPH')}
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`min-h-[44px] sm:min-h-0 flex items-center space-x-2 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
                   activeTopologyTab === 'SUBGRAPH'
                     ? 'bg-rose-50 text-rose-800 border border-rose-200 shadow-2xs'
                     : 'text-muted hover:text-text hover:bg-surface-2'
@@ -291,7 +291,7 @@ export default function ImpossibilityGraph() {
 
               <button
                 onClick={() => setActiveTopologyTab('MACRO')}
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`min-h-[44px] sm:min-h-0 flex items-center space-x-2 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
                   activeTopologyTab === 'MACRO'
                     ? 'bg-primary/10 text-sky-800 border border-primary/20 shadow-2xs'
                     : 'text-muted hover:text-text hover:bg-surface-2'
