@@ -76,6 +76,16 @@ PRAMAAN-X features an active mathematical verification ledger. The interactive t
 | **Step 3: Cryptographic Link Breach Pinpointed** | **Step 4: Pristine Ledger Restored & Re-Verified** |
 | [![Step 3: Cryptographic Link Breach Pinpointed](docs/screenshots/tamper-demo-tampered.png)](docs/screenshots/tamper-demo-tampered.png)<br>**Link Severed**: Modifying Block #2 payload instantly invalidates downstream Block #3 parent hash in red. | [![Step 4: Pristine Ledger Restored & Re-Verified](docs/screenshots/tamper-demo-restored.png)](docs/screenshots/tamper-demo-restored.png)<br>**Restoration Verified**: Re-verifying pristine ledger plays green validation animation and restores integrity. |
 
+### 5. Mobile Responsive Experience (Phones & Tablets)
+
+PRAMAAN-X provides full responsive access across mobile viewports (360px–430px) and tablets (768px), with off-canvas navigation drawers, touch targets $\ge 44\times 44\text{px}$, responsive card transformations for triage queues, and zero horizontal scroll:
+
+| Mobile Dashboard & Triage Cards | Off-Canvas Navigation Drawer |
+| :---: | :---: |
+| [![Mobile Dashboard](docs/screenshots/mobile-dashboard.png)](docs/screenshots/mobile-dashboard.png)<br>**Mobile Scrutiny Dashboard**: Compact 2-column KPI grid, mobile risk pills, and adaptive application cards with full touch targets. | [![Mobile Navigation Drawer](docs/screenshots/mobile-drawer.png)](docs/screenshots/mobile-drawer.png)<br>**Mobile Slide-Out Drawer**: Instant category navigation, active tab indicator, role badge, and backdrop-blur overlay. |
+| **Mobile Evidence Lens** | **Mobile Photo Radar & Clustering** |
+| [![Mobile Evidence Lens](docs/screenshots/mobile-evidence-lens.png)](docs/screenshots/mobile-evidence-lens.png)<br>**Mobile Evidence Lens**: Stacked split-view with synchronized PDF viewport, clause citations, and one-tap officer actions. | [![Mobile Photo Radar](docs/screenshots/mobile-photo-radar.png)](docs/screenshots/mobile-photo-radar.png)<br>**Mobile Photo Radar**: Responsive reuse cluster analysis with comparative thumbnail cards and similarity metrics. |
+
 ---
 
 ## ⚙️ How It Works: The 4-Step Pipeline
