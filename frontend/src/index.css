@@ -179,6 +179,26 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="tab"] {
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 639px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 
   body {
@@ -3448,4 +3468,28 @@ div[class*="document-paper-clause-callout"] {
 .document-paper-clause-callout span,
 .document-paper-clause-callout strong {
   color: #111827 !important;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS & TOUCH FOUNDATIONS (< 768px & (hover: none))
+   ========================================================================== */
+@media (max-width: 639px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+@media (hover: none) {
+  .interactive-card:hover,
+  button:hover:not(:active),
+  a:hover:not(:active) {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .ambient-blur,
+  .hero-ambient-aura {
+    display: none !important;
+  }
 }
