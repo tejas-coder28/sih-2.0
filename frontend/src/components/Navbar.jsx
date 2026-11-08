@@ -372,8 +372,8 @@ export default function Navbar({
         className={`sticky top-0 z-40 shrink-0 select-none border-b border-border text-text transition-all duration-200 ${
           isScrolled 
             ? 'h-14 glass-surface shadow-md border-border/80' 
-            : 'h-16 bg-header-bg shadow-xs border-border'
-        }`}
+            : 'h-14 sm:h-16 bg-header-bg shadow-xs border-border'
+        } pt-[env(safe-area-inset-top)]`}
       >
         {/* 2px Cobalt Scroll Progress Line */}
         <div 
@@ -381,10 +381,10 @@ export default function Navbar({
           style={{ transform: `scaleX(${scrollProgress})` }}
           aria-hidden="true"
         />
-        <div className="h-full px-4 sm:px-6 flex items-center justify-between gap-3">
+        <div className="h-full px-2 sm:px-4 lg:px-6 flex items-center justify-between gap-1 sm:gap-2.5">
           
           {/* LEFT: Single Hamburger Toggle + PRAMAAN-X Wordmark + AICTE EoA Chip */}
-          <div className="flex items-center space-x-2.5 min-w-0">
+          <div className="flex items-center space-x-1 sm:space-x-2 min-w-0 shrink-0">
             {/* Single Toggle Button for Desktop Rail & Mobile Drawer */}
             <button
               type="button"
@@ -400,28 +400,28 @@ export default function Navbar({
               aria-expanded={isMobileMenuOpen}
               aria-controls="sidebar-nav"
               title="Toggle sidebar"
-              className="p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors cursor-pointer"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-lg text-text-muted hover:text-text hover:bg-surface-2 transition-colors flex items-center justify-center cursor-pointer flex-none shrink-0 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5 shrink-0" />
             </button>
 
             {/* Logo Emblem & Brand Wordmark */}
-            <div className="flex items-center space-x-2.5 min-w-0">
-              <div className="p-1 rounded-lg bg-surface-2 border border-border shrink-0 flex items-center justify-center shadow-xs">
-                <AicteShieldLogo className="w-7 h-7" />
+            <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+              <div className="w-8 h-8 p-1 rounded-lg bg-surface-2 border border-border flex items-center justify-center shadow-xs flex-none shrink-0">
+                <AicteShieldLogo className="w-6 h-6 shrink-0" />
               </div>
 
-              <div className="flex items-center space-x-2">
-                <div id="header-wordmark" className="flex items-baseline tracking-tight font-black font-sans text-xl">
+              <div className="flex items-center space-x-2 min-w-0">
+                <div id="header-wordmark" className="flex items-baseline tracking-tight font-black font-sans text-base sm:text-lg lg:text-xl shrink-0 whitespace-nowrap min-w-0">
                   <span className="text-[#0B3D91] dark:text-white font-black tracking-tight">PRAMAAN</span>
                   <span className="text-[#FF9933] font-black ml-0.5">
                     -X
                   </span>
                 </div>
                 
-                {/* AICTE EoA Chip: neutral official capsule */}
+                {/* AICTE EoA Chip: hidden on phones */}
                 <span 
-                  className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-surface-2 text-text-muted border border-border shadow-xs"
+                  className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-surface-2 text-text-muted border border-border shadow-xs shrink-0 whitespace-nowrap"
                   title="Approval Process Handbook (APH 2025-26) Regulatory Scrutiny"
                 >
                   AICTE EoA
@@ -431,7 +431,7 @@ export default function Navbar({
 
             {/* Admin Viewing As Chip */}
             {adminPreviewRole && (
-              <div className="hidden md:flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-text text-xs font-medium shadow-xs">
+              <div className="hidden xl:flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-2 border border-border text-text text-xs font-medium shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 <span>Viewing as <strong className="text-text capitalize">{adminPreviewRole.replace('_', ' ')}</strong></span>
                 <button
@@ -446,6 +446,9 @@ export default function Navbar({
               </div>
             )}
           </div>
+
+          {/* Spacer on mobile/tablet when desktop search is hidden */}
+          <div className="flex-1 lg:hidden min-w-[2px]" />
 
           {/* CENTER: Enlarged Quick-Search Bar (h-10, full width 280-440px, clear Ctrl+K button) */}
           <div className="relative flex-1 min-w-[280px] max-w-[440px] mx-2 hidden lg:flex items-center" ref={searchContainerRef}>
@@ -542,8 +545,8 @@ export default function Navbar({
             )}
           </div>
 
-          {/* RIGHT: Compact Status Pill + Bell + 36px Theme Toggle + User Menu */}
-          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+          {/* RIGHT: Compact Status Pill + Bell + Theme Toggle + User Menu */}
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             
             {/* System Architecture Quick Link */}
             {(onSelectTab || onNavigateTab) && (
@@ -559,8 +562,8 @@ export default function Navbar({
               </button>
             )}
 
-            {/* Single Compact Status Pill with Two Small Dots */}
-            <div id="header-status-pill" className="hidden md:flex items-center space-x-2.5 px-3 py-1.5 rounded-full border border-border bg-surface-2 text-xs font-medium text-text-muted shadow-xs">
+            {/* Status Pill: hidden on phones, dots-only on tablet (640-1023px), full on desktop (>=1024px) */}
+            <div id="header-status-pill" className="hidden sm:flex items-center space-x-2 sm:px-2 md:px-3 py-1.5 rounded-full border border-border bg-surface-2 text-xs font-medium text-text-muted shadow-xs">
               <div 
                 className="flex items-center space-x-1.5 cursor-help"
                 title={
@@ -587,7 +590,7 @@ export default function Navbar({
                       : 'bg-slate-400'
                   }`} 
                 />
-                <span className="text-[11px] font-semibold text-text">
+                <span className="hidden md:inline text-[11px] font-semibold text-text">
                   {apiStatus === 'LIVE' ? 'API Live' : apiStatus === 'DEGRADED' ? 'Degraded' : 'Demo API'}
                 </span>
               </div>
@@ -600,7 +603,7 @@ export default function Navbar({
                     ledgerStatus.intact ? 'bg-emerald-500' : 'bg-rose-500'
                   }`} 
                 />
-                <span className="text-[11px] font-semibold text-text">
+                <span className="hidden md:inline text-[11px] font-semibold text-text">
                   {ledgerStatus.intact ? 'Ledger Intact' : 'Ledger Flagged'}
                 </span>
               </div>
@@ -609,7 +612,7 @@ export default function Navbar({
             {/* Operational Alert Bell with Drawer */}
             <AlertBellDrawer currentRole={currentRole} />
 
-            {/* Quick Site Search Button (Enlarged 40x40px with p-0 and crisp 20px icon) */}
+            {/* Quick Site Search Button (44px on phone, 40px on tablet/desktop) */}
             <button
               type="button"
               id="site-search-btn"
@@ -623,19 +626,19 @@ export default function Navbar({
               }}
               aria-label="Search navigation modules (Ctrl+K)"
               title="Search modules and applications (Ctrl+K)"
-              className="p-0 w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex lg:hidden items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-10 sm:h-10 sm:min-w-[40px] sm:min-h-[40px] rounded-xl border border-border bg-surface-2 hover:bg-surface text-text flex lg:hidden items-center justify-center transition-all cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Search className="w-5 h-5 text-text-muted hover:text-primary transition-colors shrink-0" />
             </button>
 
-            {/* Compact 36px Icon Theme Toggle with Sun/Moon 18px morph */}
+            {/* Compact 44px Icon Theme Toggle on Phone, 36px on Tablet/Desktop */}
             <button
               type="button"
               id="theme-toggle-btn"
               onClick={toggleTheme}
               aria-label="Switch theme"
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="w-9 h-9 rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent relative overflow-hidden group"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-[36px] sm:min-h-[36px] rounded-lg border border-border bg-surface-2 hover:bg-surface text-text flex items-center justify-center transition-colors cursor-pointer flex-none shrink-0 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent relative overflow-hidden group"
             >
               <div className="relative w-[18px] h-[18px] flex items-center justify-center">
                 <Sun 
@@ -674,15 +677,16 @@ export default function Navbar({
                 type="button"
                 id="user-menu-btn"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 pl-2 pr-2.5 py-1.5 rounded-lg border border-border bg-surface-2 hover:bg-surface transition-all cursor-pointer shadow-xs group"
+                className="w-10 h-10 min-w-[40px] min-h-[40px] sm:w-auto sm:h-auto flex items-center justify-center sm:space-x-2 p-1 sm:pl-2 sm:pr-2.5 sm:py-1.5 rounded-lg border border-border bg-surface-2 hover:bg-surface transition-all cursor-pointer shadow-xs group flex-none shrink-0"
                 aria-expanded={isUserMenuOpen}
                 aria-haspopup="true"
+                aria-label="User profile and menu"
               >
                 <div className="w-7 h-7 rounded-md bg-primary text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
                   {userInitial}
                 </div>
 
-                <div className="text-left hidden sm:flex flex-col items-start min-w-0 max-w-[160px]">
+                <div className="text-left hidden md:flex flex-col items-start min-w-0 max-w-[160px]">
                   <span className="text-xs font-bold text-text leading-tight truncate w-full">
                     {userName}
                   </span>
@@ -693,16 +697,16 @@ export default function Navbar({
                   )}
                 </div>
 
-                <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${
+                <ChevronDown className={`hidden md:block w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${
                   isUserMenuOpen ? 'rotate-180' : ''
                 }`} />
               </button>
 
-              {/* User Dropdown Menu: Solid Surface, 280px, Right Aligned, High Z-Index */}
+              {/* User Dropdown Menu: Solid Surface, Right Aligned, High Z-Index */}
               {isUserMenuOpen && (
                 <div 
                   id="user-menu-dropdown"
-                  className="absolute right-0 mt-2 w-[280px] rounded-xl border border-border bg-surface p-2 shadow-xl z-50 animate-fadeIn text-xs text-text space-y-2"
+                  className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-full mt-1.5 w-[calc(100vw-24px)] sm:w-[280px] max-w-[340px] rounded-xl border border-border bg-surface p-2 shadow-2xl z-50 animate-fadeIn text-xs text-text space-y-2 max-h-[85dvh] overflow-y-auto"
                   role="menu"
                   aria-orientation="vertical"
                 >
@@ -711,18 +715,59 @@ export default function Navbar({
                     <div className="text-[10px] uppercase font-bold tracking-wider text-text-subtle">
                       Signed In As
                     </div>
-                    <div className="font-bold text-text truncate text-xs">
+                    <div className="font-bold text-text truncate text-sm sm:text-xs">
                       {userName}
                     </div>
-                    <div className="text-[11px] text-text-muted font-mono truncate">
+                    <div className="text-xs sm:text-[11px] text-text-muted font-mono truncate">
                       {currentUser?.email || 'scrutiny.officer@aicte-india.org'}
                     </div>
-                    <div className="pt-1">
+                    <div className="pt-1 flex items-center gap-2">
                       <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full border border-border bg-surface text-text-muted">
                         {roleLabels[currentRole] || currentRole}
                       </span>
                     </div>
                   </div>
+
+                  {/* Compact Status Rows on Mobile (Hidden on Tablet & Desktop) */}
+                  <div className="sm:hidden p-2.5 bg-surface-2 rounded-lg border border-border space-y-2">
+                    <div className="flex items-center justify-between text-xs font-semibold">
+                      <div className="flex items-center space-x-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${apiStatus === 'LIVE' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                        <span>API Status</span>
+                      </div>
+                      <span className="text-text-muted font-mono text-[11px]">
+                        {apiStatus === 'LIVE' ? 'Live Gateway' : 'Demo API'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-semibold">
+                      <div className="flex items-center space-x-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${ledgerStatus.intact ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                        <span>Audit Ledger</span>
+                      </div>
+                      <span className="text-text-muted font-mono text-[11px]">
+                        {ledgerStatus.intact ? 'Intact (Verified)' : 'Flagged'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Architecture Link Item on Mobile / Tablet */}
+                  {(onSelectTab || onNavigateTab) && (
+                    <button
+                      type="button"
+                      id="user-menu-architecture-btn"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        (onSelectTab || onNavigateTab)('system-architecture');
+                      }}
+                      className="w-full flex xl:hidden items-center justify-between px-3 py-2 rounded-lg text-text hover:bg-surface-2 border border-border transition-colors cursor-pointer min-h-[44px]"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Layers className="w-4 h-4 text-primary shrink-0" />
+                        <span className="font-semibold text-xs">System Architecture</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-text-muted">Interactive</span>
+                    </button>
+                  )}
 
                   {/* Theme Option Row */}
                   <div className="p-2 border-t border-border">
@@ -743,7 +788,7 @@ export default function Navbar({
                             key={tOpt.id}
                             type="button"
                             onClick={() => handleSelectThemeMode(tOpt.id)}
-                            className={`py-1 rounded-lg text-xs font-semibold capitalize border flex items-center justify-center space-x-1 transition-all cursor-pointer ${
+                            className={`py-1.5 min-h-[36px] rounded-lg text-xs font-semibold capitalize border flex items-center justify-center space-x-1 transition-all cursor-pointer ${
                               isSelected
                                 ? 'bg-primary text-white border-primary shadow-xs'
                                 : 'bg-surface-2 text-text-muted hover:text-text border-border'
@@ -771,7 +816,7 @@ export default function Navbar({
                           onAdminSwitchRole(e.target.value);
                           setIsUserMenuOpen(false);
                         }}
-                        className="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-xs text-text font-medium outline-none cursor-pointer"
+                        className="w-full bg-surface-2 border border-border rounded-lg px-2 py-2 text-xs text-text font-medium outline-none cursor-pointer min-h-[40px]"
                       >
                         <option value="admin">Central Admin</option>
                         <option value="scrutiny_officer">Scrutiny Officer</option>
@@ -782,7 +827,7 @@ export default function Navbar({
                     </div>
                   )}
 
-                  {/* Sign Out Action: Full Width, Danger-tinted */}
+                  {/* Sign Out Action: Full Width, 44px, Danger-tinted */}
                   {onLogout && (
                     <div className="border-t border-border pt-1">
                       <button
@@ -792,7 +837,7 @@ export default function Navbar({
                           setIsUserMenuOpen(false);
                           setShowLogoutConfirm(true);
                         }}
-                        className="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-danger hover:bg-danger/10 transition-colors font-semibold cursor-pointer"
+                        className="w-full h-11 min-h-[44px] flex items-center justify-center space-x-2 px-3 py-2 rounded-lg text-danger hover:bg-danger/10 border border-danger/25 transition-colors font-semibold cursor-pointer"
                       >
                         <LogOut className="w-4 h-4 text-danger" />
                         <span>Sign Out</span>
