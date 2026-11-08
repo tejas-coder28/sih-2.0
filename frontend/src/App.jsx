@@ -499,7 +499,7 @@ export default function App() {
           ref={mainScrollRef}
           id="main-content"
           tabIndex={-1}
-          className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 bg-transparent p-3 sm:p-5 lg:p-6 pb-12 w-full min-w-0 scrollbar-slim relative z-10 focus:outline-none"
+          className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 bg-transparent p-3 sm:p-5 lg:p-6 pb-20 sm:pb-12 w-full min-w-0 scrollbar-slim relative z-10 focus:outline-none"
         >
           <div className="w-full max-w-[1600px] mx-auto flex flex-col gap-4 sm:gap-6 min-w-0">
             {!isTabAllowed ? (
@@ -615,34 +615,35 @@ export default function App() {
         </main>
       </div>
 
-      {/* Back-to-Top Floating Glass Button (Item 4) */}
+      {/* Back-to-Top Floating Glass Button */}
       <button
         type="button"
         id="back-to-top-btn"
         onClick={scrollToTop}
         aria-label="Back to top"
         title="Back to top"
-        className={`fixed bottom-16 right-4 sm:right-6 z-40 w-10 h-10 rounded-full glass-surface flex items-center justify-center text-text hover:text-primary transition-all duration-200 cursor-pointer shadow-lg outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        style={{ bottom: 'calc(16px + env(safe-area-inset-bottom))' }}
+        className={`fixed right-4 sm:right-6 z-40 w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-surface flex items-center justify-center text-text hover:text-primary transition-all duration-200 cursor-pointer shadow-lg outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           showBackToTop 
             ? 'opacity-100 translate-y-0 pointer-events-auto' 
             : 'opacity-0 translate-y-2 pointer-events-none'
         }`}
       >
-        <ArrowUp className="w-4 h-4" />
+        <ArrowUp className="w-5 h-5" />
       </button>
 
-      {/* Floating Regulatory Support Contact Button (Item 20) */}
+      {/* Floating Regulatory Support Contact Button (Hidden on phones) */}
       <FloatingContactButton />
 
       {/* Dismissible Local Storage / Session Consent Notice (Item 13) */}
       <StorageConsentBanner />
 
       {/* Clean Single Line Footer */}
-      <footer className="h-8 shrink-0 bg-surface border-t border-border px-4 sm:px-6 flex items-center justify-between text-xs text-text-muted z-30 select-none">
+      <footer className="h-8 shrink-0 bg-surface border-t border-border px-4 sm:px-6 flex items-center justify-between text-xs text-text-muted z-30 select-none pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center space-x-2">
           <span className="font-semibold text-text">PRAMAAN-X v1.0.0</span>
-          <span>•</span>
-          <span>Advisory decision support</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline">Advisory decision support</span>
         </div>
       </footer>
     </div>

@@ -37,6 +37,15 @@ export default function Sidebar({
   const asideRef = useRef(null);
 
   useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth < 1024) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -215,9 +224,9 @@ export default function Sidebar({
         aria-label="Navigation sidebar"
         className={`
         fixed inset-y-0 left-0 z-50 glass-surface border-r border-border text-text
-        flex flex-col justify-between h-full overflow-y-auto p-3 pb-6 gap-4 scrollbar-slim sidebar-scroll-mask transition-[width] duration-200 ease-in-out select-none
-        lg:relative lg:z-0 lg:shrink-0 lg:shadow-none lg:translate-x-0 lg:flex
-        ${isOpen ? 'translate-x-0 w-[260px]' : '-translate-x-full lg:translate-x-0'}
+        flex flex-col justify-between h-full overflow-y-auto p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))] gap-4 scrollbar-slim sidebar-scroll-mask transition-all duration-200 ease-in-out select-none
+        lg:relative lg:z-0 lg:shrink-0 lg:shadow-none lg:translate-x-0 lg:flex lg:pt-3 lg:pb-6
+        ${isOpen ? 'translate-x-0 w-[min(86vw,320px)] shadow-2xl' : '-translate-x-full lg:translate-x-0'}
         ${isCollapsed ? 'lg:w-[72px] lg:max-w-[72px] lg:px-2 overflow-x-hidden' : 'lg:w-[260px]'}
       `}>
         <div className="flex flex-col gap-4 w-full min-w-0">
@@ -303,7 +312,7 @@ export default function Sidebar({
                           onClick={() => handleItemClick(item.id)}
                           onMouseEnter={() => setHoveredTab(item.id)}
                           title={item.label}
-                          className={`w-full flex items-center rounded-lg text-left transition-colors group cursor-pointer relative h-10 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                          className={`w-full flex items-center rounded-lg text-left transition-colors group cursor-pointer relative h-12 lg:h-10 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                             isCollapsed 
                               ? 'lg:justify-center lg:p-2' 
                               : 'px-3 py-2 justify-between gap-2'

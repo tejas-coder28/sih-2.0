@@ -878,20 +878,20 @@ export default function Navbar({
       {!isAdvisoryDismissed && (
         <div 
           role="status"
-          className="h-7 shrink-0 bg-surface-2 border-b border-border px-4 sm:px-6 flex items-center justify-between text-xs font-medium text-text-muted z-30 transition-all select-none"
+          className="h-9 sm:h-7 shrink-0 bg-surface-2 border-b border-border px-3 sm:px-6 flex items-center justify-between text-[13px] sm:text-xs font-medium text-text-muted z-30 transition-all select-none"
         >
           <div className="flex items-center space-x-2 min-w-0">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-            <span className="text-text font-normal">Advisory only. No auto-rejection.</span>
+            <AlertTriangle className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-amber-500 shrink-0" />
+            <span className="text-text font-normal truncate">Advisory only. No auto-rejection.</span>
           </div>
 
           <button
             type="button"
             onClick={handleDismissAdvisory}
-            className="text-text-muted hover:text-text p-0.5 rounded cursor-pointer"
+            className="w-11 h-9 sm:w-6 sm:h-6 flex items-center justify-center text-text-muted hover:text-text cursor-pointer shrink-0"
             aria-label="Dismiss advisory note"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
           </button>
         </div>
       )}
