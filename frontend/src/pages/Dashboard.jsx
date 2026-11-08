@@ -324,29 +324,29 @@ export default function Dashboard({
 
       {/* 1. Official Government Hero Banner: Solid Surface with High-Contrast Tokens */}
       <div data-reveal className="relative revealed overflow-hidden rounded-2xl">
-        {/* Decorative Organic Blob behind hero (Step 4.8: Static, 40px blur, 0.14 opacity cobalt) */}
+        {/* Decorative Organic Blob behind hero (Hidden on phones) */}
         <div 
-          className="hero-backdrop-blob absolute -top-10 -right-10 w-80 h-80 pointer-events-none -z-10"
+          className="hero-backdrop-blob absolute -top-10 -right-10 w-80 h-80 pointer-events-none -z-10 hidden sm:block"
           aria-hidden="true" 
         />
 
-        <div className="hero-glass-card relative rounded-2xl p-6 sm:p-7 overflow-hidden glass-surface border border-border shadow-card select-none text-text">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative">
+        <div className="hero-glass-card relative rounded-2xl p-4 sm:p-7 overflow-hidden glass-surface border border-border shadow-card select-none text-text">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5 relative">
             <div className="max-w-2xl">
-              {/* Short Eyebrow: primary navy (#0B3D91) in light, cobalt (#3B6CFF) in dark */}
-              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-primary dark:text-accent uppercase tracking-wider mb-1.5">
-                <span>
+              {/* Short Eyebrow: single line with ellipsis on phone */}
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-primary dark:text-accent uppercase tracking-wider mb-1.5 truncate">
+                <span className="truncate">
                   {isInstitutionUser 
                     ? 'Institution Scrutiny Portal' 
                     : 'AICTE Central Scrutiny Division'}
                 </span>
                 <span>•</span>
-                <span>APH 2025-26</span>
+                <span className="shrink-0">APH 2025-26</span>
                 {!isLiveMode && <DemoDataBadge />}
               </div>
 
-              {/* Title 24px/700 */}
-              <h1 className="text-2xl font-bold text-text tracking-tight leading-snug">
+              {/* Title 22px on phones, 24px on desktop */}
+              <h1 className="text-[22px] sm:text-2xl font-bold text-text tracking-tight leading-snug">
                 {isInstitutionUser 
                   ? 'Institution Dossier & Self-Assessment' 
                   : isAuditor
@@ -356,22 +356,22 @@ export default function Dashboard({
                   : 'Scrutiny & Regulatory Command Center'}
               </h1>
 
-              {/* Subtitle: text-muted (#4A5B78 minimum) in light, passing 4.5:1 */}
-              <p className="text-sm text-text-muted mt-1.5 leading-normal">
+              {/* Subtitle: 14px, 2 lines max on phone */}
+              <p className="text-sm text-text-muted mt-1.5 leading-normal line-clamp-2 sm:line-clamp-none">
                 {isInstitutionUser
                   ? 'Review compliance readiness and pending requirements prior to formal review.'
                   : 'Regulatory decision support system. Findings are advisory indicators for committee inquiry.'}
               </p>
             </div>
 
-            {/* Action Buttons: Solid primary (navy #0B3D91 in light, cobalt #3B6CFF in dark), Outline secondary */}
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            {/* Action Buttons: Stack full width 48px on phones, inline on desktop */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
               {isInstitutionUser ? (
                 <button
                   type="button"
                   id="launch-preflight-btn"
                   onClick={() => onNavigateTab('preflight')}
-                  className="btn-solid h-10 px-4 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-2 cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full sm:w-auto h-12 sm:h-10 px-4 rounded-lg bg-primary hover:bg-primary-hover text-[var(--on-primary,#FFFFFF)] text-xs font-semibold transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <SearchCode className="w-4 h-4 text-inherit" />
                   <span>Pre-Flight Self-Check</span>
@@ -381,7 +381,7 @@ export default function Dashboard({
                   type="button"
                   id="launch-evidence-lens-btn"
                   onClick={() => onNavigateTab('evidence-lens')}
-                  className="btn-solid h-10 px-4 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-2 cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  className="w-full sm:w-auto h-12 sm:h-10 px-4 rounded-lg bg-primary hover:bg-primary-hover text-[var(--on-primary,#FFFFFF)] text-xs font-semibold transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <SearchCode className="w-4 h-4 text-inherit" />
                   <span>Launch Evidence Lens</span>
@@ -392,7 +392,7 @@ export default function Dashboard({
                 type="button"
                 id="launch-audit-ledger-btn"
                 onClick={() => onNavigateTab('audit-ledger')}
-                className="btn-outline h-10 px-4 rounded-lg border border-border text-text hover:bg-surface-2 text-xs font-semibold transition-colors flex items-center space-x-2 cursor-pointer shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="w-full sm:w-auto h-12 sm:h-10 px-4 rounded-lg border border-border text-text hover:bg-surface-2 text-xs font-semibold transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <History className="w-4 h-4 text-inherit" />
                 <span>Audit Ledger</span>
@@ -426,7 +426,7 @@ export default function Dashboard({
                 </span>
                 {!isLiveMode && <DemoDataBadge />}
               </h2>
-              <p className="text-xs text-text-muted mt-0.5">
+              <p className="hidden sm:block text-xs text-text-muted mt-0.5">
                 {isInstitutionUser 
                   ? 'Institutional dossiers submitted for AICTE regulatory approval.'
                   : 'Applications ordered by calculated regulatory risk score (High-to-Low). Urgent discrepancies surface at the top.'}
@@ -440,7 +440,7 @@ export default function Dashboard({
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-surface border border-border rounded-lg pl-3 pr-8 py-1.5 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs h-10 cursor-pointer"
+                  className="appearance-none bg-surface border border-border rounded-lg pl-3 pr-8 py-1.5 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs h-12 sm:h-10 cursor-pointer min-h-[44px]"
                 >
                   <option value="risk_desc" className="bg-surface text-text">Risk score (highest first)</option>
                   <option value="risk_asc" className="bg-surface text-text">Risk Score (Lowest First)</option>
@@ -452,95 +452,98 @@ export default function Dashboard({
             </div>
           </div>
 
-          {/* Filters Bar: One Row, 40px Controls, 8px Radius, 1px Border, 2px Accent Focus */}
-          <div className="flex flex-wrap lg:flex-nowrap items-center gap-2.5">
+          {/* Filters Bar: Full-width search, 2-col selects on phones, all 44-48px */}
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
             
             {/* Search Input with pl-10 and Absolute Icon */}
-            <div className="flex-1 min-w-[220px] relative">
+            <div className="w-full lg:flex-1 lg:min-w-[220px] relative">
               <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search by college, app #, AICTE ID, city..."
+                placeholder="Search college, app #, AICTE ID, city..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 bg-surface border border-border rounded-lg pl-10 pr-8 text-xs text-text placeholder-text-subtle outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs transition-colors"
+                className="w-full h-12 sm:h-10 bg-surface border border-border rounded-lg pl-10 pr-8 text-xs text-text placeholder-text-subtle outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs transition-colors min-h-[44px]"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-text-muted hover:text-text text-xs cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-text-muted hover:text-text text-xs cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
 
-            {/* State Filter (40px) */}
-            <div className="relative w-full sm:w-44 shrink-0">
-              <select
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="appearance-none w-full h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer"
-              >
-                <option value="ALL" className="bg-surface text-text">All States ({stateOptions.length - 1})</option>
-                {stateOptions.filter((s) => s !== 'ALL').map((s) => (
-                  <option key={s} value={s} className="bg-surface text-text">{s}</option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {/* 2-column Selects Grid on Phone, flex row on Desktop */}
+            <div className="grid grid-cols-2 gap-2 w-full lg:flex lg:w-auto lg:gap-2.5">
+              {/* State Filter */}
+              <div className="relative w-full lg:w-44 shrink-0">
+                <select
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  className="appearance-none w-full h-12 sm:h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer min-h-[44px]"
+                >
+                  <option value="ALL" className="bg-surface text-text">All States ({stateOptions.length - 1})</option>
+                  {stateOptions.filter((s) => s !== 'ALL').map((s) => (
+                    <option key={s} value={s} className="bg-surface text-text">{s}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* Category Filter */}
+              <div className="relative w-full lg:w-44 shrink-0">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="appearance-none w-full h-12 sm:h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer min-h-[44px]"
+                >
+                  <option value="ALL" className="bg-surface text-text">All Categories</option>
+                  {categoryOptions.filter((c) => c !== 'ALL').map((c) => (
+                    <option key={c} value={c} className="bg-surface text-text">{c}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* Status Filter */}
+              <div className="relative w-full lg:w-48 shrink-0">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="appearance-none w-full h-12 sm:h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer min-h-[44px]"
+                >
+                  <option value="ALL" className="bg-surface text-text">All Statuses ({statusOptions.length - 1})</option>
+                  {statusOptions.filter((st) => st !== 'ALL').map((st) => (
+                    <option key={st} value={st} className="bg-surface text-text">{st}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              {/* Severity Filter */}
+              <div className="relative w-full lg:w-36 shrink-0">
+                <select
+                  value={selectedSeverity}
+                  onChange={(e) => setSelectedSeverity(e.target.value)}
+                  className="appearance-none w-full h-12 sm:h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer min-h-[44px]"
+                >
+                  <option value="ALL" className="bg-surface text-text">All Severity</option>
+                  {severityOptions.filter((sev) => sev !== 'ALL').map((sev) => (
+                    <option key={sev} value={sev} className="bg-surface text-text">{sev}</option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
 
-            {/* Category Filter (40px) */}
-            <div className="relative w-full sm:w-44 shrink-0">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none w-full h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer"
-              >
-                <option value="ALL" className="bg-surface text-text">All Categories</option>
-                {categoryOptions.filter((c) => c !== 'ALL').map((c) => (
-                  <option key={c} value={c} className="bg-surface text-text">{c}</option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* Status Filter (40px) */}
-            <div className="relative w-full sm:w-48 shrink-0">
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="appearance-none w-full h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer"
-              >
-                <option value="ALL" className="bg-surface text-text">All Statuses ({statusOptions.length - 1})</option>
-                {statusOptions.filter((st) => st !== 'ALL').map((st) => (
-                  <option key={st} value={st} className="bg-surface text-text">{st}</option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* Severity Filter (40px) */}
-            <div className="relative w-full sm:w-36 shrink-0">
-              <select
-                value={selectedSeverity}
-                onChange={(e) => setSelectedSeverity(e.target.value)}
-                className="appearance-none w-full h-10 bg-surface border border-border rounded-lg pl-3 pr-8 text-xs text-text font-medium outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent shadow-xs cursor-pointer"
-              >
-                <option value="ALL" className="bg-surface text-text">All Severity</option>
-                {severityOptions.filter((sev) => sev !== 'ALL').map((sev) => (
-                  <option key={sev} value={sev} className="bg-surface text-text">{sev}</option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            {/* Reset Filters (40px) */}
+            {/* Reset Filters (44-48px) */}
             <button
               type="button"
               onClick={handleResetFilters}
-              className={`h-10 px-4 rounded-lg border text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer shrink-0 ${
+              className={`h-12 sm:h-10 px-4 rounded-lg border text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer shrink-0 min-h-[44px] ${
                 activeFilterCount > 0 
                   ? 'border-primary/50 bg-primary/10 text-primary dark:text-white hover:bg-primary/20' 
                   : 'border-border bg-surface-2 text-text-muted hover:text-text'
@@ -559,8 +562,8 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* Desktop Triage Table (>=1024px: No horizontal scroll at >= 1280px, No Overlap) */}
-        <div id="triage-table" className="hidden lg:block w-full overflow-x-auto scrollbar-slim">
+        {/* Desktop Triage Table (>=768px: No horizontal scroll at >= 1280px, No Overlap) */}
+        <div id="triage-table" className="hidden md:block w-full overflow-x-auto scrollbar-slim">
           {/* Sticky Header Row (Part 4.4): glass style when stuck, sentence case */}
           <div className="sticky top-0 z-20 grid xl:grid-cols-[minmax(260px,2fr)_150px_110px_minmax(220px,2fr)_210px_170px] grid-cols-[minmax(260px,2.5fr)_110px_minmax(220px,2.5fr)_210px_170px] gap-4 px-5 py-3 bg-surface-2/95 backdrop-blur-sm text-text-muted text-[12px] font-semibold border-b border-border items-center shadow-xs">
             <div>Application & Institution</div>
@@ -771,8 +774,8 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* Mobile / Tablet Stacked Cards View (<1024px) */}
-        <div className="lg:hidden divide-y divide-border">
+        {/* Mobile / Tablet Stacked Cards View (<768px) */}
+        <div className="md:hidden divide-y divide-border">
           {filteredAndSortedApplications.length === 0 ? (
             <div className="py-10 text-center text-text-muted p-4">
               <AlertTriangle className="w-8 h-8 mx-auto text-amber-500 mb-2 opacity-60" />
@@ -789,65 +792,126 @@ export default function Dashboard({
             filteredAndSortedApplications.map((app) => {
               const isHighRisk = app.risk_score >= 80;
               const isMedRisk = app.risk_score >= 50 && app.risk_score < 80;
+              const isAnomalyOpen = activeAnomalyPopoverId === app.id;
 
               return (
-                <div key={app.id} className="p-4 space-y-3 bg-surface hover:bg-surface-2/30 transition-colors">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-mono text-xs font-semibold text-text bg-surface-2 px-2 py-0.5 rounded border border-border">
-                          {app.application_no}
-                        </span>
-                        <span className="text-[10px] text-text-muted">AY {app.academic_year}</span>
-                      </div>
-                      <h3 className="text-xs font-semibold text-text mt-1 leading-snug">
-                        {app.institution_name}
-                      </h3>
-                      <div className="text-[11px] text-text-muted flex items-center space-x-2 mt-0.5">
-                        <span>{app.city}, {app.state}</span>
-                        <span>•</span>
-                        <span>{app.category}</span>
-                      </div>
+                <div key={app.id} className="p-4 space-y-2.5 bg-surface hover:bg-surface-2/40 transition-colors">
+                  {/* Row 1: App ID chip + AY + risk score badge (colour by level) */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-mono text-xs font-semibold text-text bg-surface-2 px-2 py-0.5 rounded border border-border">
+                        {app.application_no}
+                      </span>
+                      <span className="text-[11px] text-text-muted">AY {app.academic_year}</span>
                     </div>
 
-                    <StatusChip status={app.status} />
+                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border shadow-2xs ${
+                      isHighRisk 
+                        ? 'bg-danger/10 text-danger border-danger/30' 
+                        : isMedRisk 
+                        ? 'bg-warning/10 text-warning border-warning/30' 
+                        : 'bg-success/10 text-success border-success/30'
+                    }`}>
+                      Risk: {app.risk_score}/100 {app.risk_level}
+                    </span>
                   </div>
 
-                  <p className="text-xs text-text leading-snug">
-                    {app.primary_issue}
-                  </p>
+                  {/* Row 2: Institution name (16px/600, 2 lines max) + "City • State" */}
+                  <div>
+                    <h3 className="text-base font-semibold text-text leading-snug line-clamp-2">
+                      {app.institution_name}
+                    </h3>
+                    <div className="text-xs text-text-muted mt-0.5 font-medium">
+                      {app.city} • {app.state}
+                    </div>
+                  </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md border border-border bg-surface-2 text-text">
-                        Risk: {app.risk_score}/100
-                      </span>
+                  {/* Row 3: Category (muted) */}
+                  <div className="text-xs text-text-subtle">
+                    {app.category}
+                  </div>
+
+                  {/* Row 4: Primary anomaly (3 lines max with "+N more" link) */}
+                  <div className="relative">
+                    <p className="text-xs text-text leading-relaxed line-clamp-3">
+                      {app.primary_issue || app.flags?.[0] || 'No adverse indicators'}
+                    </p>
+                    {app.flags && app.flags.length > 1 && (
+                      <div className="mt-1">
+                        <button
+                          type="button"
+                          id={`mobile-anomaly-more-btn-${app.id}`}
+                          onClick={() => setActiveAnomalyPopoverId(isAnomalyOpen ? null : app.id)}
+                          className="text-[11px] text-primary hover:text-primary-hover font-semibold hover:underline cursor-pointer flex items-center p-0 text-left"
+                          aria-expanded={isAnomalyOpen}
+                          aria-label={`View ${app.flags.length - 1} more flagged indicators`}
+                        >
+                          +{app.flags.length - 1} more indicators
+                        </button>
+                        {isAnomalyOpen && (
+                          <div 
+                            id={`mobile-anomaly-popover-${app.id}`}
+                            className="mt-2 p-3 bg-surface border border-border rounded-xl shadow-xl space-y-2 select-text text-left"
+                          >
+                            <div className="text-[10px] font-bold text-text uppercase tracking-wider flex items-center justify-between pb-1.5 border-b border-border">
+                              <span>All Flagged Indicators ({app.flags.length})</span>
+                              <button 
+                                type="button"
+                                onClick={() => setActiveAnomalyPopoverId(null)}
+                                className="text-text-muted hover:text-text cursor-pointer p-0.5 rounded"
+                                aria-label="Close indicators popover"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <div className="max-h-48 overflow-y-auto space-y-1.5 scrollbar-slim">
+                              {app.flags.map((fl, i) => (
+                                <div key={i} className="text-xs text-text p-2 rounded-lg bg-surface-2 border border-border flex items-start space-x-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
+                                  <span className="leading-relaxed">{fl}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Row 5: Status chip + full-width Evidence Lens button (44px, outline) + 44px comment button */}
+                  <div className="pt-2.5 border-t border-border space-y-2">
+                    <div className="flex items-center overflow-x-auto">
+                      <StatusChip status={app.status} />
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2 pt-1">
                       {!isInstitutionUser ? (
                         <>
                           <button
                             type="button"
+                            id={`mobile-btn-evidence-lens-${app.id}`}
                             onClick={() => {
                               onSelectApplication(app);
                               onNavigateTab('evidence-lens');
                             }}
-                            className="h-9 px-3 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold flex items-center space-x-1 cursor-pointer"
+                            className="flex-1 h-11 min-h-[44px] px-3 rounded-lg border border-primary text-primary dark:border-border-strong dark:text-white hover:bg-primary/10 dark:hover:bg-surface-2 text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary"
                           >
                             <span>Evidence Lens</span>
-                            <ChevronRight className="w-3.5 h-3.5" />
+                            <ChevronRight className="w-4 h-4 ml-0.5" />
                           </button>
                           {!isAuditor && (
                             <button
                               type="button"
+                              id={`mobile-btn-comment-${app.id}`}
                               onClick={() => {
                                 setActionModalApp(app);
                                 setOfficerComment('');
                               }}
-                              className="w-9 h-9 rounded-lg text-text-muted hover:text-text hover:bg-surface-2 flex items-center justify-center cursor-pointer transition-colors shrink-0"
+                              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg border border-border text-text-muted hover:text-text hover:bg-surface-2 flex items-center justify-center cursor-pointer transition-colors shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              title="Add officer comment"
+                              aria-label="Add officer comment"
                             >
-                              <MessageSquare className="w-3.5 h-3.5" />
+                              <MessageSquare className="w-5 h-5 shrink-0" />
                             </button>
                           )}
                         </>
@@ -858,10 +922,10 @@ export default function Dashboard({
                             onSelectApplication(app);
                             onNavigateTab('preflight');
                           }}
-                          className="h-9 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center space-x-1 cursor-pointer"
+                          className="w-full h-11 min-h-[44px] px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center justify-center space-x-2 cursor-pointer shadow-xs"
                         >
                           <span className="text-white">Self-Audit</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-white" />
+                          <ChevronRight className="w-4 h-4 text-white" />
                         </button>
                       )}
                     </div>
@@ -900,7 +964,7 @@ export default function Dashboard({
               <select
                 value={docType}
                 onChange={(e) => setDocType(e.target.value)}
-                className="appearance-none w-full h-11 bg-surface-2 border border-border rounded-xl pl-3 pr-8 py-2 text-xs text-text outline-none focus:border-primary cursor-pointer"
+                className="appearance-none w-full h-12 sm:h-11 bg-surface-2 border border-border rounded-xl pl-3 pr-8 py-2 text-xs text-text outline-none focus:border-primary cursor-pointer min-h-[44px]"
               >
                 <option value="Auto-Detect">Auto-Detect via ML Classifier</option>
                 <option value="Fire Safety Certificate">Fire Safety Certificate / NOC</option>
@@ -910,13 +974,13 @@ export default function Dashboard({
                 <option value="University Affiliation Order">University Affiliation Order</option>
                 <option value="Campus/Lab Geo-tagged Photo">Campus/Lab Geo-tagged Photo</option>
               </select>
-              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-4 pointer-events-none" />
+              <ChevronDown className="w-3.5 h-3.5 text-text-muted absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           <div className="md:col-span-5">
             <label className="text-xs font-semibold text-text block mb-1.5">Select Dossier File:</label>
-            <div className="border border-dashed border-border hover:border-primary rounded-xl px-3 py-2 bg-surface-2/50 relative cursor-pointer flex items-center justify-between h-11 transition-colors group">
+            <div className="border border-dashed border-border hover:border-primary rounded-xl px-3 py-2 bg-surface-2/50 relative cursor-pointer flex items-center justify-between h-12 sm:h-11 transition-colors group min-h-[44px]">
               <input
                 type="file"
                 required
@@ -934,10 +998,10 @@ export default function Dashboard({
             <button
               type="submit"
               disabled={uploading || !uploadFile}
-              className={`w-full h-11 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer ${
+              className={`w-full h-12 sm:h-11 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer min-h-[44px] ${
                 uploading || !uploadFile
                   ? 'bg-surface-2 text-text-muted border border-border cursor-not-allowed opacity-60'
-                  : 'bg-gradient-to-r from-[#4D74FF] to-[#1F4BFF] hover:from-[#3B66FF] hover:to-[#0A2FD6] text-white shadow-primary/30'
+                  : 'bg-primary hover:bg-primary-hover text-[var(--on-primary,#FFFFFF)] shadow-primary/30'
               }`}
             >
               <span className={uploading || !uploadFile ? 'text-text-muted' : 'text-white'}>
